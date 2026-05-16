@@ -1,0 +1,106 @@
+{
+  "Meta": {
+    "title": "NewsMap",
+    "description": "Portal de noticias del mundo con curación geográfica. Elige tus fuentes en el mapa. Sin algoritmos."
+  },
+  "Landing": {
+    "headline": "Tus noticias del mundo, en el mapa",
+    "subheadline": "Elige los periódicos que quieres leer. Sin algoritmos — solo las fuentes que tú eliges.",
+    "cta": "Empezar gratis",
+    "demo_label": "Demo del feed"
+  },
+  "Nav": {
+    "feed": "Feed",
+    "map": "Mapa",
+    "settings": "Ajustes",
+    "signin": "Iniciar sesión",
+    "signout": "Cerrar sesión"
+  },
+  "Onboarding": {
+    "step1_title": "¿Qué tipo de lector eres?",
+    "step1_subtitle": "Elige un perfil para empezar. Podrás ajustarlo en el siguiente paso.",
+    "profile_latam": "América Latina",
+    "profile_latam_desc": "Los grandes diarios de Argentina, México, Colombia, Brasil y más.",
+    "profile_global": "Mundo",
+    "profile_global_desc": "BBC, Le Monde, Der Spiegel, The Guardian y otros referentes internacionales.",
+    "profile_spain": "España",
+    "profile_spain_desc": "El País, El Mundo, El Confidencial y La Vanguardia.",
+    "profile_custom": "Personalizar en el mapa",
+    "profile_custom_desc": "Elige tú mismo los países y fuentes que quieres seguir.",
+    "step2_title": "Ajusta tu selección",
+    "step2_subtitle": "Añade o quita fuentes según tus preferencias.",
+    "btn_continue": "Continuar",
+    "btn_back": "Volver",
+    "btn_finish": "Ir a mi feed"
+  },
+  "Feed": {
+    "title": "Mi feed",
+    "empty_title": "Tu feed está vacío",
+    "empty_desc": "Suscríbete a algunas fuentes desde el mapa para empezar.",
+    "empty_cta": "Ir al mapa",
+    "new_articles": "{count, plural, one {# artículo nuevo} other {# artículos nuevos}}",
+    "load_more": "Cargar más",
+    "filter_all": "Todo",
+    "filter_by_section": "Por sección",
+    "reading_time": "{minutes} min de lectura",
+    "published_ago": "hace {time}"
+  },
+  "Map": {
+    "title": "Mapa de fuentes",
+    "subtitle": "Haz clic en un país para ver sus medios disponibles.",
+    "sources_available": "{count, plural, one {# fuente disponible} other {# fuentes disponibles}}",
+    "subscribe": "Suscribirse",
+    "unsubscribe": "Desuscribirse",
+    "subscribed": "Suscrito",
+    "no_sources": "No hay fuentes disponibles para este país aún.",
+    "panel_title": "Fuentes en {country}"
+  },
+  "Auth": {
+    "signin_title": "Iniciar sesión en NewsMap",
+    "signin_subtitle": "Guarda tus fuentes y accede desde cualquier dispositivo.",
+    "email_placeholder": "tu@email.com",
+    "magic_link_btn": "Enviar enlace mágico",
+    "magic_link_sent": "Revisa tu correo — te enviamos un enlace de acceso.",
+    "google_btn": "Continuar con Google",
+    "or": "o",
+    "terms": "Al continuar aceptas nuestros {terms} y {privacy}.",
+    "terms_link": "Términos de uso",
+    "privacy_link": "Política de privacidad"
+  },
+  "Settings": {
+    "title": "Ajustes",
+    "section_account": "Cuenta",
+    "section_sources": "Mis fuentes",
+    "section_display": "Visualización",
+    "language_label": "Idioma",
+    "language_es": "Español",
+    "language_en": "English",
+    "delete_account": "Eliminar cuenta",
+    "delete_confirm": "¿Estás seguro? Esta acción no se puede deshacer.",
+    "delete_btn": "Sí, eliminar mi cuenta",
+    "cancel": "Cancelar"
+  },
+  "Sections": {
+    "sports": "Deportes",
+    "politics": "Política",
+    "economy": "Economía",
+    "tech": "Tecnología",
+    "culture": "Cultura",
+    "world": "Internacional",
+    "health": "Salud",
+    "science": "Ciencia",
+    "entertainment": "Entretenimiento"
+  },
+  "Article": {
+    "read_full": "Leer artículo completo",
+    "source_label": "Fuente",
+    "paywall_notice": "Este artículo puede estar detrás de un muro de pago.",
+    "share": "Compartir"
+  },
+  "Errors": {
+    "not_found": "Página no encontrada",
+    "not_found_desc": "La página que buscas no existe.",
+    "go_home": "Ir al inicio",
+    "generic": "Algo salió mal. Por favor, intenta de nuevo."
+  }
+}

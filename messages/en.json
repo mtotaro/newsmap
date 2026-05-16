@@ -1,0 +1,106 @@
+{
+  "Meta": {
+    "title": "NewsMap",
+    "description": "World news portal with geographic curation. Pick your sources on a map. No algorithm."
+  },
+  "Landing": {
+    "headline": "Your world news, on the map",
+    "subheadline": "Choose the publications you want to read. No algorithm — just the sources you pick.",
+    "cta": "Get started free",
+    "demo_label": "Feed preview"
+  },
+  "Nav": {
+    "feed": "Feed",
+    "map": "Map",
+    "settings": "Settings",
+    "signin": "Sign in",
+    "signout": "Sign out"
+  },
+  "Onboarding": {
+    "step1_title": "What kind of reader are you?",
+    "step1_subtitle": "Pick a starter profile. You can adjust it in the next step.",
+    "profile_latam": "Latin America",
+    "profile_latam_desc": "The major newspapers from Argentina, Mexico, Colombia, Brazil and more.",
+    "profile_global": "Global",
+    "profile_global_desc": "BBC, Le Monde, Der Spiegel, The Guardian and other international references.",
+    "profile_spain": "Spain",
+    "profile_spain_desc": "El País, El Mundo, El Confidencial and La Vanguardia.",
+    "profile_custom": "Customize on the map",
+    "profile_custom_desc": "Pick the countries and sources you want to follow yourself.",
+    "step2_title": "Fine-tune your selection",
+    "step2_subtitle": "Add or remove sources to match your preferences.",
+    "btn_continue": "Continue",
+    "btn_back": "Back",
+    "btn_finish": "Go to my feed"
+  },
+  "Feed": {
+    "title": "My feed",
+    "empty_title": "Your feed is empty",
+    "empty_desc": "Subscribe to some sources from the map to get started.",
+    "empty_cta": "Go to map",
+    "new_articles": "{count, plural, one {# new article} other {# new articles}}",
+    "load_more": "Load more",
+    "filter_all": "All",
+    "filter_by_section": "By section",
+    "reading_time": "{minutes} min read",
+    "published_ago": "{time} ago"
+  },
+  "Map": {
+    "title": "Source map",
+    "subtitle": "Click a country to browse its available publications.",
+    "sources_available": "{count, plural, one {# source available} other {# sources available}}",
+    "subscribe": "Subscribe",
+    "unsubscribe": "Unsubscribe",
+    "subscribed": "Subscribed",
+    "no_sources": "No sources available for this country yet.",
+    "panel_title": "Sources in {country}"
+  },
+  "Auth": {
+    "signin_title": "Sign in to NewsMap",
+    "signin_subtitle": "Save your sources and access from any device.",
+    "email_placeholder": "you@email.com",
+    "magic_link_btn": "Send magic link",
+    "magic_link_sent": "Check your email — we sent you an access link.",
+    "google_btn": "Continue with Google",
+    "or": "or",
+    "terms": "By continuing you agree to our {terms} and {privacy}.",
+    "terms_link": "Terms of service",
+    "privacy_link": "Privacy policy"
+  },
+  "Settings": {
+    "title": "Settings",
+    "section_account": "Account",
+    "section_sources": "My sources",
+    "section_display": "Display",
+    "language_label": "Language",
+    "language_es": "Español",
+    "language_en": "English",
+    "delete_account": "Delete account",
+    "delete_confirm": "Are you sure? This action cannot be undone.",
+    "delete_btn": "Yes, delete my account",
+    "cancel": "Cancel"
+  },
+  "Sections": {
+    "sports": "Sports",
+    "politics": "Politics",
+    "economy": "Economy",
+    "tech": "Technology",
+    "culture": "Culture",
+    "world": "World",
+    "health": "Health",
+    "science": "Science",
+    "entertainment": "Entertainment"
+  },
+  "Article": {
+    "read_full": "Read full article",
+    "source_label": "Source",
+    "paywall_notice": "This article may be behind a paywall.",
+    "share": "Share"
+  },
+  "Errors": {
+    "not_found": "Page not found",
+    "not_found_desc": "The page you're looking for doesn't exist.",
+    "go_home": "Go home",
+    "generic": "Something went wrong. Please try again."
+  }
+}
