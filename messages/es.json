@@ -7,7 +7,13 @@
     "headline": "Tus noticias del mundo, en el mapa",
     "subheadline": "Elige los periódicos que quieres leer. Sin algoritmos — solo las fuentes que tú eliges.",
     "cta": "Empezar gratis",
-    "demo_label": "Demo del feed"
+    "demo_label": "Demo del feed",
+    "feature_map_title": "Elige en el mapa",
+    "feature_map_desc": "Explora países y suscríbete a los medios que más te interesan.",
+    "feature_rss_title": "Feed en tiempo real",
+    "feature_rss_desc": "Artículos actualizados cada 15 minutos desde las fuentes originales.",
+    "feature_i18n_title": "En tu idioma",
+    "feature_i18n_desc": "Interfaz disponible en español e inglés. Fuentes en ambos idiomas."
   },
   "Nav": {
     "feed": "Feed",

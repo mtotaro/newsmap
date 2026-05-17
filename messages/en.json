@@ -7,7 +7,13 @@
     "headline": "Your world news, on the map",
     "subheadline": "Choose the publications you want to read. No algorithm — just the sources you pick.",
     "cta": "Get started free",
-    "demo_label": "Feed preview"
+    "demo_label": "Feed preview",
+    "feature_map_title": "Pick on the map",
+    "feature_map_desc": "Explore countries and subscribe to the publications that interest you.",
+    "feature_rss_title": "Real-time feed",
+    "feature_rss_desc": "Articles refreshed every 15 minutes straight from the original sources.",
+    "feature_i18n_title": "In your language",
+    "feature_i18n_desc": "Interface available in Spanish and English. Sources in both languages."
   },
   "Nav": {
     "feed": "Feed",
