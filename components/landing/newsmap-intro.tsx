@@ -7,36 +7,37 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
+// Approximate % positions over the 800×450 canvas for geoEqualEarth scale=147
 const PINS = [
   {
     id: "ar",
-    coords: [-64, -34] as [number, number],
+    pos: { x: 26, y: 70 },
     headline: "Economía en alza",
     source: "Infobae · Buenos Aires",
-    startFrame: 30,
+    startFrame: 20,
   },
   {
     id: "us",
-    coords: [-98, 39] as [number, number],
+    pos: { x: 17, y: 37 },
     headline: "Markets at record high",
     source: "AP News · Washington",
-    startFrame: 68,
+    startFrame: 58,
   },
   {
     id: "es",
-    coords: [-4, 40] as [number, number],
+    pos: { x: 46, y: 36 },
     headline: "Madrid lidera la Liga",
     source: "El País · Madrid",
-    startFrame: 106,
+    startFrame: 96,
   },
   {
     id: "de",
-    coords: [10, 52] as [number, number],
+    pos: { x: 50, y: 28 },
     headline: "EU summit in Berlin",
     source: "Der Spiegel · Berlín",
-    startFrame: 144,
+    startFrame: 134,
   },
 ];
 
@@ -59,16 +60,16 @@ export function NewsMapIntro({
       ? "Pick your sources. No algorithm."
       : "Elige tus fuentes. Sin algoritmos.";
 
-  const taglineOpacity = interpolate(frame, [172, 195], [0, 1], {
+  const taglineOpacity = interpolate(frame, [165, 188], [0, 1], {
     extrapolateRight: "clamp",
   });
-  const taglineY = interpolate(frame, [172, 195], [14, 0], {
+  const taglineY = interpolate(frame, [165, 188], [16, 0], {
     extrapolateRight: "clamp",
   });
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#0f0f0f" }}>
-      {/* Map */}
+      {/* World map — just background geography */}
       <div style={{ position: "absolute", inset: 0 }}>
         <ComposableMap
           projectionConfig={{ scale: 147 }}
@@ -99,102 +100,125 @@ export function NewsMapIntro({
               ))
             }
           </Geographies>
-
-          {PINS.map((pin) => {
-            const pf = frame - pin.startFrame;
-            if (pf < 0) return null;
-
-            const dotScale = spring({
-              fps,
-              frame: pf,
-              config: { damping: 14, stiffness: 280 },
-            });
-
-            const cardOpacity = interpolate(pf, [10, 24], [0, 1], {
-              extrapolateRight: "clamp",
-            });
-            const cardDx = interpolate(pf, [10, 24], [0, 8], {
-              extrapolateRight: "clamp",
-            });
-
-            const rf1 = pf % 58;
-            const r1 = interpolate(rf1, [0, 58], [4, 20], {
-              extrapolateRight: "clamp",
-            });
-            const o1 = interpolate(rf1, [0, 58], [0.45, 0], {
-              extrapolateRight: "clamp",
-            });
-            const rf2 = Math.max(0, pf - 20) % 58;
-            const r2 = interpolate(rf2, [0, 58], [4, 20], {
-              extrapolateRight: "clamp",
-            });
-            const o2 = interpolate(rf2, [0, 58], [0.45, 0], {
-              extrapolateRight: "clamp",
-            });
-
-            return (
-              <Marker key={pin.id} coordinates={pin.coords}>
-                <circle
-                  r={r1}
-                  fill="none"
-                  stroke="#4a9eff"
-                  strokeWidth={0.7}
-                  opacity={o1}
-                />
-                <circle
-                  r={r2}
-                  fill="none"
-                  stroke="#4a9eff"
-                  strokeWidth={0.7}
-                  opacity={o2}
-                />
-                <circle r={3.5 * dotScale} fill="#4a9eff" />
-                <g
-                  opacity={cardOpacity}
-                  transform={`translate(${8 + cardDx}, -33)`}
-                >
-                  <rect
-                    x={0}
-                    y={0}
-                    width={120}
-                    height={28}
-                    rx={3.5}
-                    ry={3.5}
-                    fill="#1a1a1a"
-                    stroke="#333"
-                    strokeWidth={0.5}
-                  />
-                  <text
-                    x={8}
-                    y={12}
-                    fill="#e8e8e8"
-                    fontSize={7.5}
-                    fontWeight="600"
-                    fontFamily="system-ui, -apple-system, sans-serif"
-                  >
-                    {pin.headline}
-                  </text>
-                  <text
-                    x={8}
-                    y={23}
-                    fill="#666"
-                    fontSize={6}
-                    fontFamily="system-ui, -apple-system, sans-serif"
-                  >
-                    {pin.source}
-                  </text>
-                </g>
-              </Marker>
-            );
-          })}
         </ComposableMap>
       </div>
 
-      {/* Tagline overlay */}
+      {/* HTML pin layer — avoids SVG coordinate system issues */}
+      {PINS.map((pin) => {
+        const pf = frame - pin.startFrame;
+        if (pf < 0) return null;
+
+        const dotScale = spring({
+          fps,
+          frame: pf,
+          config: { damping: 12, stiffness: 260 },
+        });
+
+        const cardOpacity = interpolate(pf, [8, 22], [0, 1], {
+          extrapolateRight: "clamp",
+        });
+        const cardDx = interpolate(pf, [8, 22], [-8, 0], {
+          extrapolateRight: "clamp",
+        });
+
+        // Repeating pulse ring
+        const rf = pf % 55;
+        const ringScale = interpolate(rf, [0, 55], [1, 3], {
+          extrapolateRight: "clamp",
+        });
+        const ringOpacity = interpolate(rf, [0, 55], [0.6, 0], {
+          extrapolateRight: "clamp",
+        });
+
+        const dotSize = 10 * dotScale;
+
+        return (
+          <div
+            key={pin.id}
+            style={{
+              position: "absolute",
+              left: `${pin.pos.x}%`,
+              top: `${pin.pos.y}%`,
+              transform: "translate(-50%, -50%)",
+            }}
+          >
+            {/* Pulse ring */}
+            <div
+              style={{
+                position: "absolute",
+                width: 14,
+                height: 14,
+                borderRadius: "50%",
+                border: "1.5px solid #4a9eff",
+                top: "50%",
+                left: "50%",
+                transform: `translate(-50%, -50%) scale(${ringScale})`,
+                opacity: ringOpacity,
+              }}
+            />
+
+            {/* Dot */}
+            <div
+              style={{
+                position: "absolute",
+                width: dotSize,
+                height: dotSize,
+                borderRadius: "50%",
+                backgroundColor: "#4a9eff",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+
+            {/* Headline card */}
+            <div
+              style={{
+                position: "absolute",
+                left: 14,
+                top: -22,
+                width: 168,
+                background: "rgba(20,20,20,0.92)",
+                border: "1px solid #383838",
+                borderRadius: 6,
+                padding: "5px 9px",
+                opacity: cardOpacity,
+                transform: `translateX(${cardDx}px)`,
+                pointerEvents: "none",
+              }}
+            >
+              <p
+                style={{
+                  color: "#e8e8e8",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  margin: 0,
+                  lineHeight: 1.3,
+                  fontFamily: "system-ui, sans-serif",
+                }}
+              >
+                {pin.headline}
+              </p>
+              <p
+                style={{
+                  color: "#666",
+                  fontSize: 9,
+                  margin: "3px 0 0",
+                  fontFamily: "system-ui, sans-serif",
+                }}
+              >
+                {pin.source}
+              </p>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Tagline */}
       <div
         style={{
           position: "absolute",
-          bottom: "16%",
+          bottom: "14%",
           left: 0,
           right: 0,
           textAlign: "center",
@@ -210,8 +234,8 @@ export function NewsMapIntro({
             fontWeight: 700,
             margin: 0,
             letterSpacing: "-0.02em",
-            fontFamily: "system-ui, -apple-system, sans-serif",
-            textShadow: "0 2px 40px rgba(0,0,0,0.9)",
+            fontFamily: "system-ui, sans-serif",
+            textShadow: "0 2px 32px rgba(0,0,0,0.9)",
           }}
         >
           {tagline}
@@ -219,9 +243,9 @@ export function NewsMapIntro({
         <p
           style={{
             color: "#555",
-            fontSize: 14,
-            margin: "6px 0 0",
-            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontSize: 13,
+            margin: "5px 0 0",
+            fontFamily: "system-ui, sans-serif",
           }}
         >
           {sub}
