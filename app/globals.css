@@ -1,6 +1,10 @@
 @import "tailwindcss";
 
 @theme {
+  /* bg-background / text-foreground utilities (used in layout.tsx body) */
+  --color-background: #ffffff;
+  --color-foreground: #0a0a0a;
+
   --color-bg:        #ffffff;
   --color-bg-2:      #f5f5f5;
   --color-bg-3:      #eaeaea;
@@ -21,14 +25,9 @@
   --font-mono: var(--font-geist-mono), "Courier New", monospace;
 }
 
-:root {
-  --background: var(--color-bg);
-  --foreground: var(--color-text);
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: #ffffff;
+  color: #0a0a0a;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }

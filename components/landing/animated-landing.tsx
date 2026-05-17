@@ -23,14 +23,14 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
       .catch(() => setTopology({})); // empty map on fetch error — animation still runs
   }, []);
 
+  // topology is in deps so this effect re-runs when the Player actually mounts
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
-    // autoPlay prop can silently fail; call play() directly as guarantee
     player.play();
     player.addEventListener("ended", onDone);
     return () => player.removeEventListener("ended", onDone);
-  }, [onDone]);
+  }, [onDone, topology]);
 
   // Keep the dark overlay visible while topology loads (seamless with the bg)
   if (!topology) return null;
@@ -56,7 +56,7 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
           right: 24,
           background: "none",
           border: "none",
-          color: "#444",
+          color: "#888",
           fontSize: 13,
           cursor: "pointer",
           fontFamily: "system-ui, -apple-system, sans-serif",
@@ -66,10 +66,10 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
           zIndex: 10,
         }}
         onMouseEnter={(e) =>
-          ((e.currentTarget as HTMLButtonElement).style.color = "#888")
+          ((e.currentTarget as HTMLButtonElement).style.color = "#ccc")
         }
         onMouseLeave={(e) =>
-          ((e.currentTarget as HTMLButtonElement).style.color = "#444")
+          ((e.currentTarget as HTMLButtonElement).style.color = "#888")
         }
       >
         Saltar →
