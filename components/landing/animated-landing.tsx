@@ -26,6 +26,8 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
+    // autoPlay prop can silently fail; call play() directly as guarantee
+    player.play();
     player.addEventListener("ended", onDone);
     return () => player.removeEventListener("ended", onDone);
   }, [onDone]);
@@ -44,7 +46,6 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
         compositionWidth={800}
         compositionHeight={450}
         style={{ width: "100%", height: "100%" }}
-        autoPlay
         acknowledgeRemotionLicense
       />
       <button

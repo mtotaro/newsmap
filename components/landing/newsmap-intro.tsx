@@ -59,9 +59,6 @@ export function NewsMapIntro({
       ? "Pick your sources. No algorithm."
       : "Elige tus fuentes. Sin algoritmos.";
 
-  const mapOpacity = interpolate(frame, [0, 28], [0, 1], {
-    extrapolateRight: "clamp",
-  });
   const taglineOpacity = interpolate(frame, [172, 195], [0, 1], {
     extrapolateRight: "clamp",
   });
@@ -72,7 +69,7 @@ export function NewsMapIntro({
   return (
     <AbsoluteFill style={{ backgroundColor: "#0f0f0f" }}>
       {/* Map */}
-      <div style={{ position: "absolute", inset: 0, opacity: mapOpacity }}>
+      <div style={{ position: "absolute", inset: 0 }}>
         <ComposableMap
           projectionConfig={{ scale: 147 }}
           style={{ width: "100%", height: "100%" }}
