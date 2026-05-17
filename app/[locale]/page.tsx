@@ -21,7 +21,7 @@ export default function HomePage() {
     <main className="flex flex-col items-center justify-center flex-1 min-h-[calc(100vh-3.5rem)] gap-6 px-4 text-center">
       {/* Fullscreen animation overlay — covers nav too while playing */}
       <div
-        className={`fixed inset-0 z-50 transition-opacity duration-1000 ${
+        className={`fixed inset-0 z-50 transition-opacity duration-300 ${
           animDone ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
         style={{ background: "#0f0f0f" }}
@@ -31,7 +31,7 @@ export default function HomePage() {
 
       {/* Headline + subheadline */}
       <div
-        className={`space-y-3 max-w-md transition-opacity duration-1000 delay-300 ${
+        className={`space-y-3 max-w-md transition-opacity duration-300 delay-300 ${
           animDone ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
@@ -45,7 +45,7 @@ export default function HomePage() {
 
       {/* CTA buttons */}
       <div
-        className={`flex flex-col sm:flex-row gap-3 transition-opacity duration-1000 delay-500 ${
+        className={`flex flex-col sm:flex-row gap-3 transition-opacity duration-300 delay-500 ${
           animDone ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
@@ -65,7 +65,7 @@ export default function HomePage() {
 
       {/* Feature cards */}
       <div
-        className={`grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl mt-2 transition-opacity duration-1000 delay-700 ${
+        className={`grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl mt-2 transition-opacity duration-300 delay-700 ${
           animDone ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
