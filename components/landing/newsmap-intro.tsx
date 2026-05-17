@@ -9,8 +9,6 @@ import {
 } from "remotion";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
-const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
-
 const PINS = [
   {
     id: "ar",
@@ -42,7 +40,13 @@ const PINS = [
   },
 ];
 
-export function NewsMapIntro({ locale = "es" }: { locale?: string }) {
+export function NewsMapIntro({
+  locale = "es",
+  topology = {},
+}: {
+  locale?: string;
+  topology?: Record<string, unknown>;
+}) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
@@ -73,7 +77,7 @@ export function NewsMapIntro({ locale = "es" }: { locale?: string }) {
           projectionConfig={{ scale: 147 }}
           style={{ width: "100%", height: "100%" }}
         >
-          <Geographies geography={GEO_URL}>
+          <Geographies geography={topology}>
             {({ geographies }) =>
               geographies.map((geo) => (
                 <Geography

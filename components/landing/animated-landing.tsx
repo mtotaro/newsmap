@@ -1,16 +1,27 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Player, type PlayerRef } from "@remotion/player";
 import { NewsMapIntro } from "./newsmap-intro";
 
-type Props = {
-  locale: string;
-  onDone: () => void;
-};
+const GEO_URL =
+  "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+
+type Props = { locale: string; onDone: () => void };
 
 export default function AnimatedLanding({ locale, onDone }: Props) {
   const playerRef = useRef<PlayerRef>(null);
+  const [topology, setTopology] = useState<Record<string, unknown> | null>(
+    null
+  );
+
+  // Pre-fetch topology so the map is ready when the Player starts
+  useEffect(() => {
+    fetch(GEO_URL)
+      .then((r) => r.json())
+      .then((t: Record<string, unknown>) => setTopology(t))
+      .catch(() => setTopology({})); // empty map on fetch error — animation still runs
+  }, []);
 
   useEffect(() => {
     const player = playerRef.current;
@@ -19,18 +30,22 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
     return () => player.removeEventListener("ended", onDone);
   }, [onDone]);
 
+  // Keep the dark overlay visible while topology loads (seamless with the bg)
+  if (!topology) return null;
+
   return (
     <>
       <Player
         ref={playerRef}
         component={NewsMapIntro}
-        inputProps={{ locale }}
+        inputProps={{ locale, topology }}
         durationInFrames={215}
         fps={30}
         compositionWidth={800}
         compositionHeight={450}
         style={{ width: "100%", height: "100%" }}
         autoPlay
+        acknowledgeRemotionLicense
       />
       <button
         onClick={onDone}
