@@ -29,7 +29,7 @@ type Props = {
 const FLAG_MAP: Record<string, string> = {
   AR: "🇦🇷", BR: "🇧🇷", CL: "🇨🇱", CO: "🇨🇴", PE: "🇵🇪",
   MX: "🇲🇽", US: "🇺🇸", GB: "🇬🇧", ES: "🇪🇸", FR: "🇫🇷",
-  DE: "🇩🇪", IT: "🇮🇹", INTL: "🌐",
+  DE: "🇩🇪", IT: "🇮🇹", QA: "🇶🇦", INTL: "🌐",
 };
 
 export function ArticleCard({

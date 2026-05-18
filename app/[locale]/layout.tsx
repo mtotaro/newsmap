@@ -5,6 +5,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Nav } from "@/components/layout/nav";
+import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -31,6 +32,7 @@ export async function generateMetadata({
   return {
     title: { default: t("title"), template: `%s · ${t("title")}` },
     description: t("description"),
+    manifest: "/manifest.json",
   };
 }
 
@@ -58,6 +60,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <Nav locale={locale} />
           {children}
+          <ServiceWorkerRegister />
         </NextIntlClientProvider>
       </body>
     </html>
