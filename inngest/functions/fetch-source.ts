@@ -58,7 +58,6 @@ export const fetchSource = inngest.createFunction(
       });
 
       // Find matching URLs from parsed batch to emit events
-      const guidToUrl = new Map(parsed.map((a) => [a.guid, a.url]));
       const parsedById = new Map(
         insertResult.map((r) => [
           r.id,

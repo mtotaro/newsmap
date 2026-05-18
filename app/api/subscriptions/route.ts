@@ -5,7 +5,7 @@ import { userSubscriptions, sources } from "@/lib/db/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { inngest } from "@/inngest/client";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const supabase = await createClient();
   const {
     data: { user },
