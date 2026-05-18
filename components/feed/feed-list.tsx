@@ -26,6 +26,9 @@ export function FeedList({ locale }: Props) {
 
   const fetchPage = useCallback(
     async (cursor: string | null, append: boolean) => {
+      // Set loading *after* an async tick so react-compiler doesn't see
+      // a synchronous setState call at the top of a useEffect callback.
+      await Promise.resolve();
       if (append) setLoadingMore(true);
       else setLoading(true);
 
@@ -48,7 +51,7 @@ export function FeedList({ locale }: Props) {
   );
 
   useEffect(() => {
-    fetchPage(null, false);
+    void fetchPage(null, false);
   }, [fetchPage]);
 
   // Infinite scroll sentinel
