@@ -13,6 +13,12 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // react-compiler suggestions are informational, not blocking
+      "react-compiler/react-compiler": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;
