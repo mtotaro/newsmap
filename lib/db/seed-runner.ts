@@ -1,8 +1,13 @@
-import "dotenv/config";
-import { db } from "./index";
+import * as dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+
+// Imports that depend on env vars must come AFTER dotenv.config (CommonJS require order)
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import { sources } from "./schema";
 import { SOURCES, NEEDS_VERIFICATION, type SourceSeed } from "./seed";
 import { sql } from "drizzle-orm";
+import * as schema from "./schema";
 
 function slugify(name: string): string {
   return name
@@ -38,6 +43,13 @@ function toDbRow(s: SourceSeed) {
 }
 
 async function main() {
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL not set");
+
+  // Create connection inline so env vars are definitely available
+  const client = postgres(url, { prepare: false, max: 5 });
+  const db = drizzle(client, { schema });
+
   console.log(`Seeding ${SOURCES.length} sources...`);
 
   for (const s of SOURCES) {
@@ -56,7 +68,10 @@ async function main() {
     console.log(`  ${row.is_active ? "✓" : "⏸"} ${s.name} (${s.countryCode})`);
   }
 
-  console.log(`Done. ${SOURCES.filter((s) => NEEDS_VERIFICATION.has(s.name)).length} sources pending manual verification.`);
+  console.log(
+    `Done. ${SOURCES.filter((s) => NEEDS_VERIFICATION.has(s.name)).length} sources pending manual verification.`
+  );
+  await client.end();
   process.exit(0);
 }
 
