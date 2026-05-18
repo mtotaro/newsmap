@@ -21,8 +21,9 @@ dist/
 .env.test.local
 .env.production.local
 
-# Vercel
-.vercel
+# Vercel — commit project.json but ignore build output
+.vercel/output
+.vercel/cache
 
 # TypeScript
 *.tsbuildinfo
