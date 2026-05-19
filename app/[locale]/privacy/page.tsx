@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
 export async function generateMetadata({
@@ -243,7 +242,7 @@ function PrivacyEn() {
 
       <Section title="1. Data controller">
         <p>
-          NewsMap ("we", "us", or "the service"). For privacy-related inquiries,
+          NewsMap (&ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;the service&rdquo;). For privacy-related inquiries,
           contact us at{" "}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
@@ -417,8 +416,6 @@ export default async function PrivacyPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "Errors" });
-
   const backLabel = locale === "es" ? "← Volver" : "← Back";
 
   return (
