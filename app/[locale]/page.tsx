@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { ALPHA2_TO_SLUG } from "@/lib/countries";
 
 const AnimatedLanding = dynamic(
   () => import("@/components/landing/animated-landing"),
@@ -90,6 +91,24 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+
+      {/* Country news links — helps SEO crawlers discover public pages */}
+      <nav
+        className={`flex flex-wrap justify-center gap-x-4 gap-y-1 max-w-xl mt-4 transition-opacity duration-300 delay-700 ${
+          animDone ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        aria-label="Country news"
+      >
+        {Object.entries(ALPHA2_TO_SLUG).map(([alpha2, slug]) => (
+          <a
+            key={alpha2}
+            href={`/${locale}/news/${slug}`}
+            className="text-xs text-[var(--color-text-3)] hover:text-[var(--color-text-2)] transition-colors"
+          >
+            {new Intl.DisplayNames([locale], { type: "region" }).of(alpha2)}
+          </a>
+        ))}
+      </nav>
     </main>
   );
 }

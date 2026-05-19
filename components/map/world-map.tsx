@@ -9,6 +9,7 @@ import {
 } from "react-simple-maps";
 import { useTranslations } from "next-intl";
 import type { SectionKey } from "@/lib/db/schema";
+import { ALPHA2_TO_SLUG } from "@/lib/countries";
 
 const GEO_URL =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
@@ -268,11 +269,21 @@ export function WorldMap({ locale }: Props) {
           <div className="h-full flex flex-col">
             {/* Panel header */}
             <div className="px-4 py-3 border-b border-[var(--color-border)]">
-              <h2 className="font-semibold text-[var(--color-text)]">
-                {t("panel_title", {
-                  country: selectedCountryName ?? selectedCountry,
-                })}
-              </h2>
+              <div className="flex items-start justify-between gap-2">
+                <h2 className="font-semibold text-[var(--color-text)]">
+                  {t("panel_title", {
+                    country: selectedCountryName ?? selectedCountry,
+                  })}
+                </h2>
+                {selectedCountry && ALPHA2_TO_SLUG[selectedCountry] && (
+                  <a
+                    href={`/${locale}/news/${ALPHA2_TO_SLUG[selectedCountry]}`}
+                    className="shrink-0 text-xs text-[var(--color-blue)] hover:underline mt-0.5"
+                  >
+                    {t("view_news")} →
+                  </a>
+                )}
+              </div>
               {!loadingSources && (
                 <p className="text-xs text-[var(--color-text-2)] mt-0.5">
                   {t("sources_available", { count: sources.length })}

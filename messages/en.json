@@ -62,7 +62,8 @@
     "subscribed": "Subscribed",
     "no_sources": "No sources available for this country yet.",
     "panel_title": "Sources in {country}",
-    "section_last": "Can't deselect the only active section"
+    "section_last": "Can't deselect the only active section",
+    "view_news": "View news"
   },
   "Auth": {
     "signin_title": "Sign in to NewsMap",
@@ -111,6 +112,18 @@
     "source_label": "Source",
     "paywall_notice": "This article may be behind a paywall.",
     "share": "Share"
+  },
+  "News": {
+    "meta_title": "{country} News Today | NewsMap",
+    "meta_description": "Latest headlines from {country}. Updated every 15 minutes from the leading sources. No account needed.",
+    "page_title": "Latest news from {country}",
+    "subtitle": "Updated every 15 minutes",
+    "articles_count": "{count} recent articles",
+    "no_articles": "No articles available for this country yet. Check back soon.",
+    "back_to_map": "All countries",
+    "signup_cta": "Follow {country} news on NewsMap",
+    "signup_desc": "Create a free account to build your personal feed across all sources.",
+    "signup_btn": "Get started free"
   },
   "Errors": {
     "not_found": "Page not found",

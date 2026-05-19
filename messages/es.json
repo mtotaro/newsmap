@@ -62,7 +62,8 @@
     "subscribed": "Suscrito",
     "no_sources": "No hay fuentes disponibles para este país aún.",
     "panel_title": "Fuentes en {country}",
-    "section_last": "No podés deseleccionar la única sección activa"
+    "section_last": "No podés deseleccionar la única sección activa",
+    "view_news": "Ver noticias"
   },
   "Auth": {
     "signin_title": "Iniciar sesión en NewsMap",
@@ -111,6 +112,18 @@
     "source_label": "Fuente",
     "paywall_notice": "Este artículo puede estar detrás de un muro de pago.",
     "share": "Compartir"
+  },
+  "News": {
+    "meta_title": "Noticias de {country} hoy | NewsMap",
+    "meta_description": "Últimas noticias de {country}. Actualizado cada 15 minutos desde los principales medios. Sin registro.",
+    "page_title": "Últimas noticias de {country}",
+    "subtitle": "Actualizado cada 15 minutos",
+    "articles_count": "{count} artículos recientes",
+    "no_articles": "No hay artículos disponibles para este país todavía. Volvé pronto.",
+    "back_to_map": "Todos los países",
+    "signup_cta": "Seguí las noticias de {country} en NewsMap",
+    "signup_desc": "Creá una cuenta gratuita para armar tu feed personal con todos los medios.",
+    "signup_btn": "Empezar gratis"
   },
   "Errors": {
     "not_found": "Página no encontrada",
