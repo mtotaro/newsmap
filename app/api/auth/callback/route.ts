@@ -14,8 +14,14 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  // `next` lets the auth page pass the final destination locale-aware
-  const next = searchParams.get("next") ?? "/en/feed";
+  // `next` lets the auth page pass the final destination locale-aware.
+  // Validate it is a relative path to prevent open-redirect attacks:
+  //   ?next=//evil.com or ?next=/@evil.com would otherwise redirect off-site.
+  const rawNext = searchParams.get("next") ?? "/en/feed";
+  const next =
+    rawNext.startsWith("/") && !rawNext.startsWith("//") && !rawNext.startsWith("/@")
+      ? rawNext
+      : "/en/feed";
 
   if (code) {
     const supabase = await createClient();

@@ -9,7 +9,9 @@ import {
   jsonb,
   index,
   unique,
+  check,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 export const regionEnum = pgEnum("region", [
   "latam",
@@ -149,22 +151,26 @@ export const ogImageJobs = pgTable(
 // Extends Supabase auth.users with app-specific preferences.
 // One row per user, created on first settings access or digest opt-in.
 
-export const userProfiles = pgTable("user_profiles", {
-  /** Matches auth.users.id */
-  user_id: uuid("user_id").primaryKey(),
-  /** Whether the user has opted in to the daily digest email. */
-  digest_enabled: boolean("digest_enabled").notNull().default(false),
-  /** Preferred UTC hour (0–23) for the digest email. Default: 7 AM UTC. */
-  digest_hour: integer("digest_hour").notNull().default(7),
-  /** Opaque token for one-click unsubscribe (no login required). */
-  digest_unsubscribe_token: text("digest_unsubscribe_token").unique(),
-  created_at: timestamp("created_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-  updated_at: timestamp("updated_at", { withTimezone: true })
-    .notNull()
-    .defaultNow(),
-});
+export const userProfiles = pgTable(
+  "user_profiles",
+  {
+    /** Matches auth.users.id */
+    user_id: uuid("user_id").primaryKey(),
+    /** Whether the user has opted in to the daily digest email. */
+    digest_enabled: boolean("digest_enabled").notNull().default(false),
+    /** Preferred UTC hour (0–23) for the digest email. Default: 7 AM UTC. */
+    digest_hour: integer("digest_hour").notNull().default(7),
+    /** Opaque token for one-click unsubscribe (no login required). */
+    digest_unsubscribe_token: text("digest_unsubscribe_token").unique(),
+    created_at: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updated_at: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [check("digest_hour_range", sql`${t.digest_hour} >= 0 AND ${t.digest_hour} <= 23`)]
+);
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -174,13 +180,12 @@ export type FeedEntry = {
   is_active?: boolean;
 };
 
-export type SectionKey =
-  | "sports"
-  | "politics"
-  | "economy"
-  | "tech"
-  | "culture"
-  | "world"
-  | "health"
-  | "science"
-  | "entertainment";
+// Derived from sectionKeyEnum — single source of truth, no manual duplication
+export type SectionKey = (typeof sectionKeyEnum.enumValues)[number];
+
+// Convenience type aliases for Drizzle row shapes
+export type Source = typeof sources.$inferSelect;
+export type Article = typeof articles.$inferSelect;
+export type UserSubscription = typeof userSubscriptions.$inferSelect;
+export type UserProfile = typeof userProfiles.$inferSelect;
+export type OgImageJob = typeof ogImageJobs.$inferSelect;

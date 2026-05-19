@@ -6,12 +6,14 @@ declare global {
   var _pgClient: postgres.Sql | undefined;
 }
 
-// Reuse connection in dev to avoid exhausting the pool on HMR
+// max: 1 is required for serverless (Vercel) — each function instance should hold
+// at most one connection to avoid exhausting Supabase Transaction Pooler limits.
+// In dev we reuse the connection across HMR reloads via the global singleton.
 const client =
   global._pgClient ??
   postgres(process.env.DATABASE_URL!, {
-    prepare: false, // required for Supabase Transaction pooler
-    max: 5,
+    prepare: false, // required for Supabase Transaction pooler (port 6543)
+    max: 1,
   });
 
 if (process.env.NODE_ENV !== "production") {

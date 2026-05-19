@@ -44,7 +44,7 @@ export const fetchSource = inngest.createFunction(
           parsed.map((a) => ({ ...a, published_at: new Date(a.published_at) }))
         )
         .onConflictDoNothing({ target: [articles.source_id, articles.guid] })
-        .returning({ id: articles.id, thumbnail_url: articles.thumbnail_url });
+        .returning({ id: articles.id, thumbnail_url: articles.thumbnail_url, guid: articles.guid });
     });
 
     // Queue og:image jobs for articles inserted without a thumbnail
@@ -57,12 +57,11 @@ export const fetchSource = inngest.createFunction(
           .onConflictDoNothing({ target: [ogImageJobs.article_id] });
       });
 
-      // Find matching URLs from parsed batch to emit events
+      // Correlate inserted rows back to parsed entries by guid so each article
+      // gets its own URL (not the first article that happened to lack a thumbnail)
+      const parsedByGuid = new Map(parsed.map((a) => [a.guid, a]));
       const parsedById = new Map(
-        insertResult.map((r) => [
-          r.id,
-          parsed.find((a) => !a.thumbnail_url) ?? null,
-        ])
+        insertResult.map((r) => [r.id, parsedByGuid.get(r.guid) ?? null])
       );
 
       await step.sendEvent(

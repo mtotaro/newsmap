@@ -15,9 +15,14 @@ import { sources, articles } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { parseFeed } from "@/lib/rss/parser";
 
-export async function POST() {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not available in production" }, { status: 403 });
+export async function POST(request: Request) {
+  // Guard 1: block in production unless a secret header is provided
+  const isProduction = process.env.NODE_ENV === "production";
+  const adminSecret = process.env.ADMIN_SYNC_SECRET;
+  const providedSecret = request.headers.get("x-admin-secret");
+
+  if (isProduction && (!adminSecret || providedSecret !== adminSecret)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const activeSources = await db
