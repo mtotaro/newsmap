@@ -17,11 +17,11 @@ const GEO_URL =
 const NUMERIC_TO_ALPHA2: Record<string, string> = {
   "032": "AR", "076": "BR", "152": "CL", "170": "CO", "604": "PE",
   "484": "MX", "840": "US", "826": "GB", "724": "ES", "250": "FR",
-  "276": "DE", "380": "IT",
+  "276": "DE", "380": "IT", "634": "QA",
 };
 
 const COUNTRIES_WITH_SOURCES = new Set([
-  "AR", "BR", "CL", "CO", "PE", "MX", "US", "GB", "ES", "FR", "DE", "IT",
+  "AR", "BR", "CL", "CO", "PE", "MX", "US", "GB", "ES", "FR", "DE", "IT", "QA",
 ]);
 
 // Section chip colors (mirrors SectionChip component)

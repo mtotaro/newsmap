@@ -81,7 +81,7 @@ export default async function SettingsPage({
               href="/map"
               className="text-xs text-[var(--color-blue)] hover:underline"
             >
-              + {locale === "es" ? "Agregar" : "Add sources"}
+              + {t("add_sources")}
             </Link>
           </div>
 
@@ -98,7 +98,7 @@ export default async function SettingsPage({
                   <SubscriptionItem
                     sub={sub}
                     removeLabel={t("remove_source")}
-                    allSectionsLabel={locale === "es" ? "Todas las secciones" : "All sections"}
+                    allSectionsLabel={t("all_sections")}
                   />
                 </li>
               ))}

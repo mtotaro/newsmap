@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { sources, userSubscriptions } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { sources, userSubscriptions, articles } from "@/lib/db/schema";
+import { eq, and, inArray, sql } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
-import type { FeedEntry } from "@/lib/db/schema";
+import type { FeedEntry, SectionKey } from "@/lib/db/schema";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -32,18 +32,57 @@ export async function GET(request: NextRequest) {
 
   const allSources = await query;
 
-  // Extract distinct available sections per source (from feed entries)
-  const withSections = allSources.map((s) => {
+  // Determine which sources rely on article-level section inference
+  // (feeds that only have section_key = "all" have no per-section feeds)
+  const inferredSourceIds: string[] = [];
+
+  const withStaticSections = allSources.map((s) => {
     const feeds = (s.feeds ?? []) as FeedEntry[];
-    const available_sections = [
-      ...new Set(
-        feeds
-          .filter((f) => f.is_active !== false)
-          .map((f) => f.section_key)
-      ),
-    ];
-    return { ...s, feeds: undefined, available_sections };
+    const activeSectionKeys = feeds
+      .filter((f) => f.is_active !== false && f.section_key !== "all")
+      .map((f) => f.section_key as SectionKey);
+
+    if (activeSectionKeys.length === 0) {
+      // All feeds use inference — resolve sections from articles table
+      inferredSourceIds.push(s.id);
+      return { ...s, feeds: undefined, available_sections: [] as SectionKey[] };
+    }
+
+    return {
+      ...s,
+      feeds: undefined,
+      available_sections: [...new Set(activeSectionKeys)],
+    };
   });
+
+  // For sources without explicit section feeds, derive sections from stored articles
+  if (inferredSourceIds.length > 0) {
+    const rows = await db
+      .select({
+        source_id: articles.source_id,
+        section_key: articles.section_key,
+      })
+      .from(articles)
+      .where(inArray(articles.source_id, inferredSourceIds))
+      .groupBy(articles.source_id, articles.section_key)
+      .orderBy(sql`count(*) desc`);
+
+    // Build a map: source_id → sorted list of distinct section_keys
+    const sectionsBySource = new Map<string, SectionKey[]>();
+    for (const row of rows) {
+      if (!row.section_key) continue;
+      const existing = sectionsBySource.get(row.source_id) ?? [];
+      existing.push(row.section_key as SectionKey);
+      sectionsBySource.set(row.source_id, existing);
+    }
+
+    // Inject into the results
+    for (const s of withStaticSections) {
+      if (inferredSourceIds.includes(s.id)) {
+        s.available_sections = sectionsBySource.get(s.id) ?? [];
+      }
+    }
+  }
 
   // Attach subscription status + section_keys if user is logged in
   const supabase = await createClient();
@@ -63,7 +102,7 @@ export async function GET(request: NextRequest) {
     const subsMap = new Map(subs.map((s) => [s.source_id, s.section_keys]));
 
     return NextResponse.json(
-      withSections.map((s) => ({
+      withStaticSections.map((s) => ({
         ...s,
         subscribed: subsMap.has(s.id),
         subscription_sections: subsMap.has(s.id)
@@ -74,7 +113,7 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json(
-    withSections.map((s) => ({
+    withStaticSections.map((s) => ({
       ...s,
       subscribed: false,
       subscription_sections: null,

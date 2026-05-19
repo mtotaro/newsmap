@@ -21,7 +21,8 @@ export default function AuthPage() {
     const { error: err } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/${locale}/feed`,
+        // Server callback exchanges the code for a session, then redirects to feed
+        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/${locale}/feed`,
       },
     });
     setLoading(false);
@@ -37,7 +38,8 @@ export default function AuthPage() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/${locale}/feed`,
+        // Server callback exchanges the code for a session, then redirects to feed
+        redirectTo: `${window.location.origin}/api/auth/callback?next=/${locale}/feed`,
       },
     });
   }

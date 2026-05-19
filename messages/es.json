@@ -47,7 +47,7 @@
     "new_articles": "{count, plural, one {# artículo nuevo} other {# artículos nuevos}}",
     "load_more": "Cargar más",
     "filter_all": "Todo",
-    "filter_by_section": "Por sección",
+    "filter_by_section": "No hay artículos en esta sección aún.",
     "reading_time": "{minutes} min de lectura",
     "published_ago": "hace {time}"
   },
@@ -86,6 +86,8 @@
     "signout_btn": "Cerrar sesión",
     "sources_empty": "Todavía no estás suscrito a ninguna fuente.",
     "remove_source": "Quitar",
+    "all_sections": "Todas las secciones",
+    "add_sources": "Agregar fuentes",
     "delete_account": "Eliminar cuenta",
     "delete_confirm": "¿Estás seguro? Esta acción eliminará tu cuenta y no se puede deshacer.",
     "delete_btn": "Sí, eliminar mi cuenta",

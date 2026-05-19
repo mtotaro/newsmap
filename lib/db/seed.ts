@@ -42,7 +42,7 @@ const ARGENTINA: SourceSeed[] = [
     websiteUrl: 'https://www.infobae.com',
     notes: 'Arc Publishing — single general feed, no section splits. Images via media:content. Section inferred from URL path.',
     feedSections: [
-      { key: 'world', url: 'https://www.infobae.com/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
+      { key: 'all', url: 'https://www.infobae.com/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
   {
@@ -54,7 +54,7 @@ const ARGENTINA: SourceSeed[] = [
     websiteUrl: 'https://www.lanacion.com.ar',
     notes: 'Arc Publishing — single general feed. Images via media:content (large originals). Section inferred from URL.',
     feedSections: [
-      { key: 'world', url: 'https://www.lanacion.com.ar/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
+      { key: 'all', url: 'https://www.lanacion.com.ar/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
 ]
@@ -94,7 +94,7 @@ const CHILE_COLOMBIA_PERU: SourceSeed[] = [
     websiteUrl: 'https://www.latercera.com',
     notes: 'Arc Publishing — single general feed. Images via media:content. Section URLs return HTML, not RSS.',
     feedSections: [
-      { key: 'world', url: 'https://www.latercera.com/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
+      { key: 'all', url: 'https://www.latercera.com/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
   {

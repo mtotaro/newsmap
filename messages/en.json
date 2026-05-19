@@ -47,7 +47,7 @@
     "new_articles": "{count, plural, one {# new article} other {# new articles}}",
     "load_more": "Load more",
     "filter_all": "All",
-    "filter_by_section": "By section",
+    "filter_by_section": "No articles in this section yet.",
     "reading_time": "{minutes} min read",
     "published_ago": "{time} ago"
   },
@@ -86,6 +86,8 @@
     "signout_btn": "Sign out",
     "sources_empty": "You're not subscribed to any sources yet.",
     "remove_source": "Remove",
+    "all_sections": "All sections",
+    "add_sources": "Add sources",
     "delete_account": "Delete account",
     "delete_confirm": "Are you sure? This will permanently delete your account and cannot be undone.",
     "delete_btn": "Yes, delete my account",

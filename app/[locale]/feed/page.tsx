@@ -32,12 +32,7 @@ export default async function FeedPage({
 
   return (
     <div className="min-h-screen pb-20">
-      <NewArticlesBanner
-        userId={user.id}
-        onRefresh={() => {
-          // Client component handles this via prop
-        }}
-      />
+      <NewArticlesBanner userId={user.id} />
       <FeedList locale={locale} />
     </div>
   );

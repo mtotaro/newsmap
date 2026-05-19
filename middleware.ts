@@ -18,6 +18,17 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/inngest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    /*
+     * Match all request paths EXCEPT:
+     *  - _next/static  (Next.js static assets)
+     *  - _next/image   (Next.js image optimisation)
+     *  - favicon.ico
+     *  - api/*         (ALL API routes — must not be locale-prefixed)
+     *  - sw.js         (service worker — must be served from root)
+     *  - manifest.json (PWA manifest — must be served from root)
+     *  - offline.html  (SW offline fallback)
+     *  - common image/font extensions
+     */
+    "/((?!_next/static|_next/image|favicon\\.ico|api/|sw\\.js|manifest\\.json|offline\\.html|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|ttf|woff2?)$).*)",
   ],
 };
