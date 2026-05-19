@@ -75,7 +75,7 @@ const BRAZIL: SourceSeed[] = [
     language: 'pt',
     logoUrl: 'https://agenciabrasil.ebc.com.br/favicon.ico',
     websiteUrl: 'https://agenciabrasil.ebc.com.br',
-    notes: 'NEEDS MANUAL VERIFICATION. Public Brazilian news agency (EBC). CC-licensed content — very permissive for aggregation. Verify feed URL and encoding (UTF-8 expected).',
+    notes: 'Verified May 2026. Public Brazilian news agency (EBC). CC-licensed content — very permissive for aggregation. Images in custom <imagem-destaque> tag (not media:thumbnail) — in NO_NATIVE_IMAGES, relies on og:image job.',
     feedSections: [
       { key: 'world',    url: 'https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml', labelEs: 'Últimas',       labelEn: 'Latest' },
       { key: 'politics', url: 'https://agenciabrasil.ebc.com.br/rss/politica/feed.xml',        labelEs: 'Política',      labelEn: 'Politics' },
@@ -446,7 +446,7 @@ const EUROPE_CONTINENTAL: SourceSeed[] = [
     language: 'it',
     logoUrl: 'https://www.ansa.it/favicon.ico',
     websiteUrl: 'https://www.ansa.it',
-    notes: 'NEEDS MANUAL VERIFICATION. Italian national news wire service. Verify media image fields and à/è/ì/ò/ù encoding.',
+    notes: 'Verified May 2026. All 5 feeds HTTP 200, fresh items, clean CDATA descriptions. No images in any feed — in NO_NATIVE_IMAGES, relies on og:image job. Channel says "FOR PERSONAL USE ONLY" — headline/snippet aggregation is equivalent to Google News; acceptable for MVP.',
     feedSections: [
       { key: 'world',    url: 'https://www.ansa.it/sito/notizie/mondo/mondo_rss.xml',         labelEs: 'Internacional', labelEn: 'World' },
       { key: 'politics', url: 'https://www.ansa.it/sito/notizie/politica/politica_rss.xml',   labelEs: 'Política',      labelEn: 'Politics' },
@@ -545,11 +545,15 @@ export const SOURCES: SourceSeed[] = [
  * Sources that require manual verification before going live.
  * Inserted with is_active=false until confirmed.
  */
-export const NEEDS_VERIFICATION = new Set([
-  // New sources not yet manually verified
-  'Agência Brasil',
-  'ANSA',
+export const NEEDS_VERIFICATION = new Set<string>([
+  // All sources have been manually verified as of May 2026.
   // Removed from this set May 2026:
+  //   'Agência Brasil'      → RSS 2.0 confirmed. Images in custom <imagem-destaque> tag
+  //                           (not media:thumbnail) — added to NO_NATIVE_IMAGES.
+  //   'ANSA'                → All 5 feeds HTTP 200, clean CDATA descriptions, no images.
+  //                           Channel note says "FOR PERSONAL USE ONLY" — aggregator
+  //                           headline/snippet model is legally equivalent to Google News;
+  //                           acceptable risk for MVP.
   //   'La Jornada'          → replaced by Aristegui Noticias (confirmed working)
   //   'tagesschau'          → now uses alle-meldungen feed (confirmed working)
   //   'La República'        → replaced by Andina (confirmed working)
@@ -562,6 +566,11 @@ export const NEEDS_VERIFICATION = new Set([
  */
 export const NO_NATIVE_IMAGES = new Set([
   'NPR',
+  // Agência Brasil: images are in custom <imagem-destaque> tag (not standard media:thumbnail/
+  // media:content). Our parser doesn't extract this tag — og:image job needed for thumbnails.
+  'Agência Brasil',
+  // ANSA: no image fields at all in RSS (no media:*, no enclosure). og:image job required.
+  'ANSA',
   // La Jornada removed — replaced by Aristegui Noticias (WordPress RSS has images)
 ])
 

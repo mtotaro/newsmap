@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { useParams } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 
 export default function AuthPage() {
   const t = useTranslations("Auth");
@@ -108,6 +109,28 @@ export default function AuthPage() {
             )}
           </div>
         )}
+
+        {/* Terms / Privacy */}
+        <p className="text-xs text-center text-[var(--color-text-3)]">
+          {t.rich("terms", {
+            terms: (chunks) => (
+              <Link
+                href="/privacy"
+                className="underline hover:text-[var(--color-text-2)] transition-colors"
+              >
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link
+                href="/privacy"
+                className="underline hover:text-[var(--color-text-2)] transition-colors"
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
+        </p>
       </div>
     </div>
   );

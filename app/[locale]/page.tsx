@@ -109,6 +109,20 @@ export default function HomePage() {
           </a>
         ))}
       </nav>
+
+      {/* Footer legal link */}
+      <p
+        className={`text-xs text-[var(--color-text-3)] mt-2 transition-opacity duration-300 delay-700 ${
+          animDone ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <a
+          href={`/${locale}/privacy`}
+          className="hover:text-[var(--color-text-2)] transition-colors underline"
+        >
+          {locale === "es" ? "Política de Privacidad" : "Privacy Policy"}
+        </a>
+      </p>
     </main>
   );
 }
