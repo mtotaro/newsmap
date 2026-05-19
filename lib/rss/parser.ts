@@ -90,9 +90,16 @@ async function fetchAndNormalize(
   if (!res.ok) throw new Error(`Feed fetch failed: ${res.status} ${url}`);
 
   const body = await res.text();
-  const parsed = feedsmithParse(body);
 
-  if (parsed.format === "rss") {
+  // feedsmith throws on RSS 1.0 / RDF — catch and fall through to our own parser
+  let parsed: ReturnType<typeof feedsmithParse> | null = null;
+  try {
+    parsed = feedsmithParse(body);
+  } catch {
+    parsed = null;
+  }
+
+  if (parsed?.format === "rss") {
     return (parsed.feed.items ?? []).map((item) => ({
       guid: item.guid?.value ?? null,
       title: item.title ?? null,
@@ -107,7 +114,7 @@ async function fetchAndNormalize(
     }));
   }
 
-  if (parsed.format === "atom") {
+  if (parsed?.format === "atom") {
     return (parsed.feed.entries ?? []).map((entry) => ({
       guid: entry.id ?? null,
       title: entry.title ?? null,
@@ -125,7 +132,7 @@ async function fetchAndNormalize(
     }));
   }
 
-  if (parsed.format === "json") {
+  if (parsed?.format === "json") {
     return (parsed.feed.items ?? []).map((item) => ({
       guid: item.id ?? null,
       title: item.title ?? null,
@@ -138,7 +145,55 @@ async function fetchAndNormalize(
     }));
   }
 
+  // RSS 1.0 / RDF fallback — feedsmith returns no format for RDF feeds
+  // Used by: Deutsche Welle (rss.dw.com/rdf/*), La Jornada
+  if (body.includes("rdf:RDF") || body.includes("http://purl.org/rss/1.0/")) {
+    return parseRdf(body);
+  }
+
   return [];
+}
+
+/** Minimal RSS 1.0 / RDF parser — handles the subset used by DW and La Jornada */
+function parseRdf(xml: string): NormalizedItem[] {
+  const items: NormalizedItem[] = [];
+  // Match each <item> block (RDF items are siblings of <channel>, not nested)
+  const itemRe = /<item[^>]*>([\s\S]*?)<\/item>/g;
+  let m: RegExpExecArray | null;
+  while ((m = itemRe.exec(xml)) !== null) {
+    const block = m[1];
+    const title = rdfText(block, "title");
+    const link = rdfText(block, "link");
+    const description = rdfText(block, "description");
+    const pubDate =
+      rdfText(block, "dc:date") ??
+      rdfText(block, "pubDate") ??
+      rdfText(block, "date") ??
+      null;
+    // media:content thumbnail
+    const mediaUrl = block.match(/media:content[^>]+url="([^"]+)"/i)?.[1] ?? null;
+    if (!title && !link) continue;
+    items.push({
+      guid: link,
+      title,
+      url: link,
+      description,
+      pubDate,
+      categories: [],
+      media: mediaUrl ? { contents: [{ url: mediaUrl }] } : undefined,
+      enclosures: undefined,
+    });
+  }
+  return items;
+}
+
+function rdfText(block: string, tag: string): string | null {
+  // Handles: <tag>value</tag> and <tag><![CDATA[value]]></tag>
+  const m = block.match(
+    new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, "i")
+  );
+  if (!m) return null;
+  return m[1].trim() || null;
 }
 
 function resolveSectionKey(

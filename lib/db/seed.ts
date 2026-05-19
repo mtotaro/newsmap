@@ -115,16 +115,17 @@ const CHILE_COLOMBIA_PERU: SourceSeed[] = [
     ],
   },
   {
-    // El Comercio (PE) has discontinued RSS. Replaced with Perú21.
-    name: 'Perú21',
+    // Perú21 blocks all RSS (403). Replaced with La República — Peru's second-largest daily,
+    // Arc Publishing CMS, open RSS feed, no aggregation restrictions found in ToS.
+    name: 'La República',
     countryCode: 'PE',
     region: 'latam',
     language: 'es',
-    logoUrl: 'https://peru21.pe/favicon.ico',
-    websiteUrl: 'https://peru21.pe',
-    notes: 'Replacement for El Comercio PE (no RSS). NEEDS MANUAL VERIFICATION — verify feed URL and thumbnail availability.',
+    logoUrl: 'https://larepublica.pe/favicon.ico',
+    websiteUrl: 'https://larepublica.pe',
+    notes: 'Arc Publishing — single general feed. Perú21 replacement (blocked RSS 403).',
     feedSections: [
-      { key: 'politics', url: 'https://peru21.pe/feed/', labelEs: 'Portada', labelEn: 'Home' },
+      { key: 'all', url: 'https://larepublica.pe/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
 ]
@@ -143,13 +144,12 @@ const MEXICO: SourceSeed[] = [
     language: 'es',
     logoUrl: 'https://www.jornada.com.mx/favicon.ico',
     websiteUrl: 'https://www.jornada.com.mx',
-    notes: 'NEEDS MANUAL VERIFICATION. Independent cooperatively owned daily. No images in RSS — relies entirely on og:image job for thumbnails. Verify encoding (may be ISO-8859-1 or UTF-8).',
+    notes: 'Independent cooperatively owned daily. No images in RSS — og:image job required. Old /seccion/rss.xml URLs are 404; migrated to /ultimas/seccion/?format=rss path.',
     feedSections: [
-      { key: 'world',    url: 'https://www.jornada.com.mx/mundo/rss.xml',    labelEs: 'Mundo',      labelEn: 'World' },
-      { key: 'politics', url: 'https://www.jornada.com.mx/politica/rss.xml', labelEs: 'Política',   labelEn: 'Politics' },
-      { key: 'economy',  url: 'https://www.jornada.com.mx/economia/rss.xml', labelEs: 'Economía',   labelEn: 'Economy' },
-      { key: 'culture',  url: 'https://www.jornada.com.mx/cultura/rss.xml',  labelEs: 'Cultura',    labelEn: 'Culture' },
-      { key: 'science',  url: 'https://www.jornada.com.mx/ciencias/rss.xml', labelEs: 'Ciencias',   labelEn: 'Science' },
+      { key: 'world',    url: 'https://www.jornada.com.mx/ultimas/mundo/?format=rss',    labelEs: 'Mundo',      labelEn: 'World' },
+      { key: 'politics', url: 'https://www.jornada.com.mx/ultimas/politica/?format=rss', labelEs: 'Política',   labelEn: 'Politics' },
+      { key: 'economy',  url: 'https://www.jornada.com.mx/ultimas/economia/?format=rss', labelEs: 'Economía',   labelEn: 'Economy' },
+      { key: 'culture',  url: 'https://www.jornada.com.mx/ultimas/cultura/?format=rss',  labelEs: 'Cultura',    labelEn: 'Culture' },
     ],
   },
 ]
@@ -197,7 +197,7 @@ const REGIONAL_ES: SourceSeed[] = [
     language: 'es',
     logoUrl: 'https://www.dw.com/favicon.ico',
     websiteUrl: 'https://www.dw.com/es',
-    notes: 'NEEDS MANUAL VERIFICATION — rss.dw.com and www.dw.com blocked automated fetch. Verify with: curl https://rss.dw.com/rdf/rss-es-all',
+    notes: 'RDF/RSS 1.0 format — now parsed by fallback RDF parser in parser.ts. Verify article count after next sync.',
     feedSections: [
       { key: 'world',    url: 'https://rss.dw.com/rdf/rss-es-all', labelEs: 'Portada', labelEn: 'Home' },
       { key: 'politics', url: 'https://rss.dw.com/rdf/rss-es-pol', labelEs: 'Política', labelEn: 'Politics' },
@@ -218,10 +218,9 @@ const USA: SourceSeed[] = [
     language: 'en',
     logoUrl: 'https://www.aljazeera.com/favicon.ico',
     websiteUrl: 'https://www.aljazeera.com',
-    notes: 'Replacement for AP News (RSS retired). Excellent global coverage with thumbnails. NEEDS MANUAL VERIFICATION.',
+    notes: 'Verified. /xml/rss/all.xml confirmed working. allnews-en.xml removed (404).',
     feedSections: [
-      { key: 'world',    url: 'https://www.aljazeera.com/xml/rss/all.xml',                labelEs: 'Portada',       labelEn: 'All News' },
-      { key: 'world',    url: 'https://www.aljazeera.com/xml/rss/allnews-en.xml',         labelEs: 'Internacional', labelEn: 'World' },
+      { key: 'all', url: 'https://www.aljazeera.com/xml/rss/all.xml', labelEs: 'Portada', labelEn: 'All News' },
     ],
   },
   {
@@ -233,11 +232,9 @@ const USA: SourceSeed[] = [
     language: 'en',
     logoUrl: 'https://www.axios.com/favicon.ico',
     websiteUrl: 'https://www.axios.com',
-    notes: 'Replacement for Reuters (public RSS discontinued). NEEDS MANUAL VERIFICATION — verify feed URL.',
+    notes: 'Verified. /feed/ confirmed working. Section feeds /feed/politics/ and /feed/technology/ return 404 — using single general feed with inference.',
     feedSections: [
-      { key: 'world',    url: 'https://api.axios.com/feed/', labelEs: 'Portada', labelEn: 'Home' },
-      { key: 'politics', url: 'https://api.axios.com/feed/politics/', labelEs: 'Política', labelEn: 'Politics' },
-      { key: 'tech',     url: 'https://api.axios.com/feed/technology/', labelEs: 'Tecnología', labelEn: 'Technology' },
+      { key: 'all', url: 'https://api.axios.com/feed/', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
   {
@@ -437,12 +434,12 @@ const EUROPE_CONTINENTAL: SourceSeed[] = [
     language: 'de',
     logoUrl: 'https://www.tagesschau.de/favicon.ico',
     websiteUrl: 'https://www.tagesschau.de',
-    notes: 'NEEDS MANUAL VERIFICATION. ARD public broadcaster. No paywall. Verify media:content/enclosure availability and ä/ö/ü/ß encoding. Feeds at /xml/rss2{_section}.',
+    notes: 'ARD public broadcaster. /xml/rss2_* URLs are 404 — migrated to /infoservices/ path. ä/ö/ü/ß UTF-8 confirmed.',
     feedSections: [
-      { key: 'world',    url: 'https://www.tagesschau.de/xml/rss2_ausland',     labelEs: 'Internacional', labelEn: 'World' },
-      { key: 'politics', url: 'https://www.tagesschau.de/xml/rss2_inland',      labelEs: 'Política',      labelEn: 'Germany' },
-      { key: 'economy',  url: 'https://www.tagesschau.de/xml/rss2_wirtschaft',  labelEs: 'Economía',      labelEn: 'Economy' },
-      { key: 'sports',   url: 'https://www.tagesschau.de/xml/rss2_sport',       labelEs: 'Deportes',      labelEn: 'Sport' },
+      { key: 'world',    url: 'https://www.tagesschau.de/infoservices/nachrichten-ausland-100~rss2.xml',     labelEs: 'Internacional', labelEn: 'World' },
+      { key: 'politics', url: 'https://www.tagesschau.de/infoservices/nachrichten-inland-100~rss2.xml',      labelEs: 'Alemania',      labelEn: 'Germany' },
+      { key: 'economy',  url: 'https://www.tagesschau.de/infoservices/nachrichten-wirtschaft-100~rss2.xml',  labelEs: 'Economía',      labelEn: 'Economy' },
+      { key: 'sports',   url: 'https://www.tagesschau.de/infoservices/nachrichten-sport-100~rss2.xml',       labelEs: 'Deportes',      labelEn: 'Sport' },
     ],
   },
   {
@@ -485,16 +482,12 @@ export const SOURCES: SourceSeed[] = [
  * Inserted with is_active=false until confirmed.
  */
 export const NEEDS_VERIFICATION = new Set([
-  // Replaced sources — new feeds not yet verified
-  'Agência Brasil',
+  // URL updated — needs re-verification
   'La Jornada',
   'tagesschau',
-  'ANSA',
-  // Existing sources awaiting verification
+  'La República',
+  // Feed format issue (RDF 1.0 — feedsmith unsupported)
   'Deutsche Welle Español',
-  'Al Jazeera English',
-  'Axios',
-  'Perú21',
 ])
 
 /**
