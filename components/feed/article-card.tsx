@@ -82,7 +82,7 @@ export function ArticleCard({
         {/* Meta row */}
         <div className="flex items-center gap-2 text-xs text-[var(--color-text-2)]">
           <span>{flag}</span>
-          <span className="font-medium truncate">{article.source_name}</span>
+          <span className="font-medium truncate min-w-0">{article.source_name}</span>
           <SectionChip section={article.section_key} label={sectionLabel} />
           <span className="ml-auto shrink-0">{ago}</span>
         </div>

@@ -48,6 +48,8 @@
     "load_more": "Load more",
     "filter_all": "All",
     "filter_by_section": "No articles in this section yet.",
+    "search_placeholder": "Search articles…",
+    "search_no_results": "No articles found for \"{query}\".",
     "reading_time": "{minutes} min read",
     "published_ago": "{time} ago"
   },

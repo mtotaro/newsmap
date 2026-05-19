@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { articles, sources, userSubscriptions } from "@/lib/db/schema";
-import { eq, and, lt, desc, getTableColumns, sql } from "drizzle-orm";
+import { eq, and, lt, desc, getTableColumns, sql, ilike, or } from "drizzle-orm";
 
 const PAGE_SIZE = 20;
 
@@ -18,12 +18,21 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const cursor = searchParams.get("cursor"); // ISO timestamp
-  const section = searchParams.get("section"); // optional UI filter
+  const section = searchParams.get("section"); // optional section filter
+  const q = searchParams.get("q");             // optional full-text search
 
   const conditions = [eq(userSubscriptions.user_id, user.id)];
 
   if (cursor) {
     conditions.push(lt(articles.published_at, new Date(cursor)));
+  }
+
+  // Full-text search — case-insensitive substring match on title + description
+  if (q && q.trim()) {
+    const term = `%${q.trim()}%`;
+    conditions.push(
+      or(ilike(articles.title, term), ilike(articles.description, term))!
+    );
   }
 
   // UI section filter (overrides per-subscription section_keys for browsing)

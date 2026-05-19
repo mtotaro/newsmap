@@ -23,6 +23,8 @@ export function FeedList({ locale }: Props) {
   const tArt = useTranslations("Article");
 
   const [activeSection, setActiveSection] = useState<SectionKey | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [items, setItems] = useState<ArticleCardData[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,6 +35,12 @@ export function FeedList({ locale }: Props) {
 
   const isDev = process.env.NODE_ENV !== "production";
 
+  // ── Debounce search input ──────────────────────────────────────────────────
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   async function handleDevSync() {
     setSyncing(true);
     setSyncResult(null);
@@ -41,8 +49,7 @@ export function FeedList({ locale }: Props) {
       const data = await res.json();
       if (res.ok) {
         setSyncResult(`✓ Inserted ${data.inserted} articles from ${data.sources} sources`);
-        // Reload feed after sync
-        void fetchPage(null, false, activeSection);
+        void fetchPage(null, false, activeSection, debouncedQuery);
       } else {
         setSyncResult(`Error: ${data.error}`);
       }
@@ -52,10 +59,16 @@ export function FeedList({ locale }: Props) {
       setSyncing(false);
     }
   }
+
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const fetchPage = useCallback(
-    async (cursor: string | null, append: boolean, section: SectionKey | null) => {
+    async (
+      cursor: string | null,
+      append: boolean,
+      section: SectionKey | null,
+      query: string
+    ) => {
       await Promise.resolve();
       if (append) setLoadingMore(true);
       else setLoading(true);
@@ -64,6 +77,7 @@ export function FeedList({ locale }: Props) {
         const url = new URL("/api/feed", window.location.origin);
         if (cursor) url.searchParams.set("cursor", cursor);
         if (section) url.searchParams.set("section", section);
+        if (query.trim()) url.searchParams.set("q", query.trim());
         const res = await fetch(url.toString());
         if (!res.ok) throw new Error("Failed to load feed");
         const data = await res.json();
@@ -79,21 +93,21 @@ export function FeedList({ locale }: Props) {
     []
   );
 
-  // Re-fetch from top whenever activeSection changes
+  // Re-fetch from top whenever activeSection or debouncedQuery changes
   useEffect(() => {
-    void fetchPage(null, false, activeSection);
-  }, [fetchPage, activeSection]);
+    void fetchPage(null, false, activeSection, debouncedQuery);
+  }, [fetchPage, activeSection, debouncedQuery]);
 
   // Listen for banner "new articles" refresh trigger
   useEffect(() => {
     function handleRefresh() {
       setItems([]);
       setNextCursor(null);
-      void fetchPage(null, false, activeSection);
+      void fetchPage(null, false, activeSection, debouncedQuery);
     }
     window.addEventListener("feed:refresh", handleRefresh);
     return () => window.removeEventListener("feed:refresh", handleRefresh);
-  }, [fetchPage, activeSection]);
+  }, [fetchPage, activeSection, debouncedQuery]);
 
   // Infinite scroll sentinel
   useEffect(() => {
@@ -101,14 +115,14 @@ export function FeedList({ locale }: Props) {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && nextCursor && !loadingMore) {
-          fetchPage(nextCursor, true, activeSection);
+          fetchPage(nextCursor, true, activeSection, debouncedQuery);
         }
       },
       { threshold: 0.1 }
     );
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [nextCursor, loadingMore, fetchPage, activeSection]);
+  }, [nextCursor, loadingMore, fetchPage, activeSection, debouncedQuery]);
 
   const handleSection = (key: SectionKey | null) => {
     if (key === activeSection) return;
@@ -126,7 +140,32 @@ export function FeedList({ locale }: Props) {
   }
 
   return (
-    <div className="max-w-[640px] mx-auto py-6 space-y-4">
+    <div className="max-w-[640px] mx-auto py-6 space-y-3">
+      {/* ── Search input ─────────────────────────────────────────────── */}
+      <div className="px-4">
+        <div className="relative">
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("search_placeholder")}
+            className="w-full pl-9 pr-8 py-2 rounded-[var(--radius-button)] bg-[var(--color-bg-3)] border border-[var(--color-border)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-3)] focus:outline-none focus:border-[var(--color-blue)] transition-colors"
+          />
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-3)] text-sm select-none">
+            🔍
+          </span>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-3)] hover:text-[var(--color-text)] transition-colors text-xs leading-none"
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* ── Section filter chips ─────────────────────────────────────── */}
       <div className="px-4 overflow-x-auto">
         <div className="flex gap-2 min-w-max pb-1">
@@ -165,12 +204,18 @@ export function FeedList({ locale }: Props) {
         </div>
       ) : !items.length ? (
         <div className="px-4 py-16 text-center space-y-4">
-          <p className="text-2xl">📭</p>
+          <p className="text-2xl">
+            {debouncedQuery ? "🔎" : "📭"}
+          </p>
           <p className="text-[var(--color-text)]">{t("empty_title")}</p>
           <p className="text-sm text-[var(--color-text-2)]">
-            {activeSection ? t("filter_by_section") : t("empty_desc")}
+            {debouncedQuery
+              ? t("search_no_results", { query: debouncedQuery })
+              : activeSection
+              ? t("filter_by_section")
+              : t("empty_desc")}
           </p>
-          {!activeSection && (
+          {!activeSection && !debouncedQuery && (
             <a
               href={`/${locale}/map`}
               className="inline-block mt-2 px-6 py-2 rounded-[var(--radius-button)] bg-[var(--color-blue)] text-white text-sm font-medium hover:opacity-90"
@@ -179,7 +224,7 @@ export function FeedList({ locale }: Props) {
             </a>
           )}
           {/* Dev-only: manually trigger RSS fetch without needing Inngest running */}
-          {isDev && !activeSection && (
+          {isDev && !activeSection && !debouncedQuery && (
             <div className="mt-4 space-y-2">
               <button
                 onClick={handleDevSync}

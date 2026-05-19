@@ -27,8 +27,10 @@ export interface SourceSeed {
   logoUrl: string
   websiteUrl: string
   feedSections: FeedSection[]
+  needsUserAgent?: boolean  // set true for sources that block non-browser User-Agents
   notes?: string       // human-readable caveats for this source
 }
+
 
 // ─── ARGENTINA ───────────────────────────────────────────────────────────────
 
@@ -463,6 +465,75 @@ const EUROPE_CONTINENTAL: SourceSeed[] = [
   },
 ]
 
+// ─── SPORTS NEWSPAPERS ───────────────────────────────────────────────────────
+//
+// One dedicated sports source per country where a working RSS was found.
+// These sources carry only sports content — section_key is always 'sports'.
+//
+// Sources researched and feed URLs verified May 2026:
+//   • Olé (AR) — No RSS. ARC endpoint 308-loops to HTML 404. Not addable.
+//   • Lance! (BR) — No RSS. Sitemap only (lance.com.br/sitemap/news/today.xml).
+//   • Récord (MX) — No RSS. Custom CMS with sitemap only.
+//   Sources below were confirmed working by automated feed fetch.
+
+const SPORTS_PAPERS: SourceSeed[] = [
+  {
+    // Spain's #1 sports newspaper (Unidad Editorial).
+    // CDN subdomain verified May 2026 (www.marca.com blocks; CDN serves RSS).
+    name: 'Marca',
+    countryCode: 'ES',
+    region: 'europe',
+    language: 'es',
+    logoUrl: 'https://www.marca.com/favicon.ico',
+    websiteUrl: 'https://www.marca.com',
+    notes: 'Unidad Editorial CDN feed (e00-xlk-ue-marca.uecdn.es). 69 items verified May 2026.',
+    feedSections: [
+      { key: 'sports', url: 'https://e00-xlk-ue-marca.uecdn.es/rss/portada.xml', labelEs: 'Portada', labelEn: 'Home' },
+    ],
+  },
+  {
+    // Spain's second sports newspaper (Grupo PRISA). MRss feed with rich media.
+    name: 'AS',
+    countryCode: 'ES',
+    region: 'europe',
+    language: 'es',
+    logoUrl: 'https://as.com/favicon.ico',
+    websiteUrl: 'https://as.com',
+    notes: 'Grupo PRISA. feeds.as.com MRss endpoint. 31 items verified May 2026.',
+    feedSections: [
+      { key: 'sports', url: 'https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/portada/', labelEs: 'Fútbol', labelEn: 'Football' },
+    ],
+  },
+  {
+    // Peru's leading sports newspaper (El Comercio group, Arc Publishing).
+    // Also covers Colombian football. Very high update frequency (TTL=1).
+    name: 'Depor',
+    countryCode: 'PE',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://depor.com/favicon.ico',
+    websiteUrl: 'https://depor.com',
+    notes: 'Arc Publishing. Sports-only. ~4 items per snapshot, updates continuously. Verified May 2026.',
+    feedSections: [
+      { key: 'sports', url: 'https://depor.com/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
+    ],
+  },
+  {
+    // Colombia's top football-dedicated news site. Blocks curl — needs browser UA.
+    name: 'Futbolred',
+    countryCode: 'CO',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.futbolred.com/favicon.ico',
+    websiteUrl: 'https://www.futbolred.com',
+    needsUserAgent: true,
+    notes: 'Colombian football: Liga BetPlay, Selección, Millonarios, Nacional. Blocks curl — must use browser UA. 20 items verified May 2026.',
+    feedSections: [
+      { key: 'sports', url: 'https://www.futbolred.com/rss/futbol-colombiano', labelEs: 'Fútbol Col.', labelEn: 'Colombian Football' },
+    ],
+  },
+]
+
 // ─── Aggregated export ────────────────────────────────────────────────────────
 
 export const SOURCES: SourceSeed[] = [
@@ -475,6 +546,7 @@ export const SOURCES: SourceSeed[] = [
   ...SPAIN,
   ...UK,
   ...EUROPE_CONTINENTAL,
+  ...SPORTS_PAPERS,
 ]
 
 /**
@@ -488,6 +560,9 @@ export const NEEDS_VERIFICATION = new Set([
   'La República',
   // Feed format issue (RDF 1.0 — feedsmith unsupported)
   'Deutsche Welle Español',
+  // New sources not yet manually verified
+  'Agência Brasil',
+  'ANSA',
 ])
 
 /**

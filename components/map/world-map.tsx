@@ -195,12 +195,12 @@ export function WorldMap({ locale }: Props) {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4 h-full">
+    <div className="flex flex-col lg:flex-row gap-4 lg:h-full">
       {/* ── Map canvas ──────────────────────────────────────────────────── */}
-      <div className="flex-1 rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-bg-2)] border border-[var(--color-border)]">
+      <div className="aspect-[16/9] lg:aspect-auto lg:flex-1 rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-bg-2)] border border-[var(--color-border)]">
         <ComposableMap
           projectionConfig={{ scale: 147 }}
-          style={{ width: "100%", height: "100%", minHeight: 320 }}
+          style={{ width: "100%", height: "100%", minHeight: 260 }}
         >
           <ZoomableGroup>
             <Geographies geography={GEO_URL}>
@@ -257,7 +257,7 @@ export function WorldMap({ locale }: Props) {
       </div>
 
       {/* ── Source panel ────────────────────────────────────────────────── */}
-      <div className="lg:w-72 rounded-[var(--radius-card)] bg-[var(--color-bg-2)] border border-[var(--color-border)] overflow-hidden">
+      <div className="h-[380px] lg:h-full lg:w-72 rounded-[var(--radius-card)] bg-[var(--color-bg-2)] border border-[var(--color-border)] overflow-hidden">
         {!selectedCountry ? (
           <div className="h-full flex items-center justify-center p-6 text-center">
             <p className="text-sm text-[var(--color-text-2)]">
@@ -281,7 +281,7 @@ export function WorldMap({ locale }: Props) {
             </div>
 
             {/* Source list */}
-            <div className="flex-1 overflow-y-auto divide-y divide-[var(--color-border)]">
+            <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-[var(--color-border)]">
               {loadingSources ? (
                 Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="px-4 py-3 flex items-center gap-3">

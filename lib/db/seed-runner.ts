@@ -36,7 +36,7 @@ function toDbRow(s: SourceSeed) {
       is_active: true,
     })),
     is_active: !NEEDS_VERIFICATION.has(s.name),
-    needs_user_agent: false,
+    needs_user_agent: s.needsUserAgent ?? false,
     image_strategy: "og_image" as const,
     logo_url: s.logoUrl,
   };
@@ -63,6 +63,7 @@ async function main() {
           name: sql`excluded.name`,
           feeds: sql`excluded.feeds`,
           is_active: sql`excluded.is_active`,
+          needs_user_agent: sql`excluded.needs_user_agent`,
         },
       });
     console.log(`  ${row.is_active ? "✓" : "⏸"} ${s.name} (${s.countryCode})`);

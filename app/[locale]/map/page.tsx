@@ -29,7 +29,7 @@ export default async function MapPage({
         <p className="text-sm text-[var(--color-text-2)] mb-6">
           {t("subtitle")}
         </p>
-        <div style={{ height: "calc(100vh - 200px)" }}>
+        <div className="lg:h-[calc(100vh-200px)]">
           <WorldMap locale={locale} />
         </div>
       </div>
