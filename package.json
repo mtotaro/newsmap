@@ -28,7 +28,8 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-simple-maps": "^3.0.0",
-    "remotion": "^4.0.462"
+    "remotion": "^4.0.462",
+    "resend": "^6.12.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

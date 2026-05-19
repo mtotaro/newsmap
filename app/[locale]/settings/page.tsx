@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
-import { userSubscriptions, sources } from "@/lib/db/schema";
+import { userSubscriptions, sources, userProfiles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
@@ -10,6 +10,7 @@ import { LanguageSwitcher } from "@/components/settings/language-switcher";
 import { SignOutButton } from "@/components/settings/sign-out-button";
 import { SubscriptionItem } from "@/components/settings/subscription-item";
 import { DeleteAccount } from "@/components/settings/delete-account";
+import { DigestToggle } from "@/components/settings/digest-toggle";
 
 export async function generateMetadata({
   params,
@@ -36,19 +37,29 @@ export default async function SettingsPage({
 
   const t = await getTranslations({ locale, namespace: "Settings" });
 
-  const subscriptions = await db
-    .select({
-      source_id: userSubscriptions.source_id,
-      source_name: sources.name,
-      source_slug: sources.slug,
-      country_code: sources.country_code,
-      logo_url: sources.logo_url,
-      section_keys: userSubscriptions.section_keys,
-    })
-    .from(userSubscriptions)
-    .innerJoin(sources, eq(sources.id, userSubscriptions.source_id))
-    .where(eq(userSubscriptions.user_id, user.id))
-    .orderBy(sources.name);
+  const [subscriptions, digestProfile] = await Promise.all([
+    db
+      .select({
+        source_id: userSubscriptions.source_id,
+        source_name: sources.name,
+        source_slug: sources.slug,
+        country_code: sources.country_code,
+        logo_url: sources.logo_url,
+        section_keys: userSubscriptions.section_keys,
+      })
+      .from(userSubscriptions)
+      .innerJoin(sources, eq(sources.id, userSubscriptions.source_id))
+      .where(eq(userSubscriptions.user_id, user.id))
+      .orderBy(sources.name),
+    db
+      .select({
+        digest_enabled: userProfiles.digest_enabled,
+        digest_hour: userProfiles.digest_hour,
+      })
+      .from(userProfiles)
+      .where(eq(userProfiles.user_id, user.id))
+      .then((rows) => rows[0] ?? { digest_enabled: false, digest_hour: 7 }),
+  ]);
 
   return (
     <div className="min-h-screen p-4 md:p-8">
@@ -119,6 +130,25 @@ export default async function SettingsPage({
               locale={locale}
               labelEs={t("language_es")}
               labelEn={t("language_en")}
+            />
+          </div>
+        </section>
+
+        {/* ── Notifications ─────────────────────────────────────────────── */}
+        <section className="rounded-[var(--radius-card)] bg-[var(--color-bg-2)] border border-[var(--color-border)]">
+          <div className="px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-2)] mb-3">
+              {t("section_notifications")}
+            </p>
+            <DigestToggle
+              initialEnabled={digestProfile.digest_enabled}
+              initialHour={digestProfile.digest_hour}
+              labels={{
+                title: t("digest_title"),
+                description: t("digest_description"),
+                hour_label: t("digest_hour_label"),
+                saved: t("digest_saved"),
+              }}
             />
           </div>
         </section>

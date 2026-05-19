@@ -82,6 +82,7 @@
     "section_account": "Cuenta",
     "section_sources": "Mis fuentes",
     "section_display": "Visualización",
+    "section_notifications": "Notificaciones",
     "section_danger": "Zona de peligro",
     "language_label": "Idioma",
     "language_es": "Español",
@@ -94,7 +95,11 @@
     "delete_account": "Eliminar cuenta",
     "delete_confirm": "¿Estás seguro? Esta acción eliminará tu cuenta y no se puede deshacer.",
     "delete_btn": "Sí, eliminar mi cuenta",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "digest_title": "Resumen diario por email",
+    "digest_description": "Recibí un resumen con los 10 mejores artículos de tus fuentes cada día.",
+    "digest_hour_label": "Hora de envío:",
+    "digest_saved": "Guardado"
   },
   "Sections": {
     "sports": "Deportes",

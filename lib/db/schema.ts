@@ -144,6 +144,28 @@ export const ogImageJobs = pgTable(
   (t) => [index("og_jobs_status_idx").on(t.status)]
 );
 
+// ─── user_profiles ────────────────────────────────────────────────────────────
+//
+// Extends Supabase auth.users with app-specific preferences.
+// One row per user, created on first settings access or digest opt-in.
+
+export const userProfiles = pgTable("user_profiles", {
+  /** Matches auth.users.id */
+  user_id: uuid("user_id").primaryKey(),
+  /** Whether the user has opted in to the daily digest email. */
+  digest_enabled: boolean("digest_enabled").notNull().default(false),
+  /** Preferred UTC hour (0–23) for the digest email. Default: 7 AM UTC. */
+  digest_hour: integer("digest_hour").notNull().default(7),
+  /** Opaque token for one-click unsubscribe (no login required). */
+  digest_unsubscribe_token: text("digest_unsubscribe_token").unique(),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type FeedEntry = {

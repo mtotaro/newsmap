@@ -82,6 +82,7 @@
     "section_account": "Account",
     "section_sources": "My sources",
     "section_display": "Display",
+    "section_notifications": "Notifications",
     "section_danger": "Danger zone",
     "language_label": "Language",
     "language_es": "Español",
@@ -94,7 +95,11 @@
     "delete_account": "Delete account",
     "delete_confirm": "Are you sure? This will permanently delete your account and cannot be undone.",
     "delete_btn": "Yes, delete my account",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "digest_title": "Daily email digest",
+    "digest_description": "Get a daily summary of the top 10 articles from your sources.",
+    "digest_hour_label": "Send at:",
+    "digest_saved": "Saved"
   },
   "Sections": {
     "sports": "Sports",
