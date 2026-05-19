@@ -4,7 +4,13 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ArticleCard, type ArticleCardData } from "./article-card";
 import { ArticleCardSkeleton } from "./article-card-skeleton";
+import { AdSlot } from "@/components/ads/ad-slot";
 import type { SectionKey } from "@/lib/db/schema";
+
+/** AdSense in-feed slot ID — set NEXT_PUBLIC_ADSENSE_SLOT_FEED in env. */
+const FEED_AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT_FEED ?? "";
+/** Inject one ad after every Nth article. */
+const AD_FREQUENCY = 5;
 
 const PAYWALL_SOURCES: string[] = [];
 
@@ -241,20 +247,33 @@ export function FeedList({ locale }: Props) {
         </div>
       ) : (
         <div className="space-y-4 px-4">
-          {items.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-              sectionLabel={tSec(article.section_key as SectionKey)}
-              readLabel={tArt("read_full")}
-              locale={locale}
-              paywallNotice={
-                PAYWALL_SOURCES.includes(article.source_slug)
-                  ? tArt("paywall_notice")
-                  : undefined
-              }
-            />
-          ))}
+          {items.flatMap((article, index) => {
+            const card = (
+              <ArticleCard
+                key={article.id}
+                article={article}
+                sectionLabel={tSec(article.section_key as SectionKey)}
+                readLabel={tArt("read_full")}
+                locale={locale}
+                paywallNotice={
+                  PAYWALL_SOURCES.includes(article.source_slug)
+                    ? tArt("paywall_notice")
+                    : undefined
+                }
+              />
+            );
+            // Inject an ad unit after every AD_FREQUENCY-th article
+            if ((index + 1) % AD_FREQUENCY === 0) {
+              return [
+                card,
+                <AdSlot
+                  key={`ad-after-${index}`}
+                  slot={FEED_AD_SLOT}
+                />,
+              ];
+            }
+            return [card];
+          })}
 
           {/* Infinite scroll sentinel */}
           <div ref={sentinelRef} className="h-4" />

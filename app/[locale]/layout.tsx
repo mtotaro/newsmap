@@ -3,10 +3,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import { routing } from "@/i18n/routing";
 import { Nav } from "@/components/layout/nav";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import "../globals.css";
+
+const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +60,14 @@ export default async function LocaleLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
+        {/* Google AdSense — loads only when NEXT_PUBLIC_ADSENSE_ID is set */}
+        {ADSENSE_ID && (
+          <Script
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_ID}`}
+            strategy="afterInteractive"
+            crossOrigin="anonymous"
+          />
+        )}
         <NextIntlClientProvider messages={messages}>
           <Nav locale={locale} />
           {children}
