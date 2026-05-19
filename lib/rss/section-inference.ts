@@ -16,6 +16,7 @@ const SECTION_MAP: Record<string, SectionKey> = {
   gobierno: "politics",
   congreso: "politics",
   elecciones: "politics",
+  inland: "politics",      // tagesschau /inland/ = Germany/domestic
   // Economy
   economia: "economy",
   cartera: "economy",
@@ -26,6 +27,7 @@ const SECTION_MAP: Record<string, SectionKey> = {
   finanzas: "economy",
   mercados: "economy",
   dinero: "economy",
+  wirtschaft: "economy",   // tagesschau /wirtschaft/
   // Tech
   tecnologia: "tech",
   tecno: "tech",            // Infobae /tecno/
@@ -40,6 +42,7 @@ const SECTION_MAP: Record<string, SectionKey> = {
   arts: "culture",
   arte: "culture",
   libros: "culture",
+  kultur: "culture",        // tagesschau /kultur/
   // Entertainment
   entretenimiento: "entertainment",
   entertainment: "entertainment",
@@ -56,15 +59,18 @@ const SECTION_MAP: Record<string, SectionKey> = {
   international: "world",
   exterior: "world",
   globo: "world",
+  ausland: "world",         // tagesschau /ausland/ = international/foreign
   // Health
   salud: "health",
   health: "health",
   wellness: "health",
   bienestar: "health",
+  gesundheit: "health",     // tagesschau /gesundheit/
   // Science
   ciencia: "science",
   ciencias: "science",
   science: "science",
+  wissenschaft: "science",  // tagesschau /wissenschaft/
   // Society → world (closest match for uncategorized content)
   sociedad: "world",
   opinion: "world",

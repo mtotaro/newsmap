@@ -117,17 +117,18 @@ const CHILE_COLOMBIA_PERU: SourceSeed[] = [
     ],
   },
   {
-    // Perú21 blocks all RSS (403). Replaced with La República — Peru's second-largest daily,
-    // Arc Publishing CMS, open RSS feed, no aggregation restrictions found in ToS.
-    name: 'La República',
+    // Perú21 blocks all RSS (403). La República (Arc) also broken May 2026 — Arc endpoint 404.
+    // Replaced with Andina — Peru's official national news wire (Agencia Peruana de Noticias).
+    // Government-funded, freely licensed content, RSS 2.0 confirmed working May 2026.
+    name: 'Andina',
     countryCode: 'PE',
     region: 'latam',
     language: 'es',
-    logoUrl: 'https://larepublica.pe/favicon.ico',
-    websiteUrl: 'https://larepublica.pe',
-    notes: 'Arc Publishing — single general feed. Perú21 replacement (blocked RSS 403).',
+    logoUrl: 'https://andina.pe/favicon.ico',
+    websiteUrl: 'https://andina.pe',
+    notes: 'Peru national news wire (Agencia Peruana de Noticias). Govt-funded, freely licensed. media:thumbnail confirmed. RSS 2.0. La República replacement (Arc endpoint 404).',
     feedSections: [
-      { key: 'all', url: 'https://larepublica.pe/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
+      { key: 'all', url: 'https://andina.pe/agencia/rss.aspx', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
 ]
@@ -138,20 +139,22 @@ const MEXICO: SourceSeed[] = [
   {
     // El Universal + Excélsior removed: both have ToS explicitly prohibiting commercial
     // distribution. Reforma excluded (paywall RSS). Milenio excluded (broken RSS).
-    // Replaced with La Jornada — independent, cooperatively owned daily that actively
-    // supports open RSS distribution. No commercial-use restrictions in ToS.
-    name: 'La Jornada',
+    // La Jornada removed May 2026: all /ultimas/SECTION/?format=rss endpoints return 404.
+    // Replaced with Aristegui Noticias — Mexico's top independent news site (Carmen Aristegui).
+    // WordPress RSS confirmed working May 2026 with per-section category feeds.
+    name: 'Aristegui Noticias',
     countryCode: 'MX',
     region: 'latam',
     language: 'es',
-    logoUrl: 'https://www.jornada.com.mx/favicon.ico',
-    websiteUrl: 'https://www.jornada.com.mx',
-    notes: 'Independent cooperatively owned daily. No images in RSS — og:image job required. Old /seccion/rss.xml URLs are 404; migrated to /ultimas/seccion/?format=rss path.',
+    logoUrl: 'https://aristeguinoticias.com/favicon.ico',
+    websiteUrl: 'https://aristeguinoticias.com',
+    notes: 'WordPress RSS (editorial.aristeguinoticias.com). Per-section feeds confirmed working May 2026. La Jornada replacement (all RSS endpoints 404).',
     feedSections: [
-      { key: 'world',    url: 'https://www.jornada.com.mx/ultimas/mundo/?format=rss',    labelEs: 'Mundo',      labelEn: 'World' },
-      { key: 'politics', url: 'https://www.jornada.com.mx/ultimas/politica/?format=rss', labelEs: 'Política',   labelEn: 'Politics' },
-      { key: 'economy',  url: 'https://www.jornada.com.mx/ultimas/economia/?format=rss', labelEs: 'Economía',   labelEn: 'Economy' },
-      { key: 'culture',  url: 'https://www.jornada.com.mx/ultimas/cultura/?format=rss',  labelEs: 'Cultura',    labelEn: 'Culture' },
+      { key: 'world',    url: 'https://editorial.aristeguinoticias.com/category/mundo/feed/',              labelEs: 'Mundo',    labelEn: 'World' },
+      { key: 'politics', url: 'https://editorial.aristeguinoticias.com/category/mexico/feed/',             labelEs: 'México',   labelEn: 'Mexico/Politics' },
+      { key: 'economy',  url: 'https://editorial.aristeguinoticias.com/category/dinero-y-economia/feed/',  labelEs: 'Economía', labelEn: 'Economy' },
+      { key: 'sports',   url: 'https://editorial.aristeguinoticias.com/category/deportes/feed/',           labelEs: 'Deportes', labelEn: 'Sports' },
+      { key: 'culture',  url: 'https://editorial.aristeguinoticias.com/category/cultura/feed/',            labelEs: 'Cultura',  labelEn: 'Culture' },
     ],
   },
 ]
@@ -192,20 +195,9 @@ const REGIONAL_ES: SourceSeed[] = [
       { key: 'economy', url: 'https://www.france24.com/es/economia/rss',  labelEs: 'Economía',  labelEn: 'Economy' },
     ],
   },
-  {
-    name: 'Deutsche Welle Español',
-    countryCode: 'DE',
-    region: 'europe',
-    language: 'es',
-    logoUrl: 'https://www.dw.com/favicon.ico',
-    websiteUrl: 'https://www.dw.com/es',
-    notes: 'RDF/RSS 1.0 format — now parsed by fallback RDF parser in parser.ts. Verify article count after next sync.',
-    feedSections: [
-      { key: 'world',    url: 'https://rss.dw.com/rdf/rss-es-all', labelEs: 'Portada', labelEn: 'Home' },
-      { key: 'politics', url: 'https://rss.dw.com/rdf/rss-es-pol', labelEs: 'Política', labelEn: 'Politics' },
-      { key: 'economy',  url: 'https://rss.dw.com/rdf/rss-es-eco', labelEs: 'Economía', labelEn: 'Economy' },
-    ],
-  },
+  // Deutsche Welle Español removed May 2026: all rss.dw.com/rdf/rss-es-* endpoints
+  // return "Error: no feed by that name." — DW has discontinued their RDF RSS feeds entirely.
+  // Germany is covered by tagesschau (German) for DE-country users.
 ]
 
 // ─── UNITED STATES ────────────────────────────────────────────────────────────
@@ -430,18 +422,18 @@ const EUROPE_CONTINENTAL: SourceSeed[] = [
     // DE replacement: tagesschau.de — official news of ARD, Germany's public broadcaster.
     // Actively promotes RSS use, no paywall, no stated restrictions on headline aggregation.
     // Safest German-language source available.
+    // Per-section /nachrichten-*-100~rss2.xml URLs return HTML (broken). Using the
+    // all-items feed instead; section is inferred from article URL path via section-inference.ts
+    // (ausland→world, inland→politics, wirtschaft→economy, kultur→culture, sport→sports).
     name: 'tagesschau',
     countryCode: 'DE',
     region: 'europe',
     language: 'de',
     logoUrl: 'https://www.tagesschau.de/favicon.ico',
     websiteUrl: 'https://www.tagesschau.de',
-    notes: 'ARD public broadcaster. /xml/rss2_* URLs are 404 — migrated to /infoservices/ path. ä/ö/ü/ß UTF-8 confirmed.',
+    notes: 'ARD public broadcaster. 40-item all-news feed verified May 2026. Section inferred from URL path segments (ausland, inland, wirtschaft, kultur, sport). ä/ö/ü/ß UTF-8 confirmed.',
     feedSections: [
-      { key: 'world',    url: 'https://www.tagesschau.de/infoservices/nachrichten-ausland-100~rss2.xml',     labelEs: 'Internacional', labelEn: 'World' },
-      { key: 'politics', url: 'https://www.tagesschau.de/infoservices/nachrichten-inland-100~rss2.xml',      labelEs: 'Alemania',      labelEn: 'Germany' },
-      { key: 'economy',  url: 'https://www.tagesschau.de/infoservices/nachrichten-wirtschaft-100~rss2.xml',  labelEs: 'Economía',      labelEn: 'Economy' },
-      { key: 'sports',   url: 'https://www.tagesschau.de/infoservices/nachrichten-sport-100~rss2.xml',       labelEs: 'Deportes',      labelEn: 'Sport' },
+      { key: 'all', url: 'https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
   {
@@ -554,15 +546,14 @@ export const SOURCES: SourceSeed[] = [
  * Inserted with is_active=false until confirmed.
  */
 export const NEEDS_VERIFICATION = new Set([
-  // URL updated — needs re-verification
-  'La Jornada',
-  'tagesschau',
-  'La República',
-  // Feed format issue (RDF 1.0 — feedsmith unsupported)
-  'Deutsche Welle Español',
   // New sources not yet manually verified
   'Agência Brasil',
   'ANSA',
+  // Removed from this set May 2026:
+  //   'La Jornada'          → replaced by Aristegui Noticias (confirmed working)
+  //   'tagesschau'          → now uses alle-meldungen feed (confirmed working)
+  //   'La República'        → replaced by Andina (confirmed working)
+  //   'Deutsche Welle Español' → removed entirely (DW discontinued all RDF feeds)
 ])
 
 /**
@@ -571,7 +562,7 @@ export const NEEDS_VERIFICATION = new Set([
  */
 export const NO_NATIVE_IMAGES = new Set([
   'NPR',
-  'La Jornada',  // No images in RSS
+  // La Jornada removed — replaced by Aristegui Noticias (WordPress RSS has images)
 ])
 
 /**
