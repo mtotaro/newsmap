@@ -15,14 +15,16 @@ export type SubscriptionData = {
   source_slug: string;
   country_code: string;
   logo_url: string | null;
+  section_keys: string[] | null;
 };
 
 type Props = {
   sub: SubscriptionData;
   removeLabel: string;
+  allSectionsLabel: string;
 };
 
-export function SubscriptionItem({ sub, removeLabel }: Props) {
+export function SubscriptionItem({ sub, removeLabel, allSectionsLabel }: Props) {
   const [removed, setRemoved] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -45,17 +47,26 @@ export function SubscriptionItem({ sub, removeLabel }: Props) {
   if (removed) return null;
 
   const flag = FLAG_MAP[sub.country_code] ?? "🗞";
+  const sectionSummary =
+    sub.section_keys && sub.section_keys.length > 0
+      ? sub.section_keys.join(", ")
+      : allSectionsLabel;
 
   return (
-    <div className="flex items-center gap-3 py-2.5">
-      <span className="text-xl leading-none">{flag}</span>
-      <span className="flex-1 text-sm text-[var(--color-text)]">
-        {sub.source_name}
-      </span>
+    <div className="flex items-start gap-3 py-2.5">
+      <span className="text-xl leading-none mt-0.5">{flag}</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm text-[var(--color-text)] font-medium">
+          {sub.source_name}
+        </p>
+        <p className="text-xs text-[var(--color-text-2)] mt-0.5 truncate">
+          {sectionSummary}
+        </p>
+      </div>
       <button
         onClick={handleRemove}
         disabled={loading}
-        className="text-xs text-[var(--color-red)] hover:opacity-70 disabled:opacity-40 transition-opacity"
+        className="text-xs text-[var(--color-red)] hover:opacity-70 disabled:opacity-40 transition-opacity mt-0.5 shrink-0"
       >
         {loading ? "…" : removeLabel}
       </button>

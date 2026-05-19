@@ -108,6 +108,12 @@ export const userSubscriptions = pgTable(
     source_id: uuid("source_id")
       .notNull()
       .references(() => sources.id, { onDelete: "cascade" }),
+    /**
+     * NULL  = subscribed to ALL sections from this source.
+     * Array = only these section_key values (e.g. ['politics', 'economy']).
+     * An empty array is semantically invalid; treat as NULL on write.
+     */
+    section_keys: text("section_keys").array(),
     created_at: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { articles, sources, userSubscriptions } from "@/lib/db/schema";
-import { eq, and, lt, desc, getTableColumns } from "drizzle-orm";
+import { eq, and, lt, desc, getTableColumns, sql } from "drizzle-orm";
 
 const PAGE_SIZE = 20;
 
@@ -18,19 +18,31 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const cursor = searchParams.get("cursor"); // ISO timestamp
-  const section = searchParams.get("section"); // optional filter
+  const section = searchParams.get("section"); // optional UI filter
 
   const conditions = [eq(userSubscriptions.user_id, user.id)];
+
   if (cursor) {
     conditions.push(lt(articles.published_at, new Date(cursor)));
   }
+
+  // UI section filter (overrides per-subscription section_keys for browsing)
   if (section) {
-    // Dynamic import to avoid circular deps with schema enum
     const { sectionKeyEnum } = await import("@/lib/db/schema");
     const validSection = sectionKeyEnum.enumValues.find((v) => v === section);
     if (validSection) {
       conditions.push(eq(articles.section_key, validSection));
     }
+  } else {
+    // Per-subscription section filter:
+    // Include the article if the subscription has no section restriction (NULL)
+    // OR if the article's section_key is in the subscription's section_keys array.
+    conditions.push(
+      sql`(
+        ${userSubscriptions.section_keys} IS NULL
+        OR ${articles.section_key}::text = ANY(${userSubscriptions.section_keys})
+      )`
+    );
   }
 
   const rows = await db
@@ -49,7 +61,7 @@ export async function GET(request: NextRequest) {
     )
     .where(and(...conditions))
     .orderBy(desc(articles.published_at))
-    .limit(PAGE_SIZE + 1); // +1 to check hasMore
+    .limit(PAGE_SIZE + 1);
 
   const hasMore = rows.length > PAGE_SIZE;
   const items = hasMore ? rows.slice(0, PAGE_SIZE) : rows;

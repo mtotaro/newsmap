@@ -59,7 +59,8 @@
     "unsubscribe": "Unsubscribe",
     "subscribed": "Subscribed",
     "no_sources": "No sources available for this country yet.",
-    "panel_title": "Sources in {country}"
+    "panel_title": "Sources in {country}",
+    "section_last": "Can't deselect the only active section"
   },
   "Auth": {
     "signin_title": "Sign in to NewsMap",

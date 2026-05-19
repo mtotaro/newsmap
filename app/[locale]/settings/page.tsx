@@ -43,6 +43,7 @@ export default async function SettingsPage({
       source_slug: sources.slug,
       country_code: sources.country_code,
       logo_url: sources.logo_url,
+      section_keys: userSubscriptions.section_keys,
     })
     .from(userSubscriptions)
     .innerJoin(sources, eq(sources.id, userSubscriptions.source_id))
@@ -94,7 +95,11 @@ export default async function SettingsPage({
             <ul className="divide-y divide-[var(--color-border)]">
               {subscriptions.map((sub) => (
                 <li key={sub.source_id} className="px-4">
-                  <SubscriptionItem sub={sub} removeLabel={t("remove_source")} />
+                  <SubscriptionItem
+                    sub={sub}
+                    removeLabel={t("remove_source")}
+                    allSectionsLabel={locale === "es" ? "Todas las secciones" : "All sections"}
+                  />
                 </li>
               ))}
             </ul>
