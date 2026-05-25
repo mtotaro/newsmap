@@ -1,55 +1,69 @@
 "use client";
 
-import {
-  AbsoluteFill,
-  interpolate,
-  spring,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
+import { useState, useEffect } from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
-// Approximate % positions over the 800×450 canvas for geoEqualEarth scale=147
 const PINS = [
   {
     id: "ar",
     pos: { x: 26, y: 70 },
     headline: "Economía en alza",
     source: "Infobae · Buenos Aires",
-    startFrame: 20,
+    delay: 500,
   },
   {
     id: "us",
     pos: { x: 17, y: 37 },
     headline: "Markets at record high",
     source: "AP News · Washington",
-    startFrame: 58,
+    delay: 1300,
   },
   {
     id: "es",
     pos: { x: 46, y: 36 },
     headline: "Madrid lidera la Liga",
     source: "El País · Madrid",
-    startFrame: 96,
+    delay: 2100,
   },
   {
     id: "de",
     pos: { x: 50, y: 28 },
     headline: "EU summit in Berlin",
     source: "Der Spiegel · Berlín",
-    startFrame: 134,
+    delay: 2900,
   },
 ];
 
-export function NewsMapIntro({
-  locale = "es",
-  topology = {},
-}: {
-  locale?: string;
-  topology?: Record<string, unknown>;
-}) {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+const TAGLINE_DELAY = 4000;
+const DONE_DELAY = 5800;
+
+type Props = {
+  locale: string;
+  /** May be null while fetching — map renders as solid dark until ready */
+  topology: Record<string, unknown> | null;
+  onDone: () => void;
+};
+
+export function NewsMapIntro({ locale, topology, onDone }: Props) {
+  const [visiblePins, setVisiblePins] = useState<Set<string>>(new Set());
+  const [showTagline, setShowTagline] = useState(false);
+
+  useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    PINS.forEach((pin) => {
+      timers.push(
+        setTimeout(() => {
+          setVisiblePins((prev) => new Set([...prev, pin.id]));
+        }, pin.delay)
+      );
+    });
+
+    timers.push(setTimeout(() => setShowTagline(true), TAGLINE_DELAY));
+    timers.push(setTimeout(() => onDone(), DONE_DELAY));
+
+    return () => timers.forEach(clearTimeout);
+  }, [onDone]);
 
   const tagline =
     locale === "en"
@@ -60,78 +74,62 @@ export function NewsMapIntro({
       ? "Pick your sources. No algorithm."
       : "Elige tus fuentes. Sin algoritmos.";
 
-  const taglineOpacity = interpolate(frame, [165, 188], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-  const taglineY = interpolate(frame, [165, 188], [16, 0], {
-    extrapolateRight: "clamp",
-  });
-
   return (
-    <AbsoluteFill style={{ backgroundColor: "#0f0f0f" }}>
-      {/* World map — just background geography */}
-      <div style={{ position: "absolute", inset: 0 }}>
-        <ComposableMap
-          projectionConfig={{ scale: 147 }}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <Geographies geography={topology}>
-            {({ geographies }) =>
-              geographies.map((geo) => (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  style={{
-                    default: {
-                      fill: "#1c1c1c",
-                      stroke: "#2e2e2e",
-                      strokeWidth: 0.4,
-                      outline: "none",
-                    },
-                    hover: {
-                      fill: "#1c1c1c",
-                      stroke: "#2e2e2e",
-                      strokeWidth: 0.4,
-                      outline: "none",
-                    },
-                    pressed: { fill: "#1c1c1c", outline: "none" },
-                  }}
-                />
-              ))
-            }
-          </Geographies>
-        </ComposableMap>
-      </div>
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        backgroundColor: "#0f0f0f",
+        overflow: "hidden",
+      }}
+    >
+      {/* Keyframe for pulse ring — scoped to this component */}
+      <style>{`
+        @keyframes nm-ping {
+          0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.7; }
+          100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0;   }
+        }
+      `}</style>
 
-      {/* HTML pin layer — avoids SVG coordinate system issues */}
+      {/* World map — renders once when topology arrives */}
+      {topology && Object.keys(topology).length > 0 && (
+        <div style={{ position: "absolute", inset: 0 }}>
+          <ComposableMap
+            projectionConfig={{ scale: 147 }}
+            style={{ width: "100%", height: "100%" }}
+          >
+            <Geographies geography={topology}>
+              {({ geographies }) =>
+                geographies.map((geo) => (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    style={{
+                      default: {
+                        fill: "#1c1c1c",
+                        stroke: "#2e2e2e",
+                        strokeWidth: 0.4,
+                        outline: "none",
+                      },
+                      hover: {
+                        fill: "#1c1c1c",
+                        stroke: "#2e2e2e",
+                        strokeWidth: 0.4,
+                        outline: "none",
+                      },
+                      pressed: { fill: "#1c1c1c", outline: "none" },
+                    }}
+                  />
+                ))
+              }
+            </Geographies>
+          </ComposableMap>
+        </div>
+      )}
+
+      {/* Pins layer — animates independently of topology load */}
       {PINS.map((pin) => {
-        const pf = frame - pin.startFrame;
-        if (pf < 0) return null;
-
-        const dotScale = spring({
-          fps,
-          frame: pf,
-          config: { damping: 12, stiffness: 260 },
-        });
-
-        const cardOpacity = interpolate(pf, [8, 22], [0, 1], {
-          extrapolateRight: "clamp",
-        });
-        const cardDx = interpolate(pf, [8, 22], [-8, 0], {
-          extrapolateRight: "clamp",
-        });
-
-        // Repeating pulse ring
-        const rf = pf % 55;
-        const ringScale = interpolate(rf, [0, 55], [1, 3], {
-          extrapolateRight: "clamp",
-        });
-        const ringOpacity = interpolate(rf, [0, 55], [0.6, 0], {
-          extrapolateRight: "clamp",
-        });
-
-        const dotSize = 10 * dotScale;
-
+        const visible = visiblePins.has(pin.id);
         return (
           <div
             key={pin.id}
@@ -142,36 +140,39 @@ export function NewsMapIntro({
               transform: "translate(-50%, -50%)",
             }}
           >
-            {/* Pulse ring */}
-            <div
-              style={{
-                position: "absolute",
-                width: 14,
-                height: 14,
-                borderRadius: "50%",
-                border: "1.5px solid #4a9eff",
-                top: "50%",
-                left: "50%",
-                transform: `translate(-50%, -50%) scale(${ringScale})`,
-                opacity: ringOpacity,
-              }}
-            />
+            {/* Pulsing ring */}
+            {visible && (
+              <div
+                style={{
+                  position: "absolute",
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  border: "1.5px solid #4a9eff",
+                  top: "50%",
+                  left: "50%",
+                  animation: "nm-ping 1.5s ease-out infinite",
+                }}
+              />
+            )}
 
-            {/* Dot */}
+            {/* Dot — spring-like pop via cubic-bezier */}
             <div
               style={{
                 position: "absolute",
-                width: dotSize,
-                height: dotSize,
+                width: 10,
+                height: 10,
                 borderRadius: "50%",
                 backgroundColor: "#4a9eff",
                 top: "50%",
                 left: "50%",
-                transform: "translate(-50%, -50%)",
+                transform: `translate(-50%, -50%) scale(${visible ? 1 : 0})`,
+                transition:
+                  "transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
               }}
             />
 
-            {/* Headline card */}
+            {/* Headline card — slides in from left */}
             <div
               style={{
                 position: "absolute",
@@ -182,8 +183,10 @@ export function NewsMapIntro({
                 border: "1px solid #383838",
                 borderRadius: 6,
                 padding: "5px 9px",
-                opacity: cardOpacity,
-                transform: `translateX(${cardDx}px)`,
+                opacity: visible ? 1 : 0,
+                transform: `translateX(${visible ? 0 : -10}px)`,
+                transition:
+                  "opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s",
                 pointerEvents: "none",
               }}
             >
@@ -214,7 +217,7 @@ export function NewsMapIntro({
         );
       })}
 
-      {/* Tagline */}
+      {/* Tagline — fades up after all pins */}
       <div
         style={{
           position: "absolute",
@@ -222,8 +225,9 @@ export function NewsMapIntro({
           left: 0,
           right: 0,
           textAlign: "center",
-          opacity: taglineOpacity,
-          transform: `translateY(${taglineY}px)`,
+          opacity: showTagline ? 1 : 0,
+          transform: `translateY(${showTagline ? 0 : 16}px)`,
+          transition: "opacity 0.7s ease, transform 0.7s ease",
           pointerEvents: "none",
         }}
       >
@@ -251,6 +255,6 @@ export function NewsMapIntro({
           {sub}
         </p>
       </div>
-    </AbsoluteFill>
+    </div>
   );
 }
