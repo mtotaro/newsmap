@@ -330,9 +330,9 @@ export function WorldMap({ locale }: Props) {
                       </button>
                     </div>
 
-                    {/* Section chips — only shown when subscribed and source has multiple sections */}
+                    {/* Section chips — shown when subscribed and source has at least one known section */}
                     {source.subscribed &&
-                      source.available_sections.length > 1 && (
+                      source.available_sections.length > 0 && (
                         <div
                           className={`px-4 pb-3 flex flex-wrap gap-1.5 transition-opacity ${
                             updatingSections[source.id] ? "opacity-50" : ""
