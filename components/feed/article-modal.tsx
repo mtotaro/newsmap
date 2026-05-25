@@ -36,6 +36,37 @@ export function ArticleModal({ article, onClose, locale }: Props) {
     };
   }, [article, handleKey]);
 
+  // Load social embed SDKs when article contains embeds
+  useEffect(() => {
+    if (!article?.content_html) return;
+
+    if (article.content_html.includes("instagram-media")) {
+      const w = window as Window & { instgrm?: { Embeds: { process: () => void } } };
+      if (w.instgrm?.Embeds) {
+        w.instgrm.Embeds.process();
+      } else if (!document.getElementById("instagram-embed-sdk")) {
+        const s = document.createElement("script");
+        s.id = "instagram-embed-sdk";
+        s.src = "https://www.instagram.com/embed.js";
+        s.async = true;
+        document.body.appendChild(s);
+      }
+    }
+
+    if (article.content_html.includes("twitter-tweet")) {
+      const w = window as Window & { twttr?: { widgets: { load: () => void } } };
+      if (w.twttr?.widgets) {
+        w.twttr.widgets.load();
+      } else if (!document.getElementById("twitter-widget-sdk")) {
+        const s = document.createElement("script");
+        s.id = "twitter-widget-sdk";
+        s.src = "https://platform.twitter.com/widgets.js";
+        s.async = true;
+        document.body.appendChild(s);
+      }
+    }
+  }, [article?.id, article?.content_html]);
+
   if (!article) return null;
 
   const flag = FLAG_MAP[article.country_code] ?? "🗞";
