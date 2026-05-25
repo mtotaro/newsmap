@@ -9,6 +9,8 @@ export type ArticleCardData = {
   title: string;
   url: string;
   description: string | null;
+  /** Sanitized HTML from <content:encoded> — null when the feed omits it */
+  content_html: string | null;
   section_key: SectionKey;
   thumbnail_url: string | null;
   published_at: string;

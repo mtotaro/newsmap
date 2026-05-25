@@ -102,6 +102,7 @@ export default async function CountryNewsPage({
     title: r.title,
     url: r.url,
     description: r.description,
+    content_html: r.content_html,
     section_key: r.section_key as SectionKey,
     thumbnail_url: r.thumbnail_url,
     published_at: r.published_at.toISOString(),

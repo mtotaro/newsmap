@@ -82,6 +82,7 @@ export const articles = pgTable(
     title: text("title").notNull(),
     url: text("url").notNull(),
     description: text("description"),
+    content_html: text("content_html"),
     section_key: sectionKeyEnum("section_key").notNull().default("world"),
     thumbnail_url: text("thumbnail_url"),
     published_at: timestamp("published_at", { withTimezone: true }).notNull(),

@@ -27,6 +27,8 @@ export type ParsedArticle = {
   title: string;
   url: string;
   description: string | null;
+  /** Sanitized HTML from <content:encoded> — null when the feed omits it */
+  content_html: string | null;
   section_key: SectionKey;
   thumbnail_url: string | null;
   /** ISO 8601 string — stays as string for Inngest step serialization */
@@ -51,6 +53,7 @@ export async function parseFeed(source: Source): Promise<ParsedArticle[]> {
         title: stripHtml(item.title),
         url: item.url,
         description: item.description ? stripHtml(item.description) : null,
+        content_html: item.contentEncoded ? sanitizeHtml(item.contentEncoded) : null,
         section_key: sectionKey,
         thumbnail_url: extractThumbnail(item.media, item.enclosures),
         published_at: item.pubDate ?? new Date().toISOString(),
@@ -72,6 +75,8 @@ type NormalizedItem = {
   title: string | null;
   url: string | null;
   description: string | null;
+  /** Raw HTML string from <content:encoded> */
+  contentEncoded: string | null;
   pubDate: string | null;
   categories: string[];
   media: MediaLike;
@@ -105,6 +110,8 @@ async function fetchAndNormalize(
       title: item.title ?? null,
       url: item.link ?? null,
       description: item.description ?? null,
+      // feedsmith exposes <content:encoded> as item.content.encoded
+      contentEncoded: (item.content as { encoded?: string } | null)?.encoded ?? null,
       pubDate: item.pubDate ?? null,
       categories: item.categories?.map((c) => c.name).filter((n): n is string => Boolean(n)) ?? [],
       media: item.media as MediaLike,
@@ -123,6 +130,8 @@ async function fetchAndNormalize(
         entry.links?.[0]?.href ??
         null,
       description: entry.summary ?? null,
+      // Atom uses <content> (not content:encoded) — map it here
+      contentEncoded: (entry.content as { value?: string } | null)?.value ?? null,
       pubDate: entry.published ?? entry.updated ?? null,
       categories: entry.categories
         ?.map((c) => c.term)
@@ -138,6 +147,7 @@ async function fetchAndNormalize(
       title: item.title ?? null,
       url: item.url ?? null,
       description: item.summary ?? null,
+      contentEncoded: (item as Record<string, unknown>).content_html as string ?? null,
       pubDate: item.date_published ?? null,
       categories: item.tags ?? [],
       media: undefined,
@@ -165,6 +175,7 @@ function parseRdf(xml: string): NormalizedItem[] {
     const title = rdfText(block, "title");
     const link = rdfText(block, "link");
     const description = rdfText(block, "description");
+    const contentEncoded = rdfText(block, "content:encoded");
     const pubDate =
       rdfText(block, "dc:date") ??
       rdfText(block, "pubDate") ??
@@ -178,6 +189,7 @@ function parseRdf(xml: string): NormalizedItem[] {
       title,
       url: link,
       description,
+      contentEncoded,
       pubDate,
       categories: [],
       media: mediaUrl ? { contents: [{ url: mediaUrl }] } : undefined,
@@ -214,4 +226,17 @@ function resolveSectionKey(
 
 function stripHtml(str: string): string {
   return str.replace(/<[^>]+>/g, "").trim();
+}
+
+/** Server-side HTML sanitizer — strips dangerous elements/attributes before storing in DB */
+function sanitizeHtml(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<form[\s\S]*?<\/form>/gi, "")
+    .replace(/\son\w+="[^"]*"/gi, "")
+    .replace(/\son\w+='[^']*'/gi, "")
+    .replace(/javascript:/gi, "")
+    .trim();
 }

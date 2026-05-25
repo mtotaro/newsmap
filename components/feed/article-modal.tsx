@@ -121,12 +121,18 @@ export function ArticleModal({ article, onClose, locale }: Props) {
             {article.title}
           </h2>
 
-          {/* Description — full text (not truncated) */}
-          {article.description && (
+          {/* Full article HTML — shown when feed provides content:encoded */}
+          {article.content_html ? (
+            <div
+              className="article-content"
+              dangerouslySetInnerHTML={{ __html: article.content_html }}
+            />
+          ) : article.description ? (
+            /* Fallback to plain description when no HTML content */
             <p className="text-sm text-[var(--color-text-2)] leading-relaxed">
               {article.description}
             </p>
-          )}
+          ) : null}
 
           {/* CTA */}
           <a
