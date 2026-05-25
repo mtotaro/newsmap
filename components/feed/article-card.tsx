@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { SectionChip } from "@/components/ui/section-chip";
 import { timeAgo, truncate } from "@/lib/utils/time";
+import { FLAG_MAP } from "@/lib/utils/flags";
 import type { SectionKey } from "@/lib/db/schema";
 
 export type ArticleCardData = {
@@ -22,14 +23,10 @@ type Props = {
   sectionLabel: string;
   readLabel: string;
   locale: string;
+  /** Called when user clicks thumbnail or title — opens preview modal */
+  onOpenPreview?: (article: ArticleCardData) => void;
   /** Show paywall disclaimer (NYT) */
   paywallNotice?: string;
-};
-
-const FLAG_MAP: Record<string, string> = {
-  AR: "🇦🇷", BR: "🇧🇷", CL: "🇨🇱", CO: "🇨🇴", PE: "🇵🇪",
-  MX: "🇲🇽", US: "🇺🇸", GB: "🇬🇧", ES: "🇪🇸", FR: "🇫🇷",
-  DE: "🇩🇪", IT: "🇮🇹", QA: "🇶🇦", INTL: "🌐",
 };
 
 export function ArticleCard({
@@ -37,45 +34,39 @@ export function ArticleCard({
   sectionLabel,
   readLabel,
   locale,
+  onOpenPreview,
   paywallNotice,
 }: Props) {
   const flag = FLAG_MAP[article.country_code] ?? "🗞";
   const ago = timeAgo(article.published_at, locale);
   const description = article.description
-    ? truncate(article.description, 280)
+    ? truncate(article.description, 200)
     : null;
+
+  const handlePreview = onOpenPreview
+    ? (e: React.MouseEvent) => {
+        e.preventDefault();
+        onOpenPreview(article);
+      }
+    : undefined;
 
   return (
     <article className="rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-bg-2)] border border-[var(--color-border)] hover:border-[var(--color-text-3)] transition-colors">
-      {/* Thumbnail */}
-      <a href={article.url} target="_blank" rel="noopener noreferrer" tabIndex={-1}>
-        <div className="relative aspect-video bg-[var(--color-bg-3)] overflow-hidden">
-          {article.thumbnail_url ? (
-            <Image
-              src={article.thumbnail_url}
-              alt=""
-              fill
-              sizes="(max-width: 768px) 100vw, 560px"
-              className="object-cover"
-              unoptimized={false}
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              {article.source_logo ? (
-                <Image
-                  src={article.source_logo}
-                  alt={article.source_name}
-                  width={48}
-                  height={48}
-                  className="opacity-40"
-                />
-              ) : (
-                <span className="text-3xl opacity-30">{flag}</span>
-              )}
-            </div>
-          )}
-        </div>
-      </a>
+      {/* Thumbnail — opens modal when onOpenPreview is provided */}
+      {handlePreview ? (
+        <button
+          onClick={handlePreview}
+          className="block w-full text-left"
+          aria-label={`Preview: ${article.title}`}
+          tabIndex={-1}
+        >
+          <ThumbnailContent article={article} flag={flag} />
+        </button>
+      ) : (
+        <a href={article.url} target="_blank" rel="noopener noreferrer" tabIndex={-1}>
+          <ThumbnailContent article={article} flag={flag} />
+        </a>
+      )}
 
       {/* Body */}
       <div className="p-4 space-y-2">
@@ -87,15 +78,24 @@ export function ArticleCard({
           <span className="ml-auto shrink-0">{ago}</span>
         </div>
 
-        {/* Title */}
-        <a
-          href={article.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block text-[var(--color-text)] font-semibold leading-snug hover:text-white"
-        >
-          {article.title}
-        </a>
+        {/* Title — opens modal when onOpenPreview is provided */}
+        {handlePreview ? (
+          <button
+            onClick={handlePreview}
+            className="block w-full text-left text-[var(--color-text)] font-semibold leading-snug hover:text-white transition-colors"
+          >
+            {article.title}
+          </button>
+        ) : (
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-[var(--color-text)] font-semibold leading-snug hover:text-white"
+          >
+            {article.title}
+          </a>
+        )}
 
         {/* Description */}
         {description && (
@@ -111,7 +111,7 @@ export function ArticleCard({
           </p>
         )}
 
-        {/* CTA */}
+        {/* CTA — always a direct link (quick access without modal) */}
         <div className="pt-1 flex justify-end">
           <a
             href={article.url}
@@ -124,5 +124,42 @@ export function ArticleCard({
         </div>
       </div>
     </article>
+  );
+}
+
+function ThumbnailContent({
+  article,
+  flag,
+}: {
+  article: ArticleCardData;
+  flag: string;
+}) {
+  return (
+    <div className="relative aspect-video bg-[var(--color-bg-3)] overflow-hidden">
+      {article.thumbnail_url ? (
+        <Image
+          src={article.thumbnail_url}
+          alt=""
+          fill
+          sizes="(max-width: 768px) 100vw, 560px"
+          className="object-cover"
+          unoptimized={false}
+        />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center">
+          {article.source_logo ? (
+            <Image
+              src={article.source_logo}
+              alt={article.source_name}
+              width={48}
+              height={48}
+              className="opacity-40"
+            />
+          ) : (
+            <span className="text-3xl opacity-30">{flag}</span>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

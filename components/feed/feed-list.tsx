@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ArticleCard, type ArticleCardData } from "./article-card";
 import { ArticleCardSkeleton } from "./article-card-skeleton";
+import { ArticleModal } from "./article-modal";
 import { AdSlot } from "@/components/ads/ad-slot";
 import type { SectionKey } from "@/lib/db/schema";
 
@@ -38,6 +39,7 @@ export function FeedList({ locale }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [syncResult, setSyncResult] = useState<string | null>(null);
+  const [previewArticle, setPreviewArticle] = useState<ArticleCardData | null>(null);
 
   const isDev = process.env.NODE_ENV !== "production";
 
@@ -146,6 +148,13 @@ export function FeedList({ locale }: Props) {
   }
 
   return (
+    <>
+    {/* Article preview modal — rendered outside the feed list so it sits above everything */}
+    <ArticleModal
+      article={previewArticle}
+      onClose={() => setPreviewArticle(null)}
+      locale={locale}
+    />
     <div className="max-w-[640px] mx-auto py-6 space-y-3">
       {/* ── Search input ─────────────────────────────────────────────── */}
       <div className="px-4">
@@ -255,6 +264,7 @@ export function FeedList({ locale }: Props) {
                 sectionLabel={tSec(article.section_key as SectionKey)}
                 readLabel={tArt("read_full")}
                 locale={locale}
+                onOpenPreview={setPreviewArticle}
                 paywallNotice={
                   PAYWALL_SOURCES.includes(article.source_slug)
                     ? tArt("paywall_notice")
@@ -294,5 +304,6 @@ export function FeedList({ locale }: Props) {
         </div>
       )}
     </div>
+    </>
   );
 }
