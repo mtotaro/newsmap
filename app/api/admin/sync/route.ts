@@ -49,10 +49,14 @@ export async function POST(request: Request) {
       const result = await db
         .insert(articles)
         .values(parsed.map((a) => ({ ...a, published_at: new Date(a.published_at) })))
-        // Update section_key on re-sync so fixes to seed/inference are applied retroactively
+        // Update section_key and content_html on re-sync
+        // so fixes to inference and new content:encoded data are applied retroactively
         .onConflictDoUpdate({
           target: [articles.source_id, articles.guid],
-          set: { section_key: sql`excluded.section_key` },
+          set: {
+            section_key: sql`excluded.section_key`,
+            content_html: sql`excluded.content_html`,
+          },
         })
         .returning({ id: articles.id });
 
