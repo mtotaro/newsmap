@@ -47,6 +47,27 @@ export const fetchSource = inngest.createFunction(
         .returning({ id: articles.id, thumbnail_url: articles.thumbnail_url, guid: articles.guid });
     });
 
+    // Build a guid → parsed map for cross-referencing below
+    const parsedByGuid = new Map(parsed.map((a) => [a.guid, a]));
+
+    // Queue content enrichment for articles inserted without content:encoded
+    const noContent = insertResult
+      .filter((r) => {
+        const p = parsedByGuid.get(r.guid);
+        return p && !p.content_html && p.url;
+      })
+      .map((r) => ({ id: r.id, url: parsedByGuid.get(r.guid)!.url }));
+
+    if (noContent.length) {
+      await step.sendEvent(
+        "enrich-content-jobs",
+        noContent.map((r) => ({
+          name: "newsmap/article.enrich" as const,
+          data: { article_id: r.id, article_url: r.url },
+        }))
+      );
+    }
+
     // Queue og:image jobs for articles inserted without a thumbnail
     const noThumb = insertResult.filter((r) => !r.thumbnail_url);
     if (noThumb.length) {
@@ -59,7 +80,6 @@ export const fetchSource = inngest.createFunction(
 
       // Correlate inserted rows back to parsed entries by guid so each article
       // gets its own URL (not the first article that happened to lack a thumbnail)
-      const parsedByGuid = new Map(parsed.map((a) => [a.guid, a]));
       const parsedById = new Map(
         insertResult.map((r) => [r.id, parsedByGuid.get(r.guid) ?? null])
       );

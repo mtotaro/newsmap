@@ -4,8 +4,9 @@ import { ingestCron } from "@/inngest/functions/ingest-cron";
 import { fetchSource } from "@/inngest/functions/fetch-source";
 import { resolveOgImage } from "@/inngest/functions/og-image";
 import { digestCron } from "@/inngest/functions/digest-cron";
+import { enrichContent } from "@/inngest/functions/enrich-content";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [ingestCron, fetchSource, resolveOgImage, digestCron],
+  functions: [ingestCron, fetchSource, resolveOgImage, digestCron, enrichContent],
 });
