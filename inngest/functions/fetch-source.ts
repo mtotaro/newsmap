@@ -9,10 +9,10 @@ export const fetchSource = inngest.createFunction(
     id: "fetch-source",
     name: "Fetch and parse RSS source",
     triggers: [{ event: "newsmap/source.fetch" }],
-    throttle: {
-      limit: 1,
-      period: "14m",
-      key: "event.data.source_id",
+    // No throttle — the 15-min cron already controls fetch frequency.
+    // Duplicate articles are handled by onConflictDoNothing in the upsert.
+    concurrency: {
+      limit: 5, // max 5 sources fetching in parallel to avoid DB connection spikes
     },
     retries: 2,
   },
