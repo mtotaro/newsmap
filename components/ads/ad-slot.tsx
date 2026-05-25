@@ -15,27 +15,29 @@ type Props = {
   className?: string;
 };
 
-const PUBLISHER_ID = process.env.NEXT_PUBLIC_ADSENSE_ID; // e.g. "ca-pub-1234567890"
+// Public publisher ID — same value hardcoded in layout.tsx.
+// NEXT_PUBLIC_ADSENSE_ID env var kept for local overrides.
+const PUBLISHER_ID =
+  process.env.NEXT_PUBLIC_ADSENSE_ID ?? "ca-pub-5899330070144720";
 
 /**
  * Renders a single AdSense in-feed unit.
  *
- * - Requires NEXT_PUBLIC_ADSENSE_ID in env to activate.
- * - In development, shows a placeholder box even without the env var so you
- *   can verify layout before applying for AdSense.
- * - Returns null in production when NEXT_PUBLIC_ADSENSE_ID is not set.
+ * - In development, shows a placeholder so you can verify layout.
+ * - In production, ads only appear once AdSense approves the site
+ *   and NEXT_PUBLIC_ADSENSE_SLOT_FEED is set to a valid slot ID.
  */
 export function AdSlot({ slot, className = "" }: Props) {
   useEffect(() => {
-    if (!PUBLISHER_ID) return;
+    if (!slot) return; // no slot ID yet — skip push
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch {
-      // Script not ready yet — AdSense will re-scan on load
+      // AdSense script not ready yet
     }
-  }, []);
+  }, [slot]);
 
-  // Development placeholder — visible even without a real publisher ID
+  // Development placeholder — always visible so layout is testable
   if (process.env.NODE_ENV === "development") {
     return (
       <div
@@ -49,8 +51,8 @@ export function AdSlot({ slot, className = "" }: Props) {
     );
   }
 
-  // Production: no publisher ID → don't render anything
-  if (!PUBLISHER_ID) return null;
+  // No slot ID yet → render nothing (avoids blank <ins> that confuses AdSense)
+  if (!slot) return null;
 
   return (
     <div className={className}>
