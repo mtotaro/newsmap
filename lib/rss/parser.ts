@@ -235,6 +235,21 @@ function sanitizeHtml(html: string): string {
     .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
     .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/<form[\s\S]*?<\/form>/gi, "")
+    // Replace Instagram embed blockquotes with a plain link (no SDK = broken skeleton)
+    .replace(/<blockquote[^>]*instagram-media[^>]*>([\s\S]*?)<\/blockquote>/gi, (match) => {
+      const url = match.match(/data-instgrm-permalink="([^"?]+)/i)?.[1] ?? "https://www.instagram.com";
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="social-embed-link">📸 Ver en Instagram →</a>`;
+    })
+    // Replace Twitter/X embed blockquotes with just the tweet text + link
+    .replace(/<blockquote[^>]*twitter-tweet[^>]*>([\s\S]*?)<\/blockquote>/gi, (match) => {
+      // Extract the last <a href> in the blockquote — that's the tweet permalink
+      const links = [...match.matchAll(/<a[^>]*href="([^"]+)"[^>]*>/gi)];
+      const tweetUrl = links[links.length - 1]?.[1] ?? "https://x.com";
+      // Extract paragraph text (the tweet content)
+      const text = (match.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] ?? "")
+        .replace(/<[^>]+>/g, "").trim();
+      return `<blockquote class="tweet-embed">${text ? `<p>${text}</p>` : ""}<a href="${tweetUrl}" target="_blank" rel="noopener noreferrer" class="social-embed-link">🐦 Ver en X →</a></blockquote>`;
+    })
     .replace(/\son\w+="[^"]*"/gi, "")
     .replace(/\son\w+='[^']*'/gi, "")
     .replace(/javascript:/gi, "")
