@@ -14,6 +14,13 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
   const [topology, setTopology] = useState<Record<string, unknown> | null>(
     null
   );
+  // Match composition size to actual viewport so Remotion fills the screen
+  // without letterboxing. Set once on mount (SSR-safe: this file is client-only).
+  const [dims, setDims] = useState({ w: 800, h: 450 });
+
+  useEffect(() => {
+    setDims({ w: window.innerWidth, h: window.innerHeight });
+  }, []);
 
   // Pre-fetch topology so the map is ready when the Player starts
   useEffect(() => {
@@ -43,8 +50,8 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
         inputProps={{ locale, topology }}
         durationInFrames={215}
         fps={30}
-        compositionWidth={800}
-        compositionHeight={450}
+        compositionWidth={dims.w}
+        compositionHeight={dims.h}
         style={{ width: "100%", height: "100%" }}
         acknowledgeRemotionLicense
       />

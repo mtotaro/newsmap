@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { SignOutButton } from "@/components/settings/sign-out-button";
 
 type Props = {
   locale: string;
@@ -44,8 +45,9 @@ export async function Nav({ locale }: Props) {
               href="/settings"
               className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
             >
-              ⚙
+              {t("settings")}
             </Link>
+            <SignOutButton label={t("signout")} locale={locale} />
           </>
         ) : (
           <Link
