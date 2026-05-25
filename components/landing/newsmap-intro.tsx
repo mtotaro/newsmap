@@ -97,6 +97,7 @@ export function NewsMapIntro({ locale, topology, onDone }: Props) {
           <ComposableMap
             projectionConfig={{ scale: 147 }}
             style={{ width: "100%", height: "100%" }}
+            preserveAspectRatio="none"
           >
             <Geographies geography={topology}>
               {({ geographies }) =>
