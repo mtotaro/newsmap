@@ -71,10 +71,20 @@ const SECTION_MAP: Record<string, SectionKey> = {
   ciencias: "science",
   science: "science",
   wissenschaft: "science",  // tagesschau /wissenschaft/
-  // Society → world (closest match for uncategorized content)
+  // Portuguese variants (RTP, Público, Observador)
+  pais: "politics",         // RTP /pais/ = national/politics
+  desporto: "sports",       // Portuguese for "sport"
+  desportos: "sports",
+  // Society/General → world
   sociedad: "world",
   opinion: "world",
   columnistas: "world",
+  sucesos: "world",
+  noticias: "world",        // El Universo /noticias/ = general news
+  actualidad: "world",
+  actualite: "world",
+  region: "politics",       // regional/national news
+  nacionales: "politics",   // ABC Color /nacionales/
 };
 
 export function inferSectionFromUrl(url: string): SectionKey {

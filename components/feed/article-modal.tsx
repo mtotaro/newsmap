@@ -73,6 +73,11 @@ export function ArticleModal({ article, onClose, locale }: Props) {
   const ago = timeAgo(article.published_at, locale);
   const sectionLabel = tSec(article.section_key as SectionKey);
 
+  // Estimate reading time from content_html word count (~200 wpm)
+  const readingTimeMin = article.content_html
+    ? Math.max(1, Math.round(article.content_html.replace(/<[^>]+>/g, " ").trim().split(/\s+/).length / 200))
+    : null;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
@@ -144,6 +149,9 @@ export function ArticleModal({ article, onClose, locale }: Props) {
             )}
             <span className="font-medium truncate min-w-0">{article.source_name}</span>
             <SectionChip section={article.section_key} label={sectionLabel} />
+            {readingTimeMin && (
+              <span className="shrink-0 opacity-70">· {readingTimeMin} min</span>
+            )}
             <span className="ml-auto shrink-0">{ago}</span>
           </div>
 

@@ -6,14 +6,28 @@
  */
 
 export const COUNTRY_SLUG_TO_ALPHA2: Record<string, string> = {
-  // Latin America
+  // Latin America — original
   argentina: "AR",
   brazil: "BR",
-  brasil: "BR", // ES variant
+  brasil: "BR",
   chile: "CL",
   colombia: "CO",
   peru: "PE",
   mexico: "MX",
+  // Latin America — new
+  venezuela: "VE",
+  ecuador: "EC",
+  paraguay: "PY",
+  bolivia: "BO",
+  guatemala: "GT",
+  "costa-rica": "CR",
+  "costa rica": "CR",
+  panama: "PA",
+  "panamá": "PA",
+  "dominican-republic": "DO",
+  "republica-dominicana": "DO",
+  "el-salvador": "SV",
+  "el salvador": "SV",
   // English-speaking
   "united-states": "US",
   usa: "US",
@@ -21,31 +35,52 @@ export const COUNTRY_SLUG_TO_ALPHA2: Record<string, string> = {
   uk: "GB",
   // Europe
   spain: "ES",
-  espana: "ES", // ES variant
+  espana: "ES",
   germany: "DE",
-  alemania: "DE", // ES variant
+  alemania: "DE",
   italy: "IT",
-  italia: "IT", // ES variant
+  italia: "IT",
   france: "FR",
-  francia: "FR", // ES variant
+  francia: "FR",
+  portugal: "PT",
+  netherlands: "NL",
+  "países-bajos": "NL",
+  sweden: "SE",
+  suecia: "SE",
   // Middle East
   qatar: "QA",
 };
 
 /** Canonical URL slug for each alpha-2 code (used for hreflang + linking) */
 export const ALPHA2_TO_SLUG: Record<string, string> = {
+  // Latin America
   AR: "argentina",
   BR: "brazil",
   CL: "chile",
   CO: "colombia",
   PE: "peru",
   MX: "mexico",
+  VE: "venezuela",
+  EC: "ecuador",
+  PY: "paraguay",
+  BO: "bolivia",
+  GT: "guatemala",
+  CR: "costa-rica",
+  PA: "panama",
+  DO: "dominican-republic",
+  SV: "el-salvador",
+  // North America / Anglosphere
   US: "united-states",
   GB: "united-kingdom",
+  // Europe
   ES: "spain",
   DE: "germany",
   IT: "italy",
   FR: "france",
+  PT: "portugal",
+  NL: "netherlands",
+  SE: "sweden",
+  // Middle East
   QA: "qatar",
 };
 
@@ -56,12 +91,24 @@ export const COUNTRY_FLAGS: Record<string, string> = {
   CO: "🇨🇴",
   PE: "🇵🇪",
   MX: "🇲🇽",
+  VE: "🇻🇪",
+  EC: "🇪🇨",
+  PY: "🇵🇾",
+  BO: "🇧🇴",
+  GT: "🇬🇹",
+  CR: "🇨🇷",
+  PA: "🇵🇦",
+  DO: "🇩🇴",
+  SV: "🇸🇻",
   US: "🇺🇸",
   GB: "🇬🇧",
   ES: "🇪🇸",
   FR: "🇫🇷",
   DE: "🇩🇪",
   IT: "🇮🇹",
+  PT: "🇵🇹",
+  NL: "🇳🇱",
+  SE: "🇸🇪",
   QA: "🇶🇦",
 };
 

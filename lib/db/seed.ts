@@ -470,6 +470,107 @@ const EUROPE_CONTINENTAL: SourceSeed[] = [
 //   Sources below were confirmed working by automated feed fetch.
 
 const SPORTS_PAPERS: SourceSeed[] = [
+  // ── ESPN country editions ─────────────────────────────────────────────────
+  // Pattern: https://www.espn.{domain}/espn/rss/news
+  // All confirmed working May 2026. Sports-only section content.
+  // NOTE: ESPN feeds do NOT include content:encoded — short descriptions only.
+  {
+    name: 'ESPN Argentina',
+    countryCode: 'AR',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://a.espncdn.com/favicon.ico',
+    websiteUrl: 'https://www.espn.com.ar',
+    notes: 'ESPN AR RSS confirmed May 2026. No content:encoded. Section inferred from article URL.',
+    feedSections: [
+      { key: 'sports', url: 'https://www.espn.com.ar/espn/rss/news', labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  {
+    name: 'ESPN Brasil',
+    countryCode: 'BR',
+    region: 'latam',
+    language: 'pt',
+    logoUrl: 'https://a.espncdn.com/favicon.ico',
+    websiteUrl: 'https://www.espn.com.br',
+    notes: 'ESPN BR RSS confirmed May 2026. No content:encoded.',
+    feedSections: [
+      { key: 'sports', url: 'https://www.espn.com.br/espn/rss/news', labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  {
+    name: 'ESPN Chile',
+    countryCode: 'CL',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://a.espncdn.com/favicon.ico',
+    websiteUrl: 'https://www.espn.cl',
+    notes: 'ESPN CL RSS confirmed May 2026. No content:encoded.',
+    feedSections: [
+      { key: 'sports', url: 'https://www.espn.cl/espn/rss/news', labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  {
+    name: 'ESPN Colombia',
+    countryCode: 'CO',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://a.espncdn.com/favicon.ico',
+    websiteUrl: 'https://www.espn.com.co',
+    notes: 'ESPN CO RSS confirmed May 2026. No content:encoded.',
+    feedSections: [
+      { key: 'sports', url: 'https://www.espn.com.co/espn/rss/news', labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  {
+    name: 'ESPN Perú',
+    countryCode: 'PE',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://a.espncdn.com/favicon.ico',
+    websiteUrl: 'https://www.espn.com.pe',
+    notes: 'ESPN PE RSS confirmed May 2026. No content:encoded.',
+    feedSections: [
+      { key: 'sports', url: 'https://www.espn.com.pe/espn/rss/news', labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  {
+    name: 'ESPN Deportes (MX)',
+    countryCode: 'MX',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://a.espncdn.com/favicon.ico',
+    websiteUrl: 'https://espndeportes.espn.com',
+    notes: 'ESPN Deportes (espndeportes.espn.com) RSS confirmed May 2026. No content:encoded.',
+    feedSections: [
+      { key: 'sports', url: 'https://espndeportes.espn.com/espn/rss/news', labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  {
+    name: 'ESPN US',
+    countryCode: 'US',
+    region: 'north_america',
+    language: 'en',
+    logoUrl: 'https://a.espncdn.com/favicon.ico',
+    websiteUrl: 'https://www.espn.com',
+    notes: 'ESPN US RSS confirmed May 2026. No content:encoded.',
+    feedSections: [
+      { key: 'sports', url: 'https://www.espn.com/espn/rss/news', labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  {
+    name: 'ESPN UK',
+    countryCode: 'GB',
+    region: 'europe',
+    language: 'en',
+    logoUrl: 'https://a.espncdn.com/favicon.ico',
+    websiteUrl: 'https://www.espn.co.uk',
+    notes: 'ESPN UK (espn.co.uk) RSS confirmed May 2026. No content:encoded.',
+    feedSections: [
+      { key: 'sports', url: 'https://www.espn.co.uk/espn/rss/news', labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  // ── Dedicated sports newspapers ───────────────────────────────────────────
   {
     // Spain's #1 sports newspaper (Unidad Editorial).
     // CDN subdomain verified May 2026 (www.marca.com blocks; CDN serves RSS).
@@ -527,6 +628,270 @@ const SPORTS_PAPERS: SourceSeed[] = [
   },
 ]
 
+// ─── VENEZUELA ────────────────────────────────────────────────────────────────
+
+const VENEZUELA: SourceSeed[] = [
+  {
+    name: 'Efecto Cocuyo',
+    countryCode: 'VE',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://efectococuyo.com/favicon.ico',
+    websiteUrl: 'https://efectococuyo.com',
+    notes: 'Leading independent Venezuelan outlet. WordPress RSS. content:encoded confirmed May 2026. 10 items. "Journalism that illuminates, informs, and approaches its audience."',
+    feedSections: [
+      { key: 'all', url: 'https://efectococuyo.com/feed/', labelEs: 'Portada', labelEn: 'Home' },
+    ],
+  },
+  {
+    name: 'Últimas Noticias',
+    countryCode: 'VE',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://ultimasnoticias.com.ve/favicon.ico',
+    websiteUrl: 'https://ultimasnoticias.com.ve',
+    notes: "Venezuela's most-read newspaper. WordPress RSS. content:encoded confirmed May 2026. 10 items.",
+    feedSections: [
+      { key: 'all', url: 'https://ultimasnoticias.com.ve/feed/', labelEs: 'Portada', labelEn: 'Home' },
+    ],
+  },
+]
+
+// ─── ECUADOR ──────────────────────────────────────────────────────────────────
+
+const ECUADOR: SourceSeed[] = [
+  {
+    // El Universo is Ecuador's largest circulation newspaper. Arc Publishing.
+    // content:encoded confirmed May 2026 on category feeds. 50+ items.
+    name: 'El Universo',
+    countryCode: 'EC',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.eluniverso.com/favicon.ico',
+    websiteUrl: 'https://www.eluniverso.com',
+    notes: 'Arc Publishing (Grupo El Universo). content:encoded confirmed May 2026. Per-section feeds confirmed. El Comercio EC dropped RSS (replaced by WhatsApp/YT).',
+    feedSections: [
+      { key: 'world',    url: 'https://www.eluniverso.com/arc/outboundfeeds/rss/category/noticias/?website=el-universo&sort=first_publish_date:desc&outputType=xml', labelEs: 'Noticias', labelEn: 'News' },
+      { key: 'sports',   url: 'https://www.eluniverso.com/arc/outboundfeeds/rss/category/deportes/?website=el-universo&sort=first_publish_date:desc&outputType=xml', labelEs: 'Deportes', labelEn: 'Sports' },
+      { key: 'entertainment', url: 'https://www.eluniverso.com/arc/outboundfeeds/rss/category/entretenimiento/?website=el-universo&sort=first_publish_date:desc&outputType=xml', labelEs: 'Entretenimiento', labelEn: 'Entertainment' },
+    ],
+  },
+]
+
+// ─── PARAGUAY ─────────────────────────────────────────────────────────────────
+
+const PARAGUAY: SourceSeed[] = [
+  {
+    // Paraguay's #1 newspaper. Arc Publishing. Per-section feeds confirmed May 2026.
+    name: 'ABC Color',
+    countryCode: 'PY',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.abc.com.py/favicon.ico',
+    websiteUrl: 'https://www.abc.com.py',
+    notes: 'Arc Publishing. content:encoded confirmed May 2026. Section feeds at arc/outboundfeeds/rss/[section]/?outputType=xml all return 200.',
+    feedSections: [
+      { key: 'politics', url: 'https://www.abc.com.py/arc/outboundfeeds/rss/nacionales/?outputType=xml',       labelEs: 'Nacionales',   labelEn: 'National' },
+      { key: 'world',    url: 'https://www.abc.com.py/arc/outboundfeeds/rss/mundo/?outputType=xml',            labelEs: 'Mundo',        labelEn: 'World' },
+      { key: 'sports',   url: 'https://www.abc.com.py/arc/outboundfeeds/rss/deportes/?outputType=xml',         labelEs: 'Deportes',     labelEn: 'Sports' },
+      { key: 'tech',     url: 'https://www.abc.com.py/arc/outboundfeeds/rss/tecnologia/?outputType=xml',       labelEs: 'Tecnología',   labelEn: 'Tech' },
+      { key: 'science',  url: 'https://www.abc.com.py/arc/outboundfeeds/rss/ciencia/?outputType=xml',          labelEs: 'Ciencia',      labelEn: 'Science' },
+      { key: 'culture',  url: 'https://www.abc.com.py/arc/outboundfeeds/rss/espectaculos/?outputType=xml',     labelEs: 'Espectáculos', labelEn: 'Entertainment' },
+    ],
+  },
+]
+
+// ─── BOLIVIA ──────────────────────────────────────────────────────────────────
+
+const BOLIVIA: SourceSeed[] = [
+  {
+    name: 'Los Tiempos',
+    countryCode: 'BO',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.lostiempos.com/favicon.ico',
+    websiteUrl: 'https://www.lostiempos.com',
+    notes: "Bolivia's leading newspaper from Cochabamba. RSS 2.0 confirmed May 2026. content:encoded confirmed. 10 items.",
+    feedSections: [
+      { key: 'all', url: 'https://www.lostiempos.com/rss.xml', labelEs: 'Portada', labelEn: 'Home' },
+    ],
+  },
+]
+
+// ─── GUATEMALA ────────────────────────────────────────────────────────────────
+
+const GUATEMALA: SourceSeed[] = [
+  {
+    name: 'Prensa Libre',
+    countryCode: 'GT',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.prensalibre.com/favicon.ico',
+    websiteUrl: 'https://www.prensalibre.com',
+    notes: "Guatemala's #1 newspaper. WordPress RSS. content:encoded confirmed May 2026. Per-section feeds at /[section]/feed/ pattern. Main feed returns 4 items.",
+    feedSections: [
+      { key: 'all',      url: 'https://prensalibre.com/feed/',           labelEs: 'Portada',      labelEn: 'Home' },
+      { key: 'politics', url: 'https://prensalibre.com/guatemala/feed/', labelEs: 'Guatemala',    labelEn: 'National' },
+      { key: 'sports',   url: 'https://prensalibre.com/deportes/feed/',  labelEs: 'Deportes',     labelEn: 'Sports' },
+    ],
+  },
+]
+
+// ─── COSTA RICA ───────────────────────────────────────────────────────────────
+
+const COSTA_RICA: SourceSeed[] = [
+  {
+    // Teletica is Costa Rica's #1 TV news channel (Channel 7, Repretel group).
+    // content:encoded confirmed May 2026. Per-section feeds all return 200.
+    // La Nación CR (nacion.com) — no working RSS found; they require login for feeds.
+    name: 'Teletica',
+    countryCode: 'CR',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.teletica.com/favicon.ico',
+    websiteUrl: 'https://www.teletica.com',
+    notes: "Costa Rica's #1 TV news channel. RSS confirmed May 2026 with content:encoded. Section feeds at /rss/feed/[section] all confirmed 200.",
+    feedSections: [
+      { key: 'politics', url: 'https://www.teletica.com/rss/feed/noticias/nacional',       labelEs: 'Nacional',        labelEn: 'National' },
+      { key: 'world',    url: 'https://www.teletica.com/rss/feed/noticias/internacional',  labelEs: 'Internacional',   labelEn: 'World' },
+      { key: 'sports',   url: 'https://www.teletica.com/rss/feed/deportes',                labelEs: 'Deportes',        labelEn: 'Sports' },
+      { key: 'health',   url: 'https://www.teletica.com/rss/feed/estilo-de-vida/salud',    labelEs: 'Salud',           labelEn: 'Health' },
+    ],
+  },
+]
+
+// ─── PANAMA ───────────────────────────────────────────────────────────────────
+
+const PANAMA: SourceSeed[] = [
+  {
+    // La Prensa is Panama's #1 newspaper. Arc Publishing.
+    // content:encoded AND media:content confirmed May 2026.
+    name: 'La Prensa Panamá',
+    countryCode: 'PA',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.prensa.com/favicon.ico',
+    websiteUrl: 'https://www.prensa.com',
+    notes: "Panama's leading newspaper. Arc Publishing. content:encoded and media:content confirmed May 2026.",
+    feedSections: [
+      { key: 'all', url: 'https://www.prensa.com/arc/outboundfeeds/rss/?outputType=xml', labelEs: 'Portada', labelEn: 'Home' },
+    ],
+  },
+]
+
+// ─── DOMINICAN REPUBLIC ───────────────────────────────────────────────────────
+
+const DOMINICAN_REPUBLIC: SourceSeed[] = [
+  {
+    // Diario Libre is the Dominican Republic's most-read digital newspaper.
+    // Per-section feeds confirmed May 2026. NOTE: NO content:encoded — description only.
+    name: 'Diario Libre',
+    countryCode: 'DO',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.diariolibre.com/favicon.ico',
+    websiteUrl: 'https://www.diariolibre.com',
+    notes: 'Dominican Republic #1 digital news. Per-section feeds confirmed May 2026. No content:encoded (description-only).',
+    feedSections: [
+      { key: 'politics', url: 'https://www.diariolibre.com/rss/politica.xml',   labelEs: 'Política',        labelEn: 'Politics' },
+      { key: 'world',    url: 'https://www.diariolibre.com/rss/mundo.xml',      labelEs: 'Mundo',           labelEn: 'World' },
+      { key: 'economy',  url: 'https://www.diariolibre.com/rss/economia.xml',   labelEs: 'Economía',        labelEn: 'Economy' },
+      { key: 'sports',   url: 'https://www.diariolibre.com/rss/deportes.xml',   labelEs: 'Deportes',        labelEn: 'Sports' },
+      { key: 'culture',  url: 'https://www.diariolibre.com/rss/revista.xml',    labelEs: 'Revista',         labelEn: 'Culture' },
+    ],
+  },
+]
+
+// ─── EL SALVADOR ──────────────────────────────────────────────────────────────
+
+const EL_SALVADOR: SourceSeed[] = [
+  {
+    // Diario Co Latino — historic workers' newspaper, founded 1890.
+    // WordPress RSS confirmed May 2026. No content:encoded (descriptions only).
+    // La Prensa Gráfica and Diario de Hoy both block RSS (403).
+    name: 'Diario Co Latino',
+    countryCode: 'SV',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://diariocolatino.com/favicon.ico',
+    websiteUrl: 'https://diariocolatino.com',
+    notes: 'Historic El Salvador newspaper (1890). WordPress RSS. No content:encoded. La Prensa Gráfica and El Diario de Hoy both return 403.',
+    feedSections: [
+      { key: 'all', url: 'https://diariocolatino.com/feed/', labelEs: 'Portada', labelEn: 'Home' },
+    ],
+  },
+]
+
+// ─── EUROPE ADDITIONAL ────────────────────────────────────────────────────────
+
+const EUROPE_ADDITIONAL: SourceSeed[] = [
+  {
+    // Portugal — RTP Notícias: official public broadcaster (Rádio e Televisão de Portugal).
+    // Safe for aggregation: state-funded, no ancillary copyright enforcement.
+    // Per-section feeds confirmed May 2026. No content:encoded (rich descriptions).
+    name: 'RTP Notícias',
+    countryCode: 'PT',
+    region: 'europe',
+    language: 'pt',
+    logoUrl: 'https://www.rtp.pt/favicon.ico',
+    websiteUrl: 'https://www.rtp.pt/noticias',
+    notes: 'Portuguese public broadcaster. 50 items confirmed May 2026. No content:encoded (description only). Safe for aggregation (state-funded). Público.pt RSS is paywall-gated (402).',
+    feedSections: [
+      { key: 'politics', url: 'https://www.rtp.pt/noticias/rss/pais',      labelEs: 'País',      labelEn: 'National' },
+      { key: 'world',    url: 'https://www.rtp.pt/noticias/rss/mundo',     labelEs: 'Mundo',     labelEn: 'World' },
+      { key: 'economy',  url: 'https://www.rtp.pt/noticias/rss/economia',  labelEs: 'Economía',  labelEn: 'Economy' },
+      { key: 'sports',   url: 'https://www.rtp.pt/noticias/rss/desporto',  labelEs: 'Deportes',  labelEn: 'Sport' },
+      { key: 'culture',  url: 'https://www.rtp.pt/noticias/rss/cultura',   labelEs: 'Cultura',   labelEn: 'Culture' },
+    ],
+  },
+  {
+    // Netherlands — NOS Nieuws: Dutch public broadcaster.
+    // Safe for aggregation (NOS explicitly promotes RSS).
+    // No content:encoded. 20 items confirmed May 2026.
+    name: 'NOS Nieuws',
+    countryCode: 'NL',
+    region: 'europe',
+    language: 'nl',
+    logoUrl: 'https://nos.nl/favicon.ico',
+    websiteUrl: 'https://nos.nl',
+    notes: 'Dutch public broadcaster (NOS). No content:encoded. 20 items confirmed May 2026. NOS actively promotes RSS use.',
+    feedSections: [
+      { key: 'all', url: 'https://feeds.nos.nl/nosnieuwsalgemeen', labelEs: 'Últimas', labelEn: 'Latest' },
+    ],
+  },
+  {
+    // Sweden — SVT Nyheter: Swedish public broadcaster (Sveriges Television).
+    // Safe for aggregation (public broadcaster, promotes RSS).
+    // No content:encoded. 100 items confirmed May 2026.
+    name: 'SVT Nyheter',
+    countryCode: 'SE',
+    region: 'europe',
+    language: 'sv',
+    logoUrl: 'https://www.svt.se/favicon.ico',
+    websiteUrl: 'https://www.svt.se/nyheter',
+    notes: 'Swedish public broadcaster (SVT). No content:encoded. 100 items confirmed May 2026.',
+    feedSections: [
+      { key: 'all', url: 'https://www.svt.se/nyheter/rss.xml', labelEs: 'Últimas', labelEn: 'Latest' },
+    ],
+  },
+  {
+    // France (native French) — France 24 French edition.
+    // Already have France 24 Español (countryCode: FR). Adding French edition for FR page.
+    // 25 items confirmed May 2026. No content:encoded.
+    name: 'France 24 (FR)',
+    countryCode: 'FR',
+    region: 'europe',
+    language: 'fr',
+    logoUrl: 'https://www.france24.com/favicon.ico',
+    websiteUrl: 'https://www.france24.com/fr',
+    notes: 'France 24 native French edition. Complements France 24 Español (already in DB). No content:encoded. 25 items confirmed May 2026.',
+    feedSections: [
+      { key: 'world',  url: 'https://www.france24.com/fr/rss',          labelEs: 'Portada',  labelEn: 'Home' },
+      { key: 'sports', url: 'https://www.france24.com/fr/sport/rss',    labelEs: 'Deporte',  labelEn: 'Sport' },
+    ],
+  },
+]
+
 // ─── Aggregated export ────────────────────────────────────────────────────────
 
 export const SOURCES: SourceSeed[] = [
@@ -539,6 +904,16 @@ export const SOURCES: SourceSeed[] = [
   ...SPAIN,
   ...UK,
   ...EUROPE_CONTINENTAL,
+  ...VENEZUELA,
+  ...ECUADOR,
+  ...PARAGUAY,
+  ...BOLIVIA,
+  ...GUATEMALA,
+  ...COSTA_RICA,
+  ...PANAMA,
+  ...DOMINICAN_REPUBLIC,
+  ...EL_SALVADOR,
+  ...EUROPE_ADDITIONAL,
   ...SPORTS_PAPERS,
 ]
 

@@ -73,9 +73,9 @@ export function LandingPage({ locale }: Props) {
       >
         {(
           [
-            { icon: "🗺", titleKey: "feature_map_title", descKey: "feature_map_desc" },
-            { icon: "📰", titleKey: "feature_rss_title", descKey: "feature_rss_desc" },
-            { icon: "🌐", titleKey: "feature_i18n_title", descKey: "feature_i18n_desc" },
+            { icon: "🗺️", titleKey: "feature_map_title", descKey: "feature_map_desc" },
+            { icon: "📖", titleKey: "feature_rss_title", descKey: "feature_rss_desc" },
+            { icon: "🌍", titleKey: "feature_i18n_title", descKey: "feature_i18n_desc" },
           ] as const
         ).map(({ icon, titleKey, descKey }) => (
           <div

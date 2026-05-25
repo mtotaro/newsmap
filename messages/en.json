@@ -1,19 +1,19 @@
 {
   "Meta": {
     "title": "NewsMap",
-    "description": "World news portal with geographic curation. Pick your sources on a map. No algorithm."
+    "description": "Global news aggregator with geographic curation. Browse today's headlines from Argentina, Spain, the UK, Germany, Italy and more — no algorithm, no account required."
   },
   "Landing": {
     "headline": "Your world news, on the map",
     "subheadline": "Choose the publications you want to read. No algorithm — just the sources you pick.",
     "cta": "Get started free",
-    "demo_label": "Feed preview",
+    "demo_label": "Browse the map",
     "feature_map_title": "Pick on the map",
     "feature_map_desc": "Explore countries and subscribe to the publications that interest you.",
-    "feature_rss_title": "Real-time feed",
-    "feature_rss_desc": "Articles refreshed every 15 minutes straight from the original sources.",
-    "feature_i18n_title": "In your language",
-    "feature_i18n_desc": "Interface available in Spanish and English. Sources in both languages."
+    "feature_rss_title": "Read without leaving",
+    "feature_rss_desc": "Many sources include full article previews — read the complete story inside NewsMap, no redirect needed. Updated every 15 min.",
+    "feature_i18n_title": "13+ countries",
+    "feature_i18n_desc": "Latin America, USA, UK, Spain, Germany, Italy, France and more. Interface in Spanish and English."
   },
   "Nav": {
     "feed": "Feed",

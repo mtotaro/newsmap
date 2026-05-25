@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { ArticleCard, type ArticleCardData } from "@/components/feed/article-card";
+import { ArticleModal } from "@/components/feed/article-modal";
 import type { SectionKey } from "@/lib/db/schema";
 
 const SECTION_ORDER: SectionKey[] = [
@@ -33,6 +34,7 @@ export function CountryNews({
   signupBtn,
 }: Props) {
   const [activeSection, setActiveSection] = useState<SectionKey | null>(null);
+  const [previewArticle, setPreviewArticle] = useState<ArticleCardData | null>(null);
 
   // Only show section chips that have actual articles, ordered by count
   const availableSections = useMemo(() => {
@@ -49,6 +51,12 @@ export function CountryNews({
     : items;
 
   return (
+    <>
+    <ArticleModal
+      article={previewArticle}
+      onClose={() => setPreviewArticle(null)}
+      locale={locale}
+    />
     <div className="max-w-[640px] mx-auto pb-16 space-y-4">
       {/* Section filter chips */}
       {availableSections.length > 1 && (
@@ -95,6 +103,7 @@ export function CountryNews({
               sectionLabel={sectionLabels[article.section_key] ?? article.section_key}
               readLabel={readLabel}
               locale={locale}
+              onOpenPreview={article.content_html ? setPreviewArticle : undefined}
             />
           ))}
         </div>
@@ -112,5 +121,6 @@ export function CountryNews({
         </a>
       </div>
     </div>
+    </>
   );
 }

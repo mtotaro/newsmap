@@ -77,6 +77,11 @@ export function ArticleCard({
           <span>{flag}</span>
           <span className="font-medium truncate min-w-0">{article.source_name}</span>
           <SectionChip section={article.section_key} label={sectionLabel} />
+          {article.content_html && (
+            <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--color-green)]/15 text-[var(--color-green)] border border-[var(--color-green)]/25 font-medium leading-none">
+              ✦ full
+            </span>
+          )}
           <span className="ml-auto shrink-0">{ago}</span>
         </div>
 
@@ -84,7 +89,7 @@ export function ArticleCard({
         {handlePreview ? (
           <button
             onClick={handlePreview}
-            className="block w-full text-left text-[var(--color-text)] font-semibold leading-snug hover:text-white transition-colors"
+            className="block w-full text-left text-[var(--color-text)] font-semibold leading-snug hover:text-[var(--color-blue)] transition-colors"
           >
             {article.title}
           </button>
@@ -93,7 +98,7 @@ export function ArticleCard({
             href={article.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block text-[var(--color-text)] font-semibold leading-snug hover:text-white"
+            className="block text-[var(--color-text)] font-semibold leading-snug hover:text-[var(--color-blue)] transition-colors"
           >
             {article.title}
           </a>
@@ -160,6 +165,13 @@ function ThumbnailContent({
           ) : (
             <span className="text-3xl opacity-30">{flag}</span>
           )}
+        </div>
+      )}
+      {/* Full-article preview badge — shown when feed provides content:encoded */}
+      {article.content_html && (
+        <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/55 backdrop-blur-sm text-white text-[10px] font-medium leading-none pointer-events-none">
+          <span>📖</span>
+          <span>preview</span>
         </div>
       )}
     </div>

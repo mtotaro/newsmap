@@ -27,6 +27,8 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://newsmap.app";
+
 export async function generateMetadata({
   params,
 }: {
@@ -38,6 +40,19 @@ export async function generateMetadata({
     title: { default: t("title"), template: `%s · ${t("title")}` },
     description: t("description"),
     manifest: "/manifest.json",
+    alternates: {
+      canonical: `${APP_URL}/${locale}`,
+      languages: {
+        es: `${APP_URL}/es`,
+        en: `${APP_URL}/en`,
+        "x-default": `${APP_URL}/en`,
+      },
+    },
+    openGraph: {
+      siteName: t("title"),
+      locale: locale === "es" ? "es_ES" : "en_US",
+      type: "website",
+    },
     other: {
       // AdSense site verification meta tag
       "google-adsense-account": ADSENSE_PUBLISHER_ID,

@@ -112,7 +112,7 @@ export default async function CountryNewsPage({
     country_code: r.country_code,
   }));
 
-  // JSON-LD structured data
+  // JSON-LD structured data — CollectionPage + ItemList for article headlines
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -124,6 +124,15 @@ export default async function CountryNewsPage({
       "@type": "Organization",
       name: "NewsMap",
       url: APP_URL,
+    },
+    mainEntity: {
+      "@type": "ItemList",
+      itemListElement: items.slice(0, 20).map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: item.url,
+        name: item.title,
+      })),
     },
   };
 
@@ -197,6 +206,32 @@ export default async function CountryNewsPage({
           signupDesc={t("signup_desc")}
           signupBtn={t("signup_btn")}
         />
+
+        {/* Internal links to other country pages — helps SEO + navigation */}
+        <nav
+          className="max-w-[640px] mx-auto px-4 pb-8"
+          aria-label={t("back_to_map")}
+        >
+          <p className="text-xs text-[var(--color-text-3)] mb-2">{t("back_to_map")}</p>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(ALPHA2_TO_SLUG)
+              .filter(([a2]) => a2 !== alpha2)
+              .map(([a2, slug]) => {
+                const name = new Intl.DisplayNames([locale], { type: "region" }).of(a2) ?? a2;
+                const flagEmoji = COUNTRY_FLAGS[a2] ?? "🌐";
+                return (
+                  <a
+                    key={a2}
+                    href={`/${locale}/news/${slug}`}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-[var(--radius-button)] text-xs border border-[var(--color-border)] text-[var(--color-text-2)] hover:border-[var(--color-blue)] hover:text-[var(--color-blue)] transition-colors"
+                  >
+                    <span>{flagEmoji}</span>
+                    <span>{name}</span>
+                  </a>
+                );
+              })}
+          </div>
+        </nav>
       </div>
     </>
   );

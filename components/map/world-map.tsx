@@ -16,13 +16,24 @@ const GEO_URL =
 
 // Map ISO numeric country codes → ISO alpha-2
 const NUMERIC_TO_ALPHA2: Record<string, string> = {
+  // Original
   "032": "AR", "076": "BR", "152": "CL", "170": "CO", "604": "PE",
   "484": "MX", "840": "US", "826": "GB", "724": "ES", "250": "FR",
   "276": "DE", "380": "IT", "634": "QA",
+  // New LATAM
+  "862": "VE", "218": "EC", "600": "PY", "068": "BO", "320": "GT",
+  "188": "CR", "591": "PA", "214": "DO", "222": "SV",
+  // New Europe
+  "620": "PT", "528": "NL", "752": "SE",
 };
 
 const COUNTRIES_WITH_SOURCES = new Set([
+  // Original
   "AR", "BR", "CL", "CO", "PE", "MX", "US", "GB", "ES", "FR", "DE", "IT", "QA",
+  // New LATAM
+  "VE", "EC", "PY", "BO", "GT", "CR", "PA", "DO", "SV",
+  // New Europe
+  "PT", "NL", "SE",
 ]);
 
 // Section chip colors (mirrors SectionChip component)
@@ -68,6 +79,9 @@ export function WorldMap({ locale }: Props) {
   const [subscribing, setSubscribing] = useState<string | null>(null);
   /** source_id → loading (section PATCH in flight) */
   const [updatingSections, setUpdatingSections] = useState<Record<string, boolean>>({});
+  /** Controlled zoom state for the map */
+  const [zoom, setZoom] = useState(1);
+  const [center, setCenter] = useState<[number, number]>([0, 20]);
 
   // ── Data loading ────────────────────────────────────────────────────────────
 
@@ -198,12 +212,43 @@ export function WorldMap({ locale }: Props) {
   return (
     <div className="flex flex-col lg:flex-row gap-4 lg:h-full">
       {/* ── Map canvas ──────────────────────────────────────────────────── */}
-      <div className="aspect-[16/9] lg:aspect-auto lg:flex-1 rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-bg-2)] border border-[var(--color-border)]">
+      <div className="relative aspect-[16/9] lg:aspect-auto lg:flex-1 rounded-[var(--radius-card)] overflow-hidden bg-[var(--color-bg-2)] border border-[var(--color-border)]">
+        {/* Zoom controls */}
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-1">
+          <button
+            onClick={() => setZoom((z) => Math.min(z * 1.5, 8))}
+            className="w-7 h-7 rounded bg-[var(--color-bg-2)] border border-[var(--color-border)] text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-3)] text-sm font-bold flex items-center justify-center transition-colors shadow-sm"
+            aria-label="Zoom in"
+          >
+            +
+          </button>
+          <button
+            onClick={() => setZoom((z) => Math.max(z / 1.5, 1))}
+            className="w-7 h-7 rounded bg-[var(--color-bg-2)] border border-[var(--color-border)] text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-3)] text-sm font-bold flex items-center justify-center transition-colors shadow-sm"
+            aria-label="Zoom out"
+          >
+            −
+          </button>
+          <button
+            onClick={() => { setZoom(1); setCenter([0, 20]); }}
+            className="w-7 h-7 rounded bg-[var(--color-bg-2)] border border-[var(--color-border)] text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-3)] text-[10px] font-bold flex items-center justify-center transition-colors shadow-sm"
+            aria-label="Reset zoom"
+          >
+            ⌂
+          </button>
+        </div>
         <ComposableMap
           projectionConfig={{ scale: 147 }}
           style={{ width: "100%", height: "100%", minHeight: 260 }}
         >
-          <ZoomableGroup>
+          <ZoomableGroup
+            zoom={zoom}
+            center={center}
+            onMoveEnd={({ zoom: z, coordinates }) => {
+              setZoom(z);
+              setCenter(coordinates as [number, number]);
+            }}
+          >
             <Geographies geography={GEO_URL}>
               {({ geographies }) =>
                 geographies.map((geo) => {
