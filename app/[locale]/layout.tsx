@@ -9,7 +9,9 @@ import { Nav } from "@/components/layout/nav";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import "../globals.css";
 
-const ADSENSE_ID = process.env.NEXT_PUBLIC_ADSENSE_ID;
+// Publisher ID is public — it appears in the HTML source of every AdSense page.
+// Hardcoded so it loads regardless of build-time env var availability.
+const ADSENSE_PUBLISHER_ID = "ca-pub-5899330070144720";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +38,10 @@ export async function generateMetadata({
     title: { default: t("title"), template: `%s · ${t("title")}` },
     description: t("description"),
     manifest: "/manifest.json",
+    other: {
+      // AdSense site verification meta tag
+      "google-adsense-account": ADSENSE_PUBLISHER_ID,
+    },
   };
 }
 
@@ -60,14 +66,12 @@ export default async function LocaleLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
-        {/* Google AdSense — loads only when NEXT_PUBLIC_ADSENSE_ID is set */}
-        {ADSENSE_ID && (
-          <Script
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_ID}`}
-            strategy="afterInteractive"
-            crossOrigin="anonymous"
-          />
-        )}
+        {/* Google AdSense */}
+        <Script
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUBLISHER_ID}`}
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
         <NextIntlClientProvider messages={messages}>
           <Nav locale={locale} />
           {children}
