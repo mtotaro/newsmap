@@ -11,16 +11,11 @@ import {
   COUNTRY_SLUG_TO_ALPHA2,
   ALPHA2_TO_SLUG,
   COUNTRY_FLAGS,
-  CANONICAL_SLUGS,
 } from "@/lib/countries";
 
-// ISR: regenerate every 15 minutes
+// ISR: regenerate every 15 minutes on-demand (no pre-generation at build time
+// to avoid DB connection pool exhaustion across parallel build workers).
 export const revalidate = 900;
-
-// Pre-generate all canonical country pages at build time
-export function generateStaticParams() {
-  return CANONICAL_SLUGS.map((country) => ({ country }));
-}
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://newsmap.app";
 const SECTION_KEYS: SectionKey[] = [
