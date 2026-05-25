@@ -93,12 +93,20 @@ export function inferSectionFromUrl(url: string): SectionKey {
   return "world";
 }
 
+/** Strips diacritics: "Política" → "politica", "Fútbol" → "futbol" */
+function normalize(str: string): string {
+  return str
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+}
+
 export function inferSectionFromCategory(
   categories: string[]
 ): SectionKey | null {
   for (const cat of categories) {
-    const key = cat.toLowerCase().trim();
-    const mapped = SECTION_MAP[key];
+    const mapped = SECTION_MAP[normalize(cat)];
     if (mapped) return mapped;
   }
   return null;

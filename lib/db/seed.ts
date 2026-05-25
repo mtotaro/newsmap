@@ -42,7 +42,8 @@ const ARGENTINA: SourceSeed[] = [
     language: 'es',
     logoUrl: 'https://www.infobae.com/favicon.ico',
     websiteUrl: 'https://www.infobae.com',
-    notes: 'Arc Publishing — single general feed, no section splits. Images via media:content. Section inferred from URL path.',
+    needsUserAgent: true,
+    notes: 'Arc Publishing — single general feed, no section splits. Images via media:content. Section inferred from URL path. Requires browser UA.',
     feedSections: [
       { key: 'all', url: 'https://www.infobae.com/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
     ],
