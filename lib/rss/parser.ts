@@ -94,7 +94,8 @@ async function fetchAndNormalize(
   const res = await fetch(url, { headers, cache: "no-store" });
   if (!res.ok) throw new Error(`Feed fetch failed: ${res.status} ${url}`);
 
-  const body = await res.text();
+  const buffer = await res.arrayBuffer();
+  const body = decodeXmlBuffer(buffer, res.headers.get("content-type") ?? "");
 
   // feedsmith throws on RSS 1.0 / RDF — catch and fall through to our own parser
   let parsed: ReturnType<typeof feedsmithParse> | null = null;
@@ -228,6 +229,36 @@ function resolveSectionKey(
 
   if (url) return inferSectionFromUrl(url);
   return "world";
+}
+
+/**
+ * Detect the charset from the XML declaration or Content-Type header, then decode
+ * the buffer accordingly. Handles feeds that declare ISO-8859-1 / Windows-1252 in
+ * their <?xml?> preamble even when the HTTP header says text/xml without charset.
+ */
+function decodeXmlBuffer(buffer: ArrayBuffer, contentType: string): string {
+  // The XML declaration is always ASCII-compatible, so reading the first ~300 bytes
+  // as UTF-8 (with replacement chars for any invalid sequences) is safe here.
+  const head = new TextDecoder("utf-8", { fatal: false }).decode(
+    new Uint8Array(buffer).slice(0, 300)
+  );
+
+  // Priority: XML declaration > Content-Type charset > UTF-8 default
+  const xmlCharset = head
+    .match(/<\?xml[^>]+encoding=["']([^"']+)/i)?.[1]
+    ?.toLowerCase();
+  const headerCharset = contentType
+    .match(/charset=([^\s;]+)/i)?.[1]
+    ?.toLowerCase();
+
+  const charset = xmlCharset ?? headerCharset ?? "utf-8";
+
+  try {
+    return new TextDecoder(charset, { fatal: false }).decode(buffer);
+  } catch {
+    // Unknown charset label — fall back to UTF-8 with replacement
+    return new TextDecoder("utf-8", { fatal: false }).decode(buffer);
+  }
 }
 
 function stripHtml(str: string): string {

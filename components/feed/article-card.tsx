@@ -180,7 +180,14 @@ function ThumbnailContent({
               onError={() => setLogoError(true)}
             />
           ) : (
-            <span className="text-3xl opacity-30">{flag}</span>
+            // Flag emojis render as letter pairs on Windows — use source initials instead
+            <span className="text-xs font-bold opacity-20 tracking-widest select-none uppercase">
+              {article.source_name
+                .split(" ")
+                .map((w) => w[0])
+                .join("")
+                .slice(0, 3)}
+            </span>
           )}
         </div>
       )}
