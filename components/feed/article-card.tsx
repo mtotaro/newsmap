@@ -1,8 +1,21 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import { SectionChip } from "@/components/ui/section-chip";
 import { timeAgo, truncate } from "@/lib/utils/time";
 import { FLAG_MAP } from "@/lib/utils/flags";
 import type { SectionKey } from "@/lib/db/schema";
+
+/**
+ * Returns true only when content:encoded has substantial text (not just a paywall teaser).
+ * El País, AS and similar sources send short teasers ending in "Seguir leyendo" — we don't
+ * want to show the "✦ full" badge for those.
+ */
+function hasRichContent(html: string | null): boolean {
+  if (!html) return false;
+  return html.replace(/<[^>]+>/g, "").trim().length > 350;
+}
 
 export type ArticleCardData = {
   id: string;
@@ -77,7 +90,7 @@ export function ArticleCard({
           <span>{flag}</span>
           <span className="font-medium truncate min-w-0">{article.source_name}</span>
           <SectionChip section={article.section_key} label={sectionLabel} />
-          {article.content_html && (
+          {hasRichContent(article.content_html) && (
             <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--color-green)]/15 text-[var(--color-green)] border border-[var(--color-green)]/25 font-medium leading-none">
               ✦ full
             </span>
@@ -141,6 +154,8 @@ function ThumbnailContent({
   article: ArticleCardData;
   flag: string;
 }) {
+  const [logoError, setLogoError] = useState(false);
+
   return (
     <div className="relative aspect-video bg-[var(--color-bg-3)] overflow-hidden">
       {article.thumbnail_url ? (
@@ -154,21 +169,23 @@ function ThumbnailContent({
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center">
-          {article.source_logo ? (
-            <Image
+          {article.source_logo && !logoError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={article.source_logo}
               alt={article.source_name}
               width={48}
               height={48}
-              className="opacity-40"
+              className="opacity-40 object-contain"
+              onError={() => setLogoError(true)}
             />
           ) : (
             <span className="text-3xl opacity-30">{flag}</span>
           )}
         </div>
       )}
-      {/* Full-article preview badge — shown when feed provides content:encoded */}
-      {article.content_html && (
+      {/* Full-article preview badge — shown only when content:encoded has substantial text */}
+      {hasRichContent(article.content_html) && (
         <div className="absolute bottom-2 left-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/55 backdrop-blur-sm text-white text-[10px] font-medium leading-none pointer-events-none">
           <span>📖</span>
           <span>preview</span>

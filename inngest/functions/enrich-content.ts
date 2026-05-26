@@ -17,7 +17,16 @@ const SKIP_DOMAINS = new Set([
   "www.espn.com",
   "espn.com",
   "espn.co.uk",
-  // Add more as discovered
+  // Unidad Editorial (El Mundo, Marca) — Cloudflare anti-bot protection
+  "www.elmundo.es",
+  "elmundo.es",
+  "www.marca.com",
+  "marca.com",
+  // Grupo PRISA (El País, AS) — subscriber-only content:encoded, scraping returns paywall
+  "elpais.com",
+  "www.elpais.com",
+  "as.com",
+  "www.as.com",
 ]);
 
 export const enrichContent = inngest.createFunction(

@@ -231,7 +231,17 @@ function resolveSectionKey(
 }
 
 function stripHtml(str: string): string {
-  return str.replace(/<[^>]+>/g, "").trim();
+  return str
+    .replace(/<[^>]+>/g, "")   // remove HTML tags
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&[a-z]+;/gi, " ")  // catch-all for remaining named entities
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 /** Server-side HTML sanitizer — strips dangerous elements/attributes before storing in DB */

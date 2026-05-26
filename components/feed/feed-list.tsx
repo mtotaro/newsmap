@@ -264,7 +264,12 @@ export function FeedList({ locale }: Props) {
                 sectionLabel={tSec(article.section_key as SectionKey)}
                 readLabel={tArt("read_full")}
                 locale={locale}
-                onOpenPreview={setPreviewArticle}
+                onOpenPreview={
+                  article.content_html &&
+                  article.content_html.replace(/<[^>]+>/g, "").trim().length > 350
+                    ? setPreviewArticle
+                    : undefined
+                }
                 paywallNotice={
                   PAYWALL_SOURCES.includes(article.source_slug)
                     ? tArt("paywall_notice")
