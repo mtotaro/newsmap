@@ -13,16 +13,13 @@ export async function GET(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get("cursor"); // ISO timestamp
     const section = searchParams.get("section"); // optional section filter
     const q = searchParams.get("q");             // optional full-text search
 
-    const conditions = [eq(userSubscriptions.user_id, user.id)];
+    // ── Common filters (apply to both anonymous + authenticated feeds) ──────
+    const conditions = [];
 
     if (cursor) {
       conditions.push(lt(articles.published_at, new Date(cursor)));
@@ -36,17 +33,41 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // UI section filter (overrides per-subscription section_keys for browsing)
+    // UI section filter
     if (section) {
       const { sectionKeyEnum } = await import("@/lib/db/schema");
       const validSection = sectionKeyEnum.enumValues.find((v) => v === section);
       if (validSection) {
         conditions.push(eq(articles.section_key, validSection));
       }
-    } else {
-      // Per-subscription section filter:
-      // Include the article if the subscription has no section restriction (NULL)
-      // OR if the article's section_key is in the subscription's section_keys array.
+    }
+
+    // ── Anonymous: public discovery feed (all sources, no personalization) ──
+    if (!user) {
+      const rows = await db
+        .select({
+          ...getTableColumns(articles),
+          source_name: sources.name,
+          source_logo: sources.logo_url,
+          source_slug: sources.slug,
+          country_code: sources.country_code,
+        })
+        .from(articles)
+        .innerJoin(sources, eq(articles.source_id, sources.id))
+        .where(conditions.length ? and(...conditions) : undefined)
+        .orderBy(desc(articles.published_at))
+        .limit(PAGE_SIZE + 1);
+
+      return paginate(rows);
+    }
+
+    // ── Authenticated: personalized feed (only subscribed sources) ──────────
+    conditions.push(eq(userSubscriptions.user_id, user.id));
+
+    // Per-subscription section filter (only when no explicit UI section override):
+    // Include the article if the subscription has no section restriction (NULL)
+    // OR if the article's section_key is in the subscription's section_keys array.
+    if (!section) {
       conditions.push(
         sql`(
           ${userSubscriptions.section_keys} IS NULL
@@ -76,15 +97,18 @@ export async function GET(request: NextRequest) {
       .orderBy(desc(articles.published_at))
       .limit(PAGE_SIZE + 1);
 
-    const hasMore = rows.length > PAGE_SIZE;
-    const items = hasMore ? rows.slice(0, PAGE_SIZE) : rows;
-    const nextCursor = hasMore
-      ? items[items.length - 1].published_at.toISOString()
-      : null;
-
-    return NextResponse.json({ items, nextCursor });
+    return paginate(rows);
   } catch (err) {
     console.error("[GET /api/feed]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
+}
+
+function paginate<T extends { published_at: Date }>(rows: T[]) {
+  const hasMore = rows.length > PAGE_SIZE;
+  const items = hasMore ? rows.slice(0, PAGE_SIZE) : rows;
+  const nextCursor = hasMore
+    ? items[items.length - 1].published_at.toISOString()
+    : null;
+  return NextResponse.json({ items, nextCursor });
 }

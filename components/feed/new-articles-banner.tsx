@@ -5,7 +5,8 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 type Props = {
-  userId: string;
+  /** Optional — banner subscribes to global INSERTs regardless of auth state */
+  userId?: string;
 };
 
 export function NewArticlesBanner({ userId }: Props) {

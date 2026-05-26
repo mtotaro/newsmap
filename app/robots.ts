@@ -8,9 +8,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/"],
-        // Keep feed and settings pages out of search results — they require auth
+        // /feed is the product itself — must be crawlable. Only block private/auth routes.
         disallow: [
-          "/*/feed",
           "/*/settings",
           "/*/onboarding",
           "/*/auth",
