@@ -4,7 +4,11 @@ import { articles } from "@/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { Readability } from "@mozilla/readability";
 import { parseHTML } from "linkedom";
-import { sanitizeArticleHtml } from "@/lib/sanitize/article-html";
+import {
+  sanitizeArticleHtml,
+  sanitizeArticleHtmlDom,
+  type DomDocLike,
+} from "@/lib/sanitize/article-html";
 
 /**
  * Domains that actively block automated HTTP access (Cloudflare Bot Management,
@@ -86,16 +90,42 @@ export const enrichContent = inngest.createFunction(
         return null;
       }
 
-      // Parse with linkedom and run Readability
+      // Parse with linkedom. Try semantic tags first (<article>, then
+      // <main>) — modern news sites use them and they're more precise than
+      // Readability's heuristics. Fall back to Readability only when the
+      // page has no semantic container or what's there is too short to be
+      // the real article.
       const { document } = parseHTML(html);
-      const reader = new Readability(document as unknown as Document);
-      const parsed = reader.parse();
-      return parsed?.content ?? null;
+
+      const tryExtract = (selector: string): string | null => {
+        const el = document.querySelector(selector);
+        if (!el) return null;
+        const innerHtml = (el as { innerHTML?: string }).innerHTML ?? "";
+        const textLen = innerHtml.replace(/<[^>]+>/g, " ").trim().length;
+        return textLen >= 600 ? innerHtml : null;
+      };
+
+      let rawContent: string | null =
+        tryExtract("article") ?? tryExtract("main");
+
+      if (!rawContent) {
+        const reader = new Readability(document as unknown as Document);
+        const parsed = reader.parse();
+        rawContent = parsed?.content ?? null;
+      }
+      if (!rawContent) return null;
+
+      // Wrap so linkedom gives us a Document with a body innerHTML we can
+      // hand to the shared DOM sanitizer.
+      const wrapped = parseHTML(`<html><body>${rawContent}</body></html>`);
+      return sanitizeArticleHtmlDom(wrapped.document as unknown as DomDocLike);
     });
 
     if (!content) return { enriched: false };
 
     // ── Persist (only if content_html is still null — don't overwrite) ──────
+    // sanitizeArticleHtml is a final regex safety net for any unsafe attrs
+    // that survived the DOM pass.
     await step.run("save-content", async () => {
       await db
         .update(articles)

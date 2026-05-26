@@ -6,7 +6,11 @@ import { useTranslations } from "next-intl";
 import { SectionChip } from "@/components/ui/section-chip";
 import { timeAgo } from "@/lib/utils/time";
 import { FLAG_MAP } from "@/lib/utils/flags";
-import { sanitizeArticleHtml } from "@/lib/sanitize/article-html";
+import {
+  sanitizeArticleHtml,
+  sanitizeArticleHtmlDom,
+  type DomDocLike,
+} from "@/lib/sanitize/article-html";
 import type { ArticleCardData } from "./article-card";
 import type { SectionKey } from "@/lib/db/schema";
 
@@ -69,13 +73,25 @@ export function ArticleModal({ article, onClose, locale }: Props) {
   }, [article?.id, article?.content_html]);
 
   // Render-time sanitization handles articles ingested before the shared
-  // sanitizer existed — Readability output for many Argentine + Spanish
-  // newspapers used to leak the site header/nav into content_html.
-  // useMemo so we don't re-sanitize 30 KB on every modal scroll re-render.
-  const cleanContent = useMemo(
-    () => sanitizeArticleHtml(article?.content_html),
-    [article?.content_html]
-  );
+  // sanitizer existed — Readability output for many publishers (especially
+  // Página 12 + other Arc Publishing sites) was leaking site chrome,
+  // "related articles" cards, and social-share rails into content_html.
+  //
+  // Two-pass: DOMParser-based deep clean (strips elements by class name,
+  // handles nested divs which regex can't) + regex safety net for any
+  // residual unsafe attributes.
+  //
+  // useMemo so we don't re-sanitize 30 KB of HTML on every scroll repaint.
+  const cleanContent = useMemo(() => {
+    const raw = article?.content_html;
+    if (!raw) return "";
+    if (typeof DOMParser === "undefined") {
+      return sanitizeArticleHtml(raw);
+    }
+    const doc = new DOMParser().parseFromString(raw, "text/html");
+    const deepCleaned = sanitizeArticleHtmlDom(doc as unknown as DomDocLike);
+    return sanitizeArticleHtml(deepCleaned);
+  }, [article?.content_html]);
 
   if (!article) return null;
 

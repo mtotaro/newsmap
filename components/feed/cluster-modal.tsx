@@ -59,24 +59,35 @@ export function ClusterModal({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm cluster-modal-fade"
-      onClick={onClose}
+      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center"
       role="dialog"
       aria-modal="true"
       aria-label={t("aria_label")}
     >
       <style>{`
-        @keyframes cluster-fade { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes cluster-slide { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes cluster-fade  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes cluster-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes cluster-pop     { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .cluster-modal-backdrop { animation: cluster-fade 0.18s ease-out; }
+        .cluster-modal-panel    { animation: cluster-slide-up 0.28s cubic-bezier(0.2, 0.85, 0.3, 1); }
         @media (min-width: 640px) {
-          @keyframes cluster-slide { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+          .cluster-modal-panel  { animation: cluster-pop 0.2s ease-out; }
         }
-        .cluster-modal-fade { animation: cluster-fade 0.18s ease-out; }
-        .cluster-modal-panel { animation: cluster-slide 0.28s cubic-bezier(0.2, 0.85, 0.3, 1); }
       `}</style>
 
+      {/* Backdrop — separate sibling element so the panel layers above it
+          cleanly and click-outside fires reliably on every browser. The
+          previous implementation put the backdrop class on the flex parent,
+          which broke clickability on some Chromium builds when combined
+          with backdrop-filter. */}
       <div
-        className="cluster-modal-panel w-full sm:max-w-[560px] max-h-[92dvh] sm:max-h-[85vh] overflow-y-auto bg-[var(--color-bg)] border-t-2 sm:border border-[var(--color-accent)] rounded-t-2xl sm:rounded-lg shadow-2xl flex flex-col"
+        className="absolute inset-0 bg-black/65 backdrop-blur-sm cluster-modal-backdrop"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      <div
+        className="cluster-modal-panel relative w-full sm:max-w-[560px] max-h-[92dvh] sm:max-h-[85vh] overflow-y-auto bg-[var(--color-bg)] border-t-2 sm:border border-[var(--color-accent)] rounded-t-2xl sm:rounded-lg shadow-2xl flex flex-col mx-0 sm:mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle (mobile only) — visual cue that this is a sheet */}
