@@ -38,6 +38,12 @@ export async function Nav({ locale }: Props) {
           {t("map")}
         </Link>
         <Link
+          href="/compare/argentina/mexico"
+          className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
+        >
+          {t("compare")}
+        </Link>
+        <Link
           href="/saved"
           className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
         >

@@ -21,7 +21,8 @@
     "settings": "Settings",
     "signin": "Sign in",
     "signout": "Sign out",
-    "saved": "Saved"
+    "saved": "Saved",
+    "compare": "Compare"
   },
   "Onboarding": {
     "step1_title": "What kind of reader are you?",
@@ -194,6 +195,25 @@
     "aria_label": "Full story coverage",
     "eyebrow": "{count, plural, one {# source covers} other {# sources cover}} this story",
     "description": "Compare how different publishers covered this story. Each link opens that source's version of the article.",
-    "close": "Close"
+    "close": "Close",
+    "badge_intl": "{sources} sources · {countries} countries",
+    "intl_title": "International story · covered in {countries} countries"
+  },
+  "Activity": {
+    "pulse": "World pulse",
+    "aria_label": "Recent activity by country",
+    "articles_count": "{count} in 6h"
+  },
+  "Compare": {
+    "eyebrow": "Compare",
+    "vs": "vs",
+    "meta_title": "{a} news vs {b} — front pages compared · NewsMap",
+    "meta_description": "See how media in {a} and {b} cover the news side by side. Stories that appear in both countries are highlighted.",
+    "subtitle": "What is being read today in {a} and {b}. Each country covers different stories — and a few in common.",
+    "shared_count": "{count, plural, one {# story is being covered in both countries} other {# stories are being covered in both countries}}",
+    "badge_shared": "Also in {other}",
+    "empty": "No recent articles from {country}.",
+    "switcher_a": "First country",
+    "switcher_b": "Second country"
   }
 }

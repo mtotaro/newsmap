@@ -27,13 +27,27 @@ export function ClusterPill({ article, cluster, locale, size = "sm" }: Props) {
   const t = useTranslations("Cluster");
   const [open, setOpen] = useState(false);
 
-  // Distinct country flags, up to 4
-  const countries = Array.from(
+  // Distinct countries — drives both the inline flag preview and the
+  // "cross-border / international story" highlight
+  const distinctCountries = Array.from(
     new Set(cluster.members.map((m) => m.country_code))
-  ).slice(0, 4);
+  );
+  const visibleCountries = distinctCountries.slice(0, 4);
+
+  /**
+   * Cross-border indicator: a cluster spanning 3+ countries is treated as an
+   * "international story" and gets a stronger oxblood treatment. This is the
+   * LATAM-multi-country differentiation we leaned into in Phase 5 — no other
+   * aggregator visually surfaces this.
+   */
+  const isCrossBorder = distinctCountries.length >= 3;
 
   const padding = size === "md" ? "px-3 py-1.5" : "px-2 py-1";
   const fontSize = size === "md" ? "text-[11px]" : "text-[10px]";
+
+  const baseClass = isCrossBorder
+    ? `border-[var(--color-accent)] bg-[var(--color-accent)] text-white hover:opacity-90`
+    : `border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/15 hover:border-[var(--color-accent)]`;
 
   return (
     <>
@@ -43,16 +57,26 @@ export function ClusterPill({ article, cluster, locale, size = "sm" }: Props) {
           e.stopPropagation();
           setOpen(true);
         }}
-        className={`inline-flex items-center gap-1.5 ${padding} ${fontSize} uppercase tracking-wider font-semibold border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/5 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/15 hover:border-[var(--color-accent)] transition-colors rounded-sm`}
+        className={`inline-flex items-center gap-1.5 ${padding} ${fontSize} uppercase tracking-wider font-semibold border transition-colors rounded-sm ${baseClass}`}
         aria-label={t("aria_open", { count: cluster.source_count })}
+        title={
+          isCrossBorder
+            ? t("intl_title", { countries: distinctCountries.length })
+            : undefined
+        }
       >
-        <span aria-hidden="true">✦</span>
+        <span aria-hidden="true">{isCrossBorder ? "🌎" : "✦"}</span>
         <span>
-          {t("badge", { count: cluster.source_count })}
+          {isCrossBorder
+            ? t("badge_intl", {
+                sources: cluster.source_count,
+                countries: distinctCountries.length,
+              })
+            : t("badge", { count: cluster.source_count })}
         </span>
-        {countries.length > 0 && (
-          <span className="flex items-center gap-0.5 ml-1 opacity-80" aria-hidden="true">
-            {countries.map((cc) => (
+        {visibleCountries.length > 0 && (
+          <span className="flex items-center gap-0.5 ml-1" aria-hidden="true">
+            {visibleCountries.map((cc) => (
               <span key={cc} className="text-[9px] leading-none">
                 {FLAG_MAP[cc] ?? "🗞"}
               </span>

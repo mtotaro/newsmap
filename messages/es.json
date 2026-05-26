@@ -21,7 +21,8 @@
     "settings": "Ajustes",
     "signin": "Iniciar sesión",
     "signout": "Cerrar sesión",
-    "saved": "Guardados"
+    "saved": "Guardados",
+    "compare": "Comparar"
   },
   "Onboarding": {
     "step1_title": "¿Qué tipo de lector eres?",
@@ -194,6 +195,25 @@
     "aria_label": "Cobertura completa de la noticia",
     "eyebrow": "{count, plural, one {# fuente} other {# fuentes}} cubren esta historia",
     "description": "Comparamos cómo cubrieron esta noticia distintos medios. Cada enlace abre la versión publicada por esa fuente.",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "badge_intl": "{sources} fuentes · {countries} países",
+    "intl_title": "Historia internacional · cubierta en {countries} países distintos"
+  },
+  "Activity": {
+    "pulse": "Pulso mundial",
+    "aria_label": "Actividad reciente por país",
+    "articles_count": "{count} en 6h"
+  },
+  "Compare": {
+    "eyebrow": "Comparativa",
+    "vs": "vs",
+    "meta_title": "Noticias de {a} vs {b} — comparativa de portadas · NewsMap",
+    "meta_description": "Compará en una sola pantalla cómo cubren las noticias los medios de {a} y {b}. Las notas en común aparecen destacadas.",
+    "subtitle": "Qué se está leyendo hoy en {a} y en {b}. Los medios cubren historias distintas — y algunas comunes.",
+    "shared_count": "{count, plural, one {Hay # historia común a ambos países} other {Hay # historias comunes a ambos países}}",
+    "badge_shared": "También en {other}",
+    "empty": "Sin artículos recientes de {country}.",
+    "switcher_a": "Primer país",
+    "switcher_b": "Segundo país"
   }
 }

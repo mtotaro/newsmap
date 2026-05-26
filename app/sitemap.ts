@@ -81,6 +81,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
+  // ── Country comparison pages — high-engagement LATAM pairs ──────────────
+  const POPULAR_COMPARE_PAIRS: Array<[string, string]> = [
+    ["argentina", "mexico"],
+    ["argentina", "spain"],
+    ["argentina", "brazil"],
+    ["argentina", "united-states"],
+    ["mexico", "spain"],
+    ["mexico", "united-states"],
+    ["spain", "united-states"],
+    ["chile", "argentina"],
+    ["colombia", "mexico"],
+    ["brazil", "mexico"],
+  ];
+  const comparePages: MetadataRoute.Sitemap = POPULAR_COMPARE_PAIRS.flatMap(
+    ([a, b]) =>
+      withAlternates(`/compare/${a}/${b}`, {
+        lastModified: now,
+        changeFrequency: "hourly",
+        priority: 0.7,
+      })
+  );
+
   // ── Section landing pages — 9 sections × 2 locales = 18 URLs ────────────
   const sectionPages: MetadataRoute.Sitemap = sectionKeyEnum.enumValues.flatMap(
     (key) =>
@@ -116,6 +138,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...rootPages,
     ...productPages,
     ...countryPages,
+    ...comparePages,
     ...sectionPages,
     ...sourcePages,
   ];
