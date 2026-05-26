@@ -62,54 +62,13 @@ const ARGENTINA: SourceSeed[] = [
       { key: 'all', url: 'https://www.lanacion.com.ar/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
-  {
-    name: 'Clarín',
-    countryCode: 'AR',
-    region: 'latam',
-    language: 'es',
-    logoUrl: 'https://www.clarin.com/favicon.ico',
-    websiteUrl: 'https://www.clarin.com',
-    notes: 'Argentina\'s largest newspaper. RSS 2.0. Section inferred from URL. No content:encoded — enricher will attempt full-text.',
-    feedSections: [
-      { key: 'all', url: 'https://www.clarin.com/rss/lo-ultimo/', labelEs: 'Últimas', labelEn: 'Latest' },
-    ],
-  },
-  {
-    name: 'Página 12',
-    countryCode: 'AR',
-    region: 'latam',
-    language: 'es',
-    logoUrl: 'https://www.pagina12.com.ar/favicon.ico',
-    websiteUrl: 'https://www.pagina12.com.ar',
-    notes: 'Left-leaning Argentine newspaper. WordPress RSS. May include content:encoded.',
-    feedSections: [
-      { key: 'all', url: 'https://www.pagina12.com.ar/rss', labelEs: 'Portada', labelEn: 'Home' },
-    ],
-  },
-  {
-    name: 'El Destape',
-    countryCode: 'AR',
-    region: 'latam',
-    language: 'es',
-    logoUrl: 'https://www.eldestapeweb.com/favicon.ico',
-    websiteUrl: 'https://www.eldestapeweb.com',
-    notes: 'Progressive Argentine online news. WordPress RSS with content:encoded confirmed.',
-    feedSections: [
-      { key: 'all', url: 'https://www.eldestapeweb.com/feed/', labelEs: 'Portada', labelEn: 'Home' },
-    ],
-  },
-  {
-    name: 'El Economista',
-    countryCode: 'AR',
-    region: 'latam',
-    language: 'es',
-    logoUrl: 'https://www.eleconomista.com.ar/favicon.ico',
-    websiteUrl: 'https://www.eleconomista.com.ar',
-    notes: 'Argentine economics/business newspaper.',
-    feedSections: [
-      { key: 'economy', url: 'https://www.eleconomista.com.ar/feed/', labelEs: 'Economía', labelEn: 'Economy' },
-    ],
-  },
+  // Clarín, Página 12, El Destape, El Economista AR:
+  // Verified May 2026 — all blocked or have no accessible RSS feeds.
+  // Clarín: anti-scraping blocks all access.
+  // Página 12: RSS index exists but all feed URLs return 404.
+  // El Destape: no RSS link found on site, /feed/ returns 404.
+  // El Economista AR: returns 403 Forbidden.
+  // Revisit if they publish official RSS endpoints in the future.
 ]
 
 // ─── BRAZIL ──────────────────────────────────────────────────────────────────
