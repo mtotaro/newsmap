@@ -21,7 +21,7 @@ function slugify(name: string): string {
 function toDbRow(s: SourceSeed) {
   return {
     name: s.name,
-    slug: slugify(s.name),
+    slug: s.slug ?? slugify(s.name),
     country_code: s.countryCode,
     region: s.region as
       | "latam"

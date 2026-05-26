@@ -21,6 +21,8 @@ export interface FeedSection {
 
 export interface SourceSeed {
   name: string
+  /** Override the auto-generated slug (use to keep existing DB rows stable). */
+  slug?: string
   countryCode: string  // ISO 3166-1 alpha-2
   region: 'latam' | 'north_america' | 'europe' | 'asia' | 'africa'
   language: string     // ISO 639-1
@@ -476,6 +478,7 @@ const SPORTS_PAPERS: SourceSeed[] = [
   // NOTE: ESPN feeds do NOT include content:encoded — short descriptions only.
   {
     name: 'ESPN Argentina',
+    slug: 'espn-ar',
     countryCode: 'AR',
     region: 'latam',
     language: 'es',
@@ -488,6 +491,7 @@ const SPORTS_PAPERS: SourceSeed[] = [
   },
   {
     name: 'ESPN Brasil',
+    slug: 'espn-br',
     countryCode: 'BR',
     region: 'latam',
     language: 'pt',
@@ -500,6 +504,7 @@ const SPORTS_PAPERS: SourceSeed[] = [
   },
   {
     name: 'ESPN Chile',
+    slug: 'espn-cl',
     countryCode: 'CL',
     region: 'latam',
     language: 'es',
@@ -512,6 +517,7 @@ const SPORTS_PAPERS: SourceSeed[] = [
   },
   {
     name: 'ESPN Colombia',
+    slug: 'espn-co',
     countryCode: 'CO',
     region: 'latam',
     language: 'es',
@@ -524,6 +530,7 @@ const SPORTS_PAPERS: SourceSeed[] = [
   },
   {
     name: 'ESPN Perú',
+    slug: 'espn-pe',
     countryCode: 'PE',
     region: 'latam',
     language: 'es',
@@ -536,6 +543,7 @@ const SPORTS_PAPERS: SourceSeed[] = [
   },
   {
     name: 'ESPN Deportes (MX)',
+    slug: 'espn-mx',
     countryCode: 'MX',
     region: 'latam',
     language: 'es',
@@ -548,6 +556,7 @@ const SPORTS_PAPERS: SourceSeed[] = [
   },
   {
     name: 'ESPN US',
+    slug: 'espn',
     countryCode: 'US',
     region: 'north_america',
     language: 'en',
