@@ -62,13 +62,65 @@ const ARGENTINA: SourceSeed[] = [
       { key: 'all', url: 'https://www.lanacion.com.ar/arc/outboundfeeds/rss/', labelEs: 'Portada', labelEn: 'Home' },
     ],
   },
-  // Clarín, Página 12, El Destape, El Economista AR:
-  // Verified May 2026 — all blocked or have no accessible RSS feeds.
-  // Clarín: anti-scraping blocks all access.
-  // Página 12: RSS index exists but all feed URLs return 404.
-  // El Destape: no RSS link found on site, /feed/ returns 404.
-  // El Economista AR: returns 403 Forbidden.
-  // Revisit if they publish official RSS endpoints in the future.
+  {
+    // Argentina's largest newspaper (Grupo Clarín). Confirmed RSS endpoints May 2026.
+    // Requires browser User-Agent — anti-scraping on server IPs.
+    name: 'Clarín',
+    countryCode: 'AR',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.clarin.com/favicon.ico',
+    websiteUrl: 'https://www.clarin.com',
+    needsUserAgent: true,
+    notes: 'Grupo Clarín. Per-section RSS feeds confirmed by user May 2026. No content:encoded expected — enricher will attempt. Requires browser UA.',
+    feedSections: [
+      { key: 'politics', url: 'https://www.clarin.com/rss/politica/',   labelEs: 'Política',   labelEn: 'Politics' },
+      { key: 'economy',  url: 'https://www.clarin.com/rss/economia/',   labelEs: 'Economía',   labelEn: 'Economy' },
+      { key: 'world',    url: 'https://www.clarin.com/rss/mundo/',      labelEs: 'Mundo',      labelEn: 'World' },
+      { key: 'world',    url: 'https://www.clarin.com/rss/sociedad/',   labelEs: 'Sociedad',   labelEn: 'Society' },
+      { key: 'tech',     url: 'https://www.clarin.com/rss/tecnologia/', labelEs: 'Tecnología', labelEn: 'Technology' },
+      { key: 'culture',  url: 'https://www.clarin.com/rss/cultura/',    labelEs: 'Cultura',    labelEn: 'Culture' },
+    ],
+  },
+  {
+    // Left-leaning Argentine newspaper, founded 1987. Per-section RSS confirmed by user May 2026.
+    name: 'Página 12',
+    countryCode: 'AR',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://www.pagina12.com.ar/favicon.ico',
+    websiteUrl: 'https://www.pagina12.com.ar',
+    needsUserAgent: true,
+    notes: 'Kirchnerist/progressive newspaper. Custom CMS RSS at /rss/secciones/{section}/notas. URLs confirmed by user May 2026. No content:encoded known — enricher will attempt.',
+    feedSections: [
+      { key: 'politics', url: 'https://www.pagina12.com.ar/rss/secciones/el-pais/notas',   labelEs: 'El País',  labelEn: 'Politics' },
+      { key: 'economy',  url: 'https://www.pagina12.com.ar/rss/secciones/economia/notas',  labelEs: 'Economía', labelEn: 'Economy' },
+      { key: 'world',    url: 'https://www.pagina12.com.ar/rss/secciones/el-mundo/notas',  labelEs: 'El Mundo', labelEn: 'World' },
+      { key: 'culture',  url: 'https://www.pagina12.com.ar/rss/secciones/cultura/notas',   labelEs: 'Cultura',  labelEn: 'Culture' },
+      { key: 'science',  url: 'https://www.pagina12.com.ar/rss/secciones/ciencia/notas',   labelEs: 'Ciencia',  labelEn: 'Science' },
+      { key: 'sports',   url: 'https://www.pagina12.com.ar/rss/secciones/deportes/notas',  labelEs: 'Deportes', labelEn: 'Sports' },
+    ],
+  },
+  {
+    // Argentine business/economics newspaper (not related to Spanish or Mexican homonyms).
+    name: 'El Economista',
+    slug: 'el-economista-ar',
+    countryCode: 'AR',
+    region: 'latam',
+    language: 'es',
+    logoUrl: 'https://eleconomista.com.ar/favicon.ico',
+    websiteUrl: 'https://eleconomista.com.ar',
+    needsUserAgent: true,
+    notes: 'Argentine economics newspaper. WordPress per-section feeds confirmed by user May 2026.',
+    feedSections: [
+      { key: 'economy', url: 'https://eleconomista.com.ar/economia/feed/',        labelEs: 'Economía',      labelEn: 'Economy' },
+      { key: 'politics', url: 'https://eleconomista.com.ar/politica/feed/',       labelEs: 'Política',      labelEn: 'Politics' },
+      { key: 'world',    url: 'https://eleconomista.com.ar/internacional/feed/',  labelEs: 'Internacional', labelEn: 'World' },
+      { key: 'tech',     url: 'https://eleconomista.com.ar/tech/feed/',           labelEs: 'Tecnología',    labelEn: 'Technology' },
+      { key: 'economy',  url: 'https://eleconomista.com.ar/finanzas/feed/',       labelEs: 'Finanzas',      labelEn: 'Finance' },
+    ],
+  },
+  // El Destape: no RSS feeds found (confirmed May 2026 — site has no feed autodiscovery).
 ]
 
 // ─── BRAZIL ──────────────────────────────────────────────────────────────────
