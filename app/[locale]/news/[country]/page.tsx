@@ -41,11 +41,14 @@ export async function generateMetadata({
     title: t("meta_title", { country: countryName }),
     description: t("meta_description", { country: countryName }),
     alternates: {
-      canonical: `${APP_URL}/en/news/${canonical}`,
+      // Each locale self-canonicalises so /es and /en don't compete as
+      // duplicates in Google. x-default points to Spanish (LATAM is our
+      // primary audience).
+      canonical: `${APP_URL}/${locale}/news/${canonical}`,
       languages: {
         es: `${APP_URL}/es/news/${canonical}`,
         en: `${APP_URL}/en/news/${canonical}`,
-        "x-default": `${APP_URL}/en/news/${canonical}`,
+        "x-default": `${APP_URL}/es/news/${canonical}`,
       },
     },
     openGraph: {

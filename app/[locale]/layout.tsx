@@ -55,7 +55,8 @@ export async function generateMetadata({
       languages: {
         es: `${APP_URL}/es`,
         en: `${APP_URL}/en`,
-        "x-default": `${APP_URL}/en`,
+        // Spanish is the primary LATAM audience — favour /es as the default
+        "x-default": `${APP_URL}/es`,
       },
     },
     openGraph: {

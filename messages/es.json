@@ -166,5 +166,26 @@
     "empty_title": "No tenés nada guardado",
     "empty_desc": "Marcá artículos con el ícono de bookmark mientras navegás el feed para guardarlos acá y leerlos más tarde.",
     "empty_cta": "Ir al feed"
+  },
+  "SectionPage": {
+    "eyebrow": "Sección",
+    "meta_title": "Noticias de {section} — última hora · NewsMap",
+    "meta_description": "Las últimas noticias de {section} de fuentes en todo el mundo. Argentina, España, México, Brasil, Estados Unidos y más.",
+    "subtitle": "Las últimas noticias de {section} desde {count, plural, one {# fuente} other {# fuentes}} en distintos países",
+    "subtitle_empty": "Aún no hay artículos publicados de {section}. Volvé en unos minutos.",
+    "no_articles": "No hay artículos en esta sección por ahora.",
+    "other_sections": "Otras secciones",
+    "top_sources": "Fuentes que más cubren esta sección"
+  },
+  "SourcePage": {
+    "eyebrow": "Fuente",
+    "meta_title": "{source} — Últimas noticias · NewsMap",
+    "meta_description": "Lo último publicado por {source} en {country}. Política, economía, mundo, deportes y más, agregado en tiempo real.",
+    "subtitle": "Última hora de {source} — {count, plural, one {# artículo} other {# artículos}} publicados recientemente",
+    "subtitle_empty": "Aún no recopilamos artículos de {source}. Volvé en unos minutos.",
+    "no_articles": "No hay artículos recientes de esta fuente.",
+    "more_sources_country": "Más fuentes de {country}",
+    "country_front_page": "Ver toda la portada de {country}",
+    "visit_publisher": "Visitar sitio del medio"
   }
 }

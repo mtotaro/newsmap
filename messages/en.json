@@ -166,5 +166,26 @@
     "empty_title": "Nothing saved yet",
     "empty_desc": "Tap the bookmark icon on any article in the feed to save it here and read it later.",
     "empty_cta": "Go to feed"
+  },
+  "SectionPage": {
+    "eyebrow": "Section",
+    "meta_title": "{section} news — latest headlines · NewsMap",
+    "meta_description": "The latest {section} news from sources across the world. Argentina, Spain, Mexico, Brazil, the US, the UK and more — aggregated in real time.",
+    "subtitle": "The latest {section} news from {count, plural, one {# source} other {# sources}} across countries",
+    "subtitle_empty": "No {section} articles yet. Check back in a few minutes.",
+    "no_articles": "No articles in this section right now.",
+    "other_sections": "Other sections",
+    "top_sources": "Sources covering this section"
+  },
+  "SourcePage": {
+    "eyebrow": "Source",
+    "meta_title": "{source} — latest news · NewsMap",
+    "meta_description": "The latest stories from {source} in {country}. Politics, economy, world, sports and more, aggregated in real time.",
+    "subtitle": "Latest from {source} — {count, plural, one {# article} other {# articles}} recently published",
+    "subtitle_empty": "We have not aggregated articles from {source} yet. Check back soon.",
+    "no_articles": "No recent articles from this source.",
+    "more_sources_country": "More sources from {country}",
+    "country_front_page": "See the full {country} front page",
+    "visit_publisher": "Visit publisher site"
   }
 }
