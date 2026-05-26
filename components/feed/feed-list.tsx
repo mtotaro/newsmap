@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { ArticleCard, type ArticleCardData } from "./article-card";
 import { ArticleCardSkeleton } from "./article-card-skeleton";
 import { ArticleModal } from "./article-modal";
+import { ContinueReadingStrip } from "./continue-reading-strip";
+import { EndOfFeed } from "./end-of-feed";
 import { AdSlot } from "@/components/ads/ad-slot";
 import type { SectionKey } from "@/lib/db/schema";
 
@@ -156,6 +158,9 @@ export function FeedList({ locale }: Props) {
       locale={locale}
     />
     <div className="max-w-[720px] mx-auto py-4 space-y-4">
+      {/* Continue reading rail — only renders when there's history */}
+      {!activeSection && !debouncedQuery && <ContinueReadingStrip />}
+
       {/* ── Search input ─────────────────────────────────────────────── */}
       <div className="px-4">
         <div className="relative">
@@ -307,11 +312,7 @@ export function FeedList({ locale }: Props) {
             </div>
           )}
 
-          {!nextCursor && items.length > 0 && (
-            <p className="text-center text-xs text-[var(--color-text-3)] py-4">
-              ·
-            </p>
-          )}
+          {!nextCursor && items.length > 0 && <EndOfFeed locale={locale} />}
         </div>
       )}
     </div>

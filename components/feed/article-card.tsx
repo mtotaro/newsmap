@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 import { SectionChip } from "@/components/ui/section-chip";
 import { timeAgo, truncate } from "@/lib/utils/time";
 import { FLAG_MAP } from "@/lib/utils/flags";
+import { useHistory } from "@/lib/storage/use-history";
+import { useWeeklyCount } from "@/lib/storage/use-weekly-count";
+import { BookmarkButton } from "./bookmark-button";
 import type { SectionKey } from "@/lib/db/schema";
 
 /**
@@ -74,9 +77,19 @@ export function ArticleCard({
     ? truncate(article.description, isLead ? 280 : 180)
     : null;
 
+  // Mark-read + bump weekly counter on any "read this article" interaction.
+  // De-dup is handled inside the hooks; calling multiple times is safe.
+  const { markRead } = useHistory();
+  const { bump } = useWeeklyCount();
+  const trackRead = useCallback(() => {
+    markRead(article);
+    bump();
+  }, [article, markRead, bump]);
+
   const handlePreview = onOpenPreview
     ? (e: React.MouseEvent) => {
         e.preventDefault();
+        trackRead();
         onOpenPreview(article);
       }
     : undefined;
@@ -112,6 +125,7 @@ export function ArticleCard({
             target="_blank"
             rel="noopener noreferrer"
             tabIndex={-1}
+            onClick={trackRead}
             className="block mb-4"
           >
             <ThumbnailContent article={article} flag={flag} large priority={priority} />
@@ -132,6 +146,7 @@ export function ArticleCard({
             href={article.url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={trackRead}
             className="block headline-serif text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors"
             style={{ fontSize: "clamp(1.65rem, 3.5vw, 2.4rem)" }}
           >
@@ -146,7 +161,7 @@ export function ArticleCard({
           </p>
         )}
 
-        {/* Footer row: country flag · time · CTA */}
+        {/* Footer row: country flag · time · bookmark · CTA */}
         <div className="mt-3 flex items-center gap-3 text-[11px] text-[var(--color-text-3)]">
           <span className="text-base leading-none">{flag}</span>
           <span>{ago}</span>
@@ -155,14 +170,18 @@ export function ArticleCard({
               · {paywallNotice}
             </span>
           )}
-          <a
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-auto text-[var(--color-ink)] font-semibold hover:underline uppercase tracking-wider"
-          >
-            {readLabel} →
-          </a>
+          <div className="ml-auto flex items-center gap-2">
+            <BookmarkButton article={article} size="md" />
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={trackRead}
+              className="text-[var(--color-ink)] font-semibold hover:underline uppercase tracking-wider"
+            >
+              {readLabel} →
+            </a>
+          </div>
         </div>
       </article>
     );
@@ -203,6 +222,7 @@ export function ArticleCard({
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={trackRead}
               className="block headline-serif text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors"
               style={{ fontSize: "clamp(1.05rem, 2vw, 1.25rem)" }}
             >
@@ -227,14 +247,18 @@ export function ArticleCard({
           {/* CTA row */}
           <div className="mt-2 flex items-center gap-2 text-[11px] text-[var(--color-text-3)]">
             <span className="text-sm leading-none">{flag}</span>
-            <a
-              href={article.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-auto text-[var(--color-ink)] hover:underline"
-            >
-              {readLabel} →
-            </a>
+            <div className="ml-auto flex items-center gap-1.5">
+              <BookmarkButton article={article} size="sm" />
+              <a
+                href={article.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={trackRead}
+                className="text-[var(--color-ink)] hover:underline"
+              >
+                {readLabel} →
+              </a>
+            </div>
           </div>
         </div>
 
@@ -250,7 +274,13 @@ export function ArticleCard({
               <ThumbnailContent article={article} flag={flag} />
             </button>
           ) : (
-            <a href={article.url} target="_blank" rel="noopener noreferrer" tabIndex={-1}>
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              tabIndex={-1}
+              onClick={trackRead}
+            >
               <ThumbnailContent article={article} flag={flag} />
             </a>
           )}

@@ -123,6 +123,15 @@ body {
   animation: fadeInUp 0.35s ease-out both;
 }
 
+/* Hide the scrollbar but keep scrolling (used in horizontal rails) */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
 /* ─── article-content ─────────────────────────────────────────────────────────
    Rendered HTML from <content:encoded> inside the article preview modal.
    All rules are scoped to .article-content to avoid leaking into global styles.

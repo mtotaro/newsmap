@@ -20,7 +20,8 @@
     "map": "Mapa",
     "settings": "Ajustes",
     "signin": "Iniciar sesión",
-    "signout": "Cerrar sesión"
+    "signout": "Cerrar sesión",
+    "saved": "Guardados"
   },
   "Onboarding": {
     "step1_title": "¿Qué tipo de lector eres?",
@@ -141,5 +142,29 @@
     "edition_morning": "Edición de la mañana",
     "edition_afternoon": "Edición de la tarde",
     "edition_evening": "Edición de la noche"
+  },
+  "Habits": {
+    "continue_reading": "Continúa leyendo",
+    "save_for_later": "Guardar para después",
+    "remove_from_saved": "Quitar de guardados",
+    "streak_short": "{count}",
+    "streak_title": "Racha de días consecutivos en NewsMap",
+    "read_this_week_short": "{count, plural, one {# leída} other {# leídas}}",
+    "read_this_week_title": "Artículos leídos esta semana",
+    "end_of_feed_title": "Llegaste al final",
+    "end_of_feed_desc": "Estás al día con todas las noticias. Volvé más tarde para ver las próximas actualizaciones — el feed se refresca cada 15 minutos.",
+    "end_of_feed_cta_map": "Explorar el mapa",
+    "end_of_feed_cta_saved": "Ver guardados ({count})",
+    "end_of_feed_cta_top": "Volver arriba"
+  },
+  "Saved": {
+    "eyebrow": "Tu colección",
+    "title": "Artículos guardados",
+    "count": "{count, plural, one {# artículo} other {# artículos}}",
+    "saved_ago": "guardado {time}",
+    "remove": "Quitar",
+    "empty_title": "No tenés nada guardado",
+    "empty_desc": "Marcá artículos con el ícono de bookmark mientras navegás el feed para guardarlos acá y leerlos más tarde.",
+    "empty_cta": "Ir al feed"
   }
 }

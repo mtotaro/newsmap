@@ -20,7 +20,8 @@
     "map": "Map",
     "settings": "Settings",
     "signin": "Sign in",
-    "signout": "Sign out"
+    "signout": "Sign out",
+    "saved": "Saved"
   },
   "Onboarding": {
     "step1_title": "What kind of reader are you?",
@@ -141,5 +142,29 @@
     "edition_morning": "Morning Edition",
     "edition_afternoon": "Afternoon Edition",
     "edition_evening": "Evening Edition"
+  },
+  "Habits": {
+    "continue_reading": "Continue reading",
+    "save_for_later": "Save for later",
+    "remove_from_saved": "Remove from saved",
+    "streak_short": "{count}",
+    "streak_title": "Consecutive days on NewsMap",
+    "read_this_week_short": "{count, plural, one {# read} other {# read}}",
+    "read_this_week_title": "Articles read this week",
+    "end_of_feed_title": "You are all caught up",
+    "end_of_feed_desc": "You have seen every story in the feed. The page refreshes every 15 minutes — check back soon for new headlines.",
+    "end_of_feed_cta_map": "Explore the map",
+    "end_of_feed_cta_saved": "View saved ({count})",
+    "end_of_feed_cta_top": "Back to top"
+  },
+  "Saved": {
+    "eyebrow": "Your collection",
+    "title": "Saved articles",
+    "count": "{count, plural, one {# article} other {# articles}}",
+    "saved_ago": "saved {time}",
+    "remove": "Remove",
+    "empty_title": "Nothing saved yet",
+    "empty_desc": "Tap the bookmark icon on any article in the feed to save it here and read it later.",
+    "empty_cta": "Go to feed"
   }
 }

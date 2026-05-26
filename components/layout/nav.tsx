@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/settings/sign-out-button";
+import { StatsBadge } from "./stats-badge";
 
 type Props = {
   locale: string;
@@ -36,9 +37,16 @@ export async function Nav({ locale }: Props) {
         >
           {t("map")}
         </Link>
+        <Link
+          href="/saved"
+          className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
+        >
+          {t("saved")}
+        </Link>
       </div>
 
       <div className="flex items-center gap-2">
+        <StatsBadge />
         {user ? (
           <>
             <Link
