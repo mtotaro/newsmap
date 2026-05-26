@@ -25,6 +25,7 @@ const MAX_COUNTRIES = 12;
  */
 export async function ActivityRail({ locale }: Props) {
   const t = await getTranslations({ locale, namespace: "Activity" });
+  // eslint-disable-next-line react-hooks/purity -- Server Component; Date.now() is intentional per-request
   const cutoff = new Date(Date.now() - WINDOW_HOURS * 3_600_000);
 
   // Count articles per country in the recent window. Only counts countries

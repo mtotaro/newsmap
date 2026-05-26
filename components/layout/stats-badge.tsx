@@ -17,6 +17,7 @@ export function StatsBadge() {
   const { count } = useWeeklyCount();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional SSR hydration guard
     setMounted(true);
   }, []);
 

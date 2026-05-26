@@ -20,6 +20,7 @@ export function useLocalState<T>(
     try {
       const raw = window.localStorage.getItem(key);
       if (raw !== null) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional localStorage hydration
         setValue(JSON.parse(raw) as T);
       }
     } catch {

@@ -25,6 +25,7 @@ export function SavedList({ locale }: Props) {
   // Skip first render to avoid hydration mismatch (items come from localStorage)
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional SSR hydration guard
     setMounted(true);
   }, []);
 

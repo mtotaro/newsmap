@@ -146,7 +146,7 @@ export function ArticleCard({
             aria-label={`Preview: ${article.title}`}
             tabIndex={-1}
           >
-            <ThumbnailContent article={article} flag={flag} large priority={priority} />
+            <ThumbnailContent article={article} large priority={priority} />
           </button>
         ) : (
           <a
@@ -157,7 +157,7 @@ export function ArticleCard({
             onClick={trackRead}
             className="block mb-4"
           >
-            <ThumbnailContent article={article} flag={flag} large priority={priority} />
+            <ThumbnailContent article={article} large priority={priority} />
           </a>
         )}
 
@@ -308,7 +308,7 @@ export function ArticleCard({
               aria-label={`Preview: ${article.title}`}
               tabIndex={-1}
             >
-              <ThumbnailContent article={article} flag={flag} />
+              <ThumbnailContent article={article} />
             </button>
           ) : (
             <a
@@ -318,7 +318,7 @@ export function ArticleCard({
               tabIndex={-1}
               onClick={trackRead}
             >
-              <ThumbnailContent article={article} flag={flag} />
+              <ThumbnailContent article={article} />
             </a>
           )}
         </div>
@@ -329,12 +329,10 @@ export function ArticleCard({
 
 function ThumbnailContent({
   article,
-  flag,
   large = false,
   priority = false,
 }: {
   article: ArticleCardData;
-  flag: string;
   /** Lead-card hero image */
   large?: boolean;
   /** Pass priority to Next.js Image for LCP optimization */

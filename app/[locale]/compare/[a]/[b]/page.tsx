@@ -149,6 +149,7 @@ export default async function ComparePage({
 
   let sharedKeys = new Set<string>();
   if (clusterKeysInView.length > 0) {
+    // eslint-disable-next-line react-hooks/purity -- Server Component; Date.now() is intentional per-request
     const cutoff = new Date(Date.now() - SHARED_WINDOW_HOURS * 3_600_000);
     const memberRows = await db
       .select({
