@@ -109,6 +109,9 @@ export default async function ComparePage({
   const flagB = COUNTRY_FLAGS[alphaB] ?? "🌐";
 
   // ── Articles per country ────────────────────────────────────────────────
+  // .catch([]) guards against ECONNREFUSED in CI builds that have no DB env;
+  // ISR revalidates with real data on the first live request after deploy.
+  const emptyRows = [] as [];
   const [rowsA, rowsB] = await Promise.all([
     db
       .select({
@@ -122,7 +125,11 @@ export default async function ComparePage({
       .innerJoin(sources, eq(articles.source_id, sources.id))
       .where(and(eq(sources.country_code, alphaA), eq(sources.is_active, true)))
       .orderBy(desc(articles.published_at))
-      .limit(ITEMS_PER_COUNTRY),
+      .limit(ITEMS_PER_COUNTRY)
+      .catch((err: unknown) => {
+        console.error(`[compare/${a}/${b}] DB unavailable at build time:`, err instanceof Error ? err.message : err);
+        return emptyRows;
+      }),
     db
       .select({
         ...getTableColumns(articles),
@@ -135,7 +142,8 @@ export default async function ComparePage({
       .innerJoin(sources, eq(articles.source_id, sources.id))
       .where(and(eq(sources.country_code, alphaB), eq(sources.is_active, true)))
       .orderBy(desc(articles.published_at))
-      .limit(ITEMS_PER_COUNTRY),
+      .limit(ITEMS_PER_COUNTRY)
+      .catch(() => emptyRows),
   ]);
 
   // ── Detect shared stories (cluster_keys present in both countries) ──────
@@ -165,7 +173,8 @@ export default async function ComparePage({
           gte(articles.published_at, cutoff),
           inArray(sources.country_code, [alphaA, alphaB])
         )
-      );
+      )
+      .catch(() => [] as []);
 
     // Cluster is "shared" only when it has at least one member in EACH country
     const byKey = new Map<string, Set<string>>();

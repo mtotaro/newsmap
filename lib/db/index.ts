@@ -12,8 +12,9 @@ declare global {
 const client =
   global._pgClient ??
   postgres(process.env.DATABASE_URL!, {
-    prepare: false, // required for Supabase Transaction pooler (port 6543)
+    prepare: false,      // required for Supabase Transaction pooler (port 6543)
     max: 1,
+    connect_timeout: 10, // fail fast in CI builds where the DB is unreachable
   });
 
 if (process.env.NODE_ENV !== "production") {

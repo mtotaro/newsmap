@@ -79,7 +79,9 @@ export default async function SectionPage({
   const t = await getTranslations({ locale, namespace: "SectionPage" });
   const sectionName = tSec(section);
 
-  // Latest 40 articles in this section across all active sources
+  // Latest 40 articles in this section across all active sources.
+  // .catch returns [] so CI builds without a DB env still produce a valid
+  // (empty) static page; ISR revalidates with real data on the first live request.
   const rows = await db
     .select({
       ...getTableColumns(articles),
@@ -94,7 +96,11 @@ export default async function SectionPage({
       and(eq(articles.section_key, section), eq(sources.is_active, true))
     )
     .orderBy(desc(articles.published_at))
-    .limit(40);
+    .limit(40)
+    .catch((err: unknown) => {
+      console.error(`[section/${section}] DB unavailable at build time:`, err instanceof Error ? err.message : err);
+      return [] as [];
+    });
 
   const items: ArticleCardData[] = rows.map((r) => ({
     id: r.id,
