@@ -135,5 +135,11 @@
     "not_found_desc": "The page you're looking for doesn't exist.",
     "go_home": "Go home",
     "generic": "Something went wrong. Please try again."
+  },
+  "Masthead": {
+    "tagline": "World news, one front page",
+    "edition_morning": "Morning Edition",
+    "edition_afternoon": "Afternoon Edition",
+    "edition_evening": "Evening Edition"
   }
 }

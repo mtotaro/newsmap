@@ -155,7 +155,7 @@ export function FeedList({ locale }: Props) {
       onClose={() => setPreviewArticle(null)}
       locale={locale}
     />
-    <div className="max-w-[640px] mx-auto py-6 space-y-3">
+    <div className="max-w-[720px] mx-auto py-4 space-y-4">
       {/* ── Search input ─────────────────────────────────────────────── */}
       <div className="px-4">
         <div className="relative">
@@ -255,8 +255,12 @@ export function FeedList({ locale }: Props) {
           )}
         </div>
       ) : (
-        <div className="space-y-4 px-4">
+        <div className="space-y-5 px-4">
           {items.flatMap((article, index) => {
+            // First article in the unfiltered "all" feed becomes the lead/hero story.
+            // When a section filter or search is active we keep everything uniform so
+            // the user sees consistent results without one outsized card on top.
+            const isLead = index === 0 && !activeSection && !debouncedQuery;
             const card = (
               <ArticleCard
                 key={article.id}
@@ -264,6 +268,8 @@ export function FeedList({ locale }: Props) {
                 sectionLabel={tSec(article.section_key as SectionKey)}
                 readLabel={tArt("read_full")}
                 locale={locale}
+                variant={isLead ? "lead" : "standard"}
+                priority={isLead}
                 onOpenPreview={
                   article.content_html &&
                   article.content_html.replace(/<[^>]+>/g, "").trim().length > 350

@@ -135,5 +135,11 @@
     "not_found_desc": "La página que buscas no existe.",
     "go_home": "Ir al inicio",
     "generic": "Algo salió mal. Por favor, intenta de nuevo."
+  },
+  "Masthead": {
+    "tagline": "Las noticias del mundo, una sola portada",
+    "edition_morning": "Edición de la mañana",
+    "edition_afternoon": "Edición de la tarde",
+    "edition_evening": "Edición de la noche"
   }
 }

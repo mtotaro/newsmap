@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { FeedList } from "@/components/feed/feed-list";
 import { NewArticlesBanner } from "@/components/feed/new-articles-banner";
+import { Masthead } from "@/components/layout/masthead";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -31,6 +32,7 @@ export default async function FeedPage({
   return (
     <div className="min-h-screen pb-20">
       <NewArticlesBanner userId={user?.id} />
+      <Masthead locale={locale} />
       <FeedList locale={locale} />
     </div>
   );
