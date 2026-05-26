@@ -24,6 +24,9 @@ const SHARED_WINDOW_HOURS = 12;
  * and stay cached via ISR.
  */
 export function generateStaticParams() {
+  // Skip pre-rendering when DATABASE_URL is missing (CI builds without pulled
+  // env vars). ISR fills these in on first request post-deploy.
+  if (!process.env.DATABASE_URL) return [];
   const popular: Array<[string, string]> = [
     ["argentina", "mexico"],
     ["argentina", "spain"],

@@ -23,6 +23,12 @@ function isValidSection(value: string): value is SectionKey {
 }
 
 export async function generateStaticParams() {
+  // Skip pre-rendering when DATABASE_URL is missing (e.g. CI builds without
+  // pulled env vars). The pages still work — ISR renders them on demand
+  // after deploy. Without this guard, 18 pages × ~10 s connect_timeout
+  // serialise through the max:1 postgres connection and blow past Next.js's
+  // 60-second static-gen ceiling.
+  if (!process.env.DATABASE_URL) return [];
   // Pre-render all 9 sections for both locales (18 pages total)
   return ALL_SECTIONS.flatMap((section) =>
     ["es", "en"].map((locale) => ({ locale, section }))
