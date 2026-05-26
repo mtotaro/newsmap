@@ -7,6 +7,7 @@ import {
   inferSectionFromCategory,
 } from "./section-inference";
 import { extractThumbnail, type MediaLike } from "./thumbnail";
+import { sanitizeArticleHtml } from "@/lib/sanitize/article-html";
 
 type Source = Pick<
   InferSelectModel<typeof sources>,
@@ -53,7 +54,7 @@ export async function parseFeed(source: Source): Promise<ParsedArticle[]> {
         title: stripHtml(item.title),
         url: item.url,
         description: item.description ? stripHtml(item.description) : null,
-        content_html: item.contentEncoded ? sanitizeHtml(item.contentEncoded) : null,
+        content_html: item.contentEncoded ? sanitizeArticleHtml(item.contentEncoded) : null,
         section_key: sectionKey,
         thumbnail_url: extractThumbnail(item.media, item.enclosures),
         published_at: item.pubDate ?? new Date().toISOString(),
@@ -275,15 +276,5 @@ function stripHtml(str: string): string {
     .trim();
 }
 
-/** Server-side HTML sanitizer — strips dangerous elements/attributes before storing in DB */
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, "")
-    .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
-    .replace(/<style[\s\S]*?<\/style>/gi, "")
-    .replace(/<form[\s\S]*?<\/form>/gi, "")
-    .replace(/\son\w+="[^"]*"/gi, "")
-    .replace(/\son\w+='[^']*'/gi, "")
-    .replace(/javascript:/gi, "")
-    .trim();
-}
+// HTML sanitization moved to lib/sanitize/article-html.ts — same helper now
+// used here, by enrich-content.ts, and at render time in article-modal.tsx.

@@ -22,7 +22,9 @@
     "signin": "Sign in",
     "signout": "Sign out",
     "saved": "Saved",
-    "compare": "Compare"
+    "compare": "Compare",
+    "account_menu_label": "Account menu",
+    "account_signed_in_as": "Signed in as"
   },
   "Onboarding": {
     "step1_title": "What kind of reader are you?",

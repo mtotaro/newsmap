@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/settings/sign-out-button";
 import { StatsBadge } from "./stats-badge";
+import { UserMenu } from "./user-menu";
 
 type Props = {
   locale: string;
@@ -52,13 +53,23 @@ export async function Nav({ locale }: Props) {
         <StatsBadge />
         {user ? (
           <>
+            {/* Mobile: single avatar circle with dropdown — collapses
+                "Ajustes" + "Cerrar sesión" into one tap target so the nav
+                doesn't crowd on 360 px phones. */}
+            <div className="sm:hidden">
+              <UserMenu email={user.email ?? ""} locale={locale} />
+            </div>
+            {/* Desktop: keep the inline text links — there's room for them
+                and they're zero-click discoverable. */}
             <Link
               href="/settings"
-              className="inline-flex items-center px-2 sm:px-3 py-2 min-h-[44px] rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
+              className="hidden sm:inline-flex items-center px-3 py-2 min-h-[44px] rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
             >
               {t("settings")}
             </Link>
-            <SignOutButton label={t("signout")} locale={locale} />
+            <div className="hidden sm:block">
+              <SignOutButton label={t("signout")} locale={locale} />
+            </div>
           </>
         ) : (
           <Link

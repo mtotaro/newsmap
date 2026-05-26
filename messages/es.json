@@ -22,7 +22,9 @@
     "signin": "Iniciar sesión",
     "signout": "Cerrar sesión",
     "saved": "Guardados",
-    "compare": "Comparar"
+    "compare": "Comparar",
+    "account_menu_label": "Menú de cuenta",
+    "account_signed_in_as": "Sesión iniciada como"
   },
   "Onboarding": {
     "step1_title": "¿Qué tipo de lector eres?",

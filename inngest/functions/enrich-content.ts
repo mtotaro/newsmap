@@ -4,6 +4,7 @@ import { articles } from "@/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { Readability } from "@mozilla/readability";
 import { parseHTML } from "linkedom";
+import { sanitizeArticleHtml } from "@/lib/sanitize/article-html";
 
 /**
  * Domains that actively block automated HTTP access (Cloudflare Bot Management,
@@ -98,7 +99,7 @@ export const enrichContent = inngest.createFunction(
     await step.run("save-content", async () => {
       await db
         .update(articles)
-        .set({ content_html: sanitizeHtml(content) })
+        .set({ content_html: sanitizeArticleHtml(content) })
         .where(
           and(
             eq(articles.id, article_id),
@@ -110,16 +111,3 @@ export const enrichContent = inngest.createFunction(
     return { enriched: true };
   }
 );
-
-/** Strip dangerous elements/attributes before storing */
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<script[\s\S]*?<\/script>/gi, "")
-    .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
-    .replace(/<style[\s\S]*?<\/style>/gi, "")
-    .replace(/<form[\s\S]*?<\/form>/gi, "")
-    .replace(/\son\w+="[^"]*"/gi, "")
-    .replace(/\son\w+='[^']*'/gi, "")
-    .replace(/javascript:/gi, "")
-    .trim();
-}

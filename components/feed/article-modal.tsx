@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { SectionChip } from "@/components/ui/section-chip";
 import { timeAgo } from "@/lib/utils/time";
 import { FLAG_MAP } from "@/lib/utils/flags";
+import { sanitizeArticleHtml } from "@/lib/sanitize/article-html";
 import type { ArticleCardData } from "./article-card";
 import type { SectionKey } from "@/lib/db/schema";
 
@@ -67,16 +68,30 @@ export function ArticleModal({ article, onClose, locale }: Props) {
     }
   }, [article?.id, article?.content_html]);
 
+  // Render-time sanitization handles articles ingested before the shared
+  // sanitizer existed — Readability output for many Argentine + Spanish
+  // newspapers used to leak the site header/nav into content_html.
+  // useMemo so we don't re-sanitize 30 KB on every modal scroll re-render.
+  const cleanContent = useMemo(
+    () => sanitizeArticleHtml(article?.content_html),
+    [article?.content_html]
+  );
+
   if (!article) return null;
 
   const flag = FLAG_MAP[article.country_code] ?? "🗞";
   const ago = timeAgo(article.published_at, locale);
   const sectionLabel = tSec(article.section_key as SectionKey);
 
-  // Estimate reading time from content_html word count (~200 wpm)
-  const readingTimeMin = article.content_html
-    ? Math.max(1, Math.round(article.content_html.replace(/<[^>]+>/g, " ").trim().split(/\s+/).length / 200))
+  // Estimate reading time from sanitized text length (~200 wpm). Using the
+  // cleaned HTML means we don't count navigation links toward word count.
+  const cleanText = cleanContent.replace(/<[^>]+>/g, " ").trim();
+  const readingTimeMin = cleanText.length > 0
+    ? Math.max(1, Math.round(cleanText.split(/\s+/).length / 200))
     : null;
+  // Fall back to description if the sanitizer stripped the entire content
+  // (happens when the original "content_html" was 100% navigation chrome).
+  const hasUsableContent = cleanText.length >= 50;
 
   return (
     <div
@@ -160,14 +175,14 @@ export function ArticleModal({ article, onClose, locale }: Props) {
             {article.title}
           </h2>
 
-          {/* Full article HTML — shown when feed provides content:encoded */}
-          {article.content_html ? (
+          {/* Full article HTML — shown when sanitization leaves usable body.
+              Falls back to the RSS description when the body was 100% chrome. */}
+          {hasUsableContent ? (
             <div
               className="article-content"
-              dangerouslySetInnerHTML={{ __html: article.content_html }}
+              dangerouslySetInnerHTML={{ __html: cleanContent }}
             />
           ) : article.description ? (
-            /* Fallback to plain description when no HTML content */
             <p className="text-sm text-[var(--color-text-2)] leading-relaxed">
               {article.description}
             </p>
