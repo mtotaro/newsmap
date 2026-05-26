@@ -19,7 +19,8 @@ type Article = {
   id: string;
   title: string;
   source_id: string;
-  published_at: Date;
+  /** Accept both Date objects (direct DB result) and ISO strings (Inngest step serialisation) */
+  published_at: Date | string;
 };
 
 /**
@@ -84,10 +85,15 @@ export function clusterArticles(
 ): Array<{ ids: string[] }> {
   if (articles.length < 2) return [];
 
+  // Normalise published_at to timestamps once, so the rest of the algorithm
+  // can use plain numbers regardless of whether the input was Date or string.
+  const withTs = articles.map((a) => ({
+    ...a,
+    _ts: new Date(a.published_at).getTime(),
+  }));
+
   // Sort by published_at ascending so the window check is cheap
-  const sorted = [...articles].sort(
-    (a, b) => a.published_at.getTime() - b.published_at.getTime()
-  );
+  const sorted = [...withTs].sort((a, b) => a._ts - b._ts);
 
   // Pre-tokenize
   const tokens: Array<Set<string>> = sorted.map((a) => tokenize(a.title));
@@ -101,10 +107,10 @@ export function clusterArticles(
   for (let i = 0; i < sorted.length; i++) {
     const ti = tokens[i];
     if (ti.size === 0) continue;
-    const cutoff = sorted[i].published_at.getTime() + windowMs;
+    const cutoff = sorted[i]._ts + windowMs;
 
     for (let j = i + 1; j < sorted.length; j++) {
-      if (sorted[j].published_at.getTime() > cutoff) break;
+      if (sorted[j]._ts > cutoff) break;
       // Same source = same publisher's variations, not a cluster signal
       if (sorted[i].source_id === sorted[j].source_id) continue;
 

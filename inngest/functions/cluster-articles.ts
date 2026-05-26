@@ -55,12 +55,7 @@ export const clusterArticlesCron = inngest.createFunction(
           id: c.id,
           title: c.title,
           source_id: c.source_id,
-          // Drizzle returns Date objects but Inngest may serialise them as strings;
-          // be defensive either way.
-          published_at:
-            c.published_at instanceof Date
-              ? c.published_at
-              : new Date(c.published_at),
+          published_at: c.published_at,
         }))
       );
     });
