@@ -8,6 +8,7 @@ import { FLAG_MAP } from "@/lib/utils/flags";
 import { useHistory } from "@/lib/storage/use-history";
 import { useWeeklyCount } from "@/lib/storage/use-weekly-count";
 import { BookmarkButton } from "./bookmark-button";
+import { ClusterPill } from "./cluster-pill";
 import type { SectionKey } from "@/lib/db/schema";
 
 /**
@@ -19,6 +20,24 @@ function hasRichContent(html: string | null): boolean {
   if (!html) return false;
   return html.replace(/<[^>]+>/g, "").trim().length > 350;
 }
+
+/** One member of a multi-source story cluster (siblings of the primary article) */
+export type ClusterMember = {
+  id: string;
+  title: string;
+  url: string;
+  source_name: string;
+  source_slug: string;
+  country_code: string;
+  published_at: string;
+};
+
+/** Cluster metadata attached by /api/feed when the article is part of multi-source coverage */
+export type ClusterInfo = {
+  key: string;
+  source_count: number;
+  members: ClusterMember[];
+};
 
 export type ArticleCardData = {
   id: string;
@@ -34,6 +53,8 @@ export type ArticleCardData = {
   source_logo: string | null;
   source_slug: string;
   country_code: string;
+  /** Story clustering — null when this article isn't part of a multi-source group */
+  cluster?: ClusterInfo | null;
 };
 
 /**
@@ -98,8 +119,8 @@ export function ArticleCard({
   if (isLead) {
     return (
       <article className="fade-in-up border-b border-[var(--color-border)] pb-8 mb-2 group">
-        {/* Eyebrow row: section · "última hora" badge · source */}
-        <div className="flex items-center gap-2 mb-3">
+        {/* Eyebrow row: section · source · cluster pill (if part of multi-source story) */}
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="eyebrow text-[var(--color-accent)]">
             {sectionLabel}
           </span>
@@ -107,6 +128,14 @@ export function ArticleCard({
           <span className="text-[11px] text-[var(--color-text-3)] uppercase tracking-wider font-semibold">
             {article.source_name}
           </span>
+          {article.cluster && (
+            <ClusterPill
+              article={article}
+              cluster={article.cluster}
+              locale={locale}
+              size="md"
+            />
+          )}
         </div>
 
         {/* Big hero image */}
@@ -193,13 +222,21 @@ export function ArticleCard({
       <div className="flex gap-4">
         {/* Thumbnail on the right (newspaper convention: photo right of headline) */}
         <div className="flex-1 min-w-0">
-          {/* Meta row — small caps eyebrow */}
-          <div className="flex items-center gap-2 mb-1.5 text-[11px] text-[var(--color-text-3)]">
+          {/* Meta row — small caps eyebrow + optional cluster pill */}
+          <div className="flex items-center gap-2 mb-1.5 text-[11px] text-[var(--color-text-3)] flex-wrap">
             <span className="eyebrow text-[var(--color-text-2)]">
               {article.source_name}
             </span>
             <span className="opacity-30">·</span>
             <SectionChip section={article.section_key} label={sectionLabel} />
+            {article.cluster && (
+              <ClusterPill
+                article={article}
+                cluster={article.cluster}
+                locale={locale}
+                size="sm"
+              />
+            )}
             {hasRichContent(article.content_html) && (
               <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-sm bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-medium leading-none uppercase tracking-wider">
                 ✦ full

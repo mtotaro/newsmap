@@ -2,9 +2,38 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { articles, sources, userSubscriptions } from "@/lib/db/schema";
-import { eq, and, lt, desc, getTableColumns, sql, ilike, or } from "drizzle-orm";
+import {
+  eq,
+  and,
+  lt,
+  desc,
+  getTableColumns,
+  sql,
+  ilike,
+  or,
+  inArray,
+} from "drizzle-orm";
 
 const PAGE_SIZE = 20;
+/** Overfetch factor — leaves headroom for cluster deduplication */
+const OVERFETCH = 3;
+
+type ArticleRow = {
+  id: string;
+  title: string;
+  url: string;
+  description: string | null;
+  content_html: string | null;
+  section_key: string;
+  thumbnail_url: string | null;
+  cluster_key: string | null;
+  published_at: Date;
+  source_id: string;
+  source_name: string;
+  source_logo: string | null;
+  source_slug: string;
+  country_code: string;
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,8 +72,9 @@ export async function GET(request: NextRequest) {
     }
 
     // ── Anonymous: public discovery feed (all sources, no personalization) ──
+    let rawRows: ArticleRow[];
     if (!user) {
-      const rows = await db
+      rawRows = await db
         .select({
           ...getTableColumns(articles),
           source_name: sources.name,
@@ -56,59 +86,132 @@ export async function GET(request: NextRequest) {
         .innerJoin(sources, eq(articles.source_id, sources.id))
         .where(conditions.length ? and(...conditions) : undefined)
         .orderBy(desc(articles.published_at))
-        .limit(PAGE_SIZE + 1);
+        .limit(PAGE_SIZE * OVERFETCH);
+    } else {
+      // ── Authenticated: personalized feed (only subscribed sources) ────────
+      conditions.push(eq(userSubscriptions.user_id, user.id));
 
-      return paginate(rows);
-    }
+      // Per-subscription section filter (only when no explicit UI section override)
+      if (!section) {
+        conditions.push(
+          sql`(
+            ${userSubscriptions.section_keys} IS NULL
+            OR ${articles.section_key}::text = ANY(${userSubscriptions.section_keys})
+          )`
+        );
+      }
 
-    // ── Authenticated: personalized feed (only subscribed sources) ──────────
-    conditions.push(eq(userSubscriptions.user_id, user.id));
-
-    // Per-subscription section filter (only when no explicit UI section override):
-    // Include the article if the subscription has no section restriction (NULL)
-    // OR if the article's section_key is in the subscription's section_keys array.
-    if (!section) {
-      conditions.push(
-        sql`(
-          ${userSubscriptions.section_keys} IS NULL
-          OR ${articles.section_key}::text = ANY(${userSubscriptions.section_keys})
-        )`
-      );
-    }
-
-    const rows = await db
-      .select({
-        ...getTableColumns(articles),
-        source_name: sources.name,
-        source_logo: sources.logo_url,
-        source_slug: sources.slug,
-        country_code: sources.country_code,
-      })
-      .from(articles)
-      .innerJoin(sources, eq(articles.source_id, sources.id))
-      .innerJoin(
-        userSubscriptions,
-        and(
-          eq(userSubscriptions.source_id, articles.source_id),
-          eq(userSubscriptions.user_id, user.id)
+      rawRows = await db
+        .select({
+          ...getTableColumns(articles),
+          source_name: sources.name,
+          source_logo: sources.logo_url,
+          source_slug: sources.slug,
+          country_code: sources.country_code,
+        })
+        .from(articles)
+        .innerJoin(sources, eq(articles.source_id, sources.id))
+        .innerJoin(
+          userSubscriptions,
+          and(
+            eq(userSubscriptions.source_id, articles.source_id),
+            eq(userSubscriptions.user_id, user.id)
+          )
         )
-      )
-      .where(and(...conditions))
-      .orderBy(desc(articles.published_at))
-      .limit(PAGE_SIZE + 1);
+        .where(and(...conditions))
+        .orderBy(desc(articles.published_at))
+        .limit(PAGE_SIZE * OVERFETCH);
+    }
 
-    return paginate(rows);
+    // ── Dedup by cluster_key (most-recent per cluster wins) ─────────────────
+    // Singletons (cluster_key === null) are always kept as-is.
+    const seenClusters = new Set<string>();
+    const primaries: ArticleRow[] = [];
+    for (const row of rawRows) {
+      if (row.cluster_key) {
+        if (seenClusters.has(row.cluster_key)) continue;
+        seenClusters.add(row.cluster_key);
+      }
+      primaries.push(row);
+      if (primaries.length > PAGE_SIZE) break;
+    }
+
+    const hasMore = primaries.length > PAGE_SIZE;
+    const items = hasMore ? primaries.slice(0, PAGE_SIZE) : primaries;
+    const nextCursor = hasMore
+      ? items[items.length - 1].published_at.toISOString()
+      : null;
+
+    // ── Attach cluster_members for any primary that's part of a cluster ─────
+    const clusterKeys = [...new Set(
+      items.map((i) => i.cluster_key).filter((k): k is string => Boolean(k))
+    )];
+    let membersByKey = new Map<string, ClusterMember[]>();
+    if (clusterKeys.length > 0) {
+      const memberRows = await db
+        .select({
+          id: articles.id,
+          title: articles.title,
+          url: articles.url,
+          cluster_key: articles.cluster_key,
+          published_at: articles.published_at,
+          source_name: sources.name,
+          source_slug: sources.slug,
+          country_code: sources.country_code,
+        })
+        .from(articles)
+        .innerJoin(sources, eq(articles.source_id, sources.id))
+        .where(inArray(articles.cluster_key, clusterKeys));
+
+      membersByKey = memberRows.reduce((map, m) => {
+        if (!m.cluster_key) return map;
+        const list = map.get(m.cluster_key) ?? [];
+        list.push({
+          id: m.id,
+          title: m.title,
+          url: m.url,
+          source_name: m.source_name,
+          source_slug: m.source_slug,
+          country_code: m.country_code,
+          published_at: m.published_at.toISOString(),
+        });
+        map.set(m.cluster_key, list);
+        return map;
+      }, new Map<string, ClusterMember[]>());
+    }
+
+    const enriched = items.map((row) => {
+      const members = row.cluster_key
+        ? membersByKey.get(row.cluster_key) ?? []
+        : [];
+      return {
+        ...row,
+        cluster:
+          members.length >= 2
+            ? {
+                key: row.cluster_key!,
+                source_count: members.length,
+                members: members.sort((a, b) =>
+                  b.published_at.localeCompare(a.published_at)
+                ),
+              }
+            : null,
+      };
+    });
+
+    return NextResponse.json({ items: enriched, nextCursor });
   } catch (err) {
     console.error("[GET /api/feed]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-function paginate<T extends { published_at: Date }>(rows: T[]) {
-  const hasMore = rows.length > PAGE_SIZE;
-  const items = hasMore ? rows.slice(0, PAGE_SIZE) : rows;
-  const nextCursor = hasMore
-    ? items[items.length - 1].published_at.toISOString()
-    : null;
-  return NextResponse.json({ items, nextCursor });
-}
+type ClusterMember = {
+  id: string;
+  title: string;
+  url: string;
+  source_name: string;
+  source_slug: string;
+  country_code: string;
+  published_at: string;
+};

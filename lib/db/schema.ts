@@ -85,6 +85,15 @@ export const articles = pgTable(
     content_html: text("content_html"),
     section_key: sectionKeyEnum("section_key").notNull().default("world"),
     thumbnail_url: text("thumbnail_url"),
+    /**
+     * Story-clustering key. Articles sharing the same value cover the same
+     * underlying news story across multiple publishers ("Cobertura completa").
+     * NULL = singleton (not part of any multi-source cluster).
+     *
+     * Assigned by inngest/functions/cluster-articles.ts every 5 minutes over
+     * the last 12-hour window. Uses Jaccard similarity on tokenized titles.
+     */
+    cluster_key: text("cluster_key"),
     published_at: timestamp("published_at", { withTimezone: true }).notNull(),
     fetched_at: timestamp("fetched_at", { withTimezone: true })
       .notNull()
@@ -98,6 +107,7 @@ export const articles = pgTable(
     index("articles_source_published_idx").on(t.source_id, t.published_at),
     index("articles_published_idx").on(t.published_at),
     index("articles_section_idx").on(t.section_key, t.published_at),
+    index("articles_cluster_idx").on(t.cluster_key, t.published_at),
   ]
 );
 

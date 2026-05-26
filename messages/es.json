@@ -187,5 +187,13 @@
     "more_sources_country": "Más fuentes de {country}",
     "country_front_page": "Ver toda la portada de {country}",
     "visit_publisher": "Visitar sitio del medio"
+  },
+  "Cluster": {
+    "badge": "Cobertura · {count, plural, one {# fuente} other {# fuentes}}",
+    "aria_open": "Ver cobertura de {count, plural, one {# fuente} other {# fuentes}}",
+    "aria_label": "Cobertura completa de la noticia",
+    "eyebrow": "{count, plural, one {# fuente} other {# fuentes}} cubren esta historia",
+    "description": "Comparamos cómo cubrieron esta noticia distintos medios. Cada enlace abre la versión publicada por esa fuente.",
+    "close": "Cerrar"
   }
 }

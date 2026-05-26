@@ -5,8 +5,16 @@ import { fetchSource } from "@/inngest/functions/fetch-source";
 import { resolveOgImage } from "@/inngest/functions/og-image";
 import { digestCron } from "@/inngest/functions/digest-cron";
 import { enrichContent } from "@/inngest/functions/enrich-content";
+import { clusterArticlesCron } from "@/inngest/functions/cluster-articles";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [ingestCron, fetchSource, resolveOgImage, digestCron, enrichContent],
+  functions: [
+    ingestCron,
+    fetchSource,
+    resolveOgImage,
+    digestCron,
+    enrichContent,
+    clusterArticlesCron,
+  ],
 });

@@ -187,5 +187,13 @@
     "more_sources_country": "More sources from {country}",
     "country_front_page": "See the full {country} front page",
     "visit_publisher": "Visit publisher site"
+  },
+  "Cluster": {
+    "badge": "Coverage · {count, plural, one {# source} other {# sources}}",
+    "aria_open": "View coverage from {count, plural, one {# source} other {# sources}}",
+    "aria_label": "Full story coverage",
+    "eyebrow": "{count, plural, one {# source covers} other {# sources cover}} this story",
+    "description": "Compare how different publishers covered this story. Each link opens that source's version of the article.",
+    "close": "Close"
   }
 }
