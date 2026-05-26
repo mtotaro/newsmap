@@ -112,7 +112,13 @@ async function fetchAndNormalize(
       description: item.description ?? null,
       // feedsmith exposes <content:encoded> as item.content.encoded
       contentEncoded: (item.content as { encoded?: string } | null)?.encoded ?? null,
-      pubDate: item.pubDate ?? null,
+      // Prefer <pubDate>, fall back to <dc:date> (used by ESPN and some other sources
+      // that omit the standard pubDate element)
+      pubDate:
+        item.pubDate ??
+        (item.dc as { date?: string; dates?: string[] } | null)?.date ??
+        (item.dc as { date?: string; dates?: string[] } | null)?.dates?.[0] ??
+        null,
       categories: item.categories?.map((c) => c.name).filter((n): n is string => Boolean(n)) ?? [],
       media: item.media as MediaLike,
       enclosures: item.enclosures
