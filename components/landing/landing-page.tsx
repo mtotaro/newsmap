@@ -20,7 +20,7 @@ export function LandingPage({ locale }: Props) {
   const t = useTranslations("Landing");
 
   return (
-    <main className="flex flex-col items-center justify-center flex-1 min-h-[calc(100vh-3.5rem)] gap-6 px-4 text-center">
+    <main className="flex flex-col items-center justify-center flex-1 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100vh-3.5rem)] gap-5 sm:gap-6 px-4 text-center">
       {/* Fullscreen animation overlay */}
       <div
         className={`fixed inset-0 z-50 transition-opacity duration-300 ${
@@ -37,10 +37,10 @@ export function LandingPage({ locale }: Props) {
           animDone ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        <h1 className="text-4xl font-bold tracking-tight text-[var(--color-text)]">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text)]">
           {t("headline")}
         </h1>
-        <p className="text-lg text-[var(--color-text-2)] leading-relaxed">
+        <p className="text-base sm:text-lg text-[var(--color-text-2)] leading-relaxed">
           {t("subheadline")}
         </p>
       </div>

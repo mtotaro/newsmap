@@ -118,7 +118,7 @@ export function ArticleCard({
   // ── Lead variant — hero treatment ─────────────────────────────────────────
   if (isLead) {
     return (
-      <article className="fade-in-up border-b border-[var(--color-border)] pb-8 mb-2 group">
+      <article className="fade-in-up border-b border-[var(--color-border)] pb-6 sm:pb-8 mb-2 group">
         {/* Eyebrow row: section · source · cluster pill (if part of multi-source story) */}
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           <span className="eyebrow text-[var(--color-accent)]">
@@ -166,7 +166,7 @@ export function ArticleCard({
           <button
             onClick={handlePreview}
             className="block w-full text-left headline-serif text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors"
-            style={{ fontSize: "clamp(1.65rem, 3.5vw, 2.4rem)" }}
+            style={{ fontSize: "clamp(1.35rem, 2.8vw, 2.2rem)" }}
           >
             {article.title}
           </button>
@@ -177,7 +177,7 @@ export function ArticleCard({
             rel="noopener noreferrer"
             onClick={trackRead}
             className="block headline-serif text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors"
-            style={{ fontSize: "clamp(1.65rem, 3.5vw, 2.4rem)" }}
+            style={{ fontSize: "clamp(1.35rem, 2.8vw, 2.2rem)" }}
           >
             {article.title}
           </a>
@@ -185,7 +185,7 @@ export function ArticleCard({
 
         {/* Dek (subtitle paragraph) */}
         {description && (
-          <p className="mt-3 text-[15px] text-[var(--color-text-2)] leading-relaxed">
+          <p className="mt-2.5 sm:mt-3 text-[13.5px] sm:text-[15px] text-[var(--color-text-2)] leading-relaxed">
             {description}
           </p>
         )}
@@ -218,8 +218,8 @@ export function ArticleCard({
 
   // ── Standard variant — newspaper-row treatment ────────────────────────────
   return (
-    <article className="fade-in-up border-b border-[var(--color-border)] pb-5 group">
-      <div className="flex gap-4">
+    <article className="fade-in-up border-b border-[var(--color-border)] pb-4 sm:pb-5 group">
+      <div className="flex gap-3 sm:gap-4">
         {/* Thumbnail on the right (newspaper convention: photo right of headline) */}
         <div className="flex-1 min-w-0">
           {/* Meta row — small caps eyebrow + optional cluster pill */}
@@ -299,8 +299,8 @@ export function ArticleCard({
           </div>
         </div>
 
-        {/* Thumbnail — fixed width on right (~140px) */}
-        <div className="shrink-0 w-[120px] sm:w-[140px]">
+        {/* Thumbnail — narrow on phones so the headline gets real estate, wider on ≥sm */}
+        <div className="shrink-0 w-[88px] sm:w-[140px]">
           {handlePreview ? (
             <button
               onClick={handlePreview}

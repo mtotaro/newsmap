@@ -166,13 +166,13 @@ export default async function SectionPage({
 
       <div className="min-h-screen pb-8">
         {/* Landing header — newspaper-style masthead for this section */}
-        <header className="max-w-[720px] mx-auto px-4 pt-10 pb-6 border-b border-[var(--color-accent)] mb-6">
-          <p className="eyebrow text-[var(--color-accent)] mb-2 text-center">
+        <header className="max-w-[720px] mx-auto px-3 sm:px-4 pt-6 sm:pt-10 pb-5 sm:pb-6 border-b border-[var(--color-accent)] mb-5 sm:mb-6">
+          <p className="eyebrow text-[var(--color-accent)] mb-1.5 sm:mb-2 text-center">
             {t("eyebrow")}
           </p>
           <h1
             className="font-display text-center font-black text-[var(--color-text)] leading-none capitalize"
-            style={{ fontSize: "clamp(2.25rem, 6vw, 3.75rem)" }}
+            style={{ fontSize: "clamp(1.75rem, 5vw, 3.75rem)" }}
           >
             {sectionName}
           </h1>

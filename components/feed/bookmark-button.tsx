@@ -19,8 +19,10 @@ export function BookmarkButton({ article, size = "sm" }: Props) {
   const { isSaved, toggle } = useSaved();
   const saved = isSaved(article.id);
 
-  const dimensions = size === "md" ? "w-8 h-8" : "w-7 h-7";
-  const iconSize = size === "md" ? 18 : 16;
+  // Touch target minimums per WCAG 2.1 AA: ≥44×44 px (we get close while
+  // staying visually unobtrusive — 40 px sm / 44 px md).
+  const dimensions = size === "md" ? "w-11 h-11" : "w-10 h-10";
+  const iconSize = size === "md" ? 20 : 18;
 
   return (
     <button

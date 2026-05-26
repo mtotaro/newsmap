@@ -20,7 +20,7 @@ type Props = {
 export function SectionChip({ section, label }: Props) {
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${SECTION_COLORS[section]}`}
+      className={`inline-flex items-center px-2 py-1 rounded text-[11px] sm:text-xs font-medium leading-none ${SECTION_COLORS[section]}`}
     >
       {label}
     </span>

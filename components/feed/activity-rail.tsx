@@ -56,10 +56,10 @@ export async function ActivityRail({ locale }: Props) {
       className="border-b border-[var(--color-border)] bg-[var(--color-bg)]"
       aria-label={t("aria_label")}
     >
-      <div className="max-w-[920px] mx-auto px-4 py-2.5 overflow-x-auto scrollbar-hidden">
-        <div className="flex items-center gap-1.5 min-w-max">
+      <div className="max-w-[920px] mx-auto px-3 sm:px-4 py-1.5 sm:py-2 overflow-x-auto scrollbar-hidden">
+        <div className="flex items-center gap-1 sm:gap-1.5 min-w-max">
           {/* Eyebrow label */}
-          <span className="eyebrow text-[var(--color-accent)] mr-2 shrink-0">
+          <span className="eyebrow text-[var(--color-accent)] mr-1.5 sm:mr-2 shrink-0">
             {t("pulse")} · {t("articles_count", { count: total })}
           </span>
 
@@ -73,9 +73,10 @@ export async function ActivityRail({ locale }: Props) {
                 key={c.country_code}
                 href={`/${locale}/news/${slug}`}
                 title={`${name} · ${c.count}`}
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors rounded-sm shrink-0"
+                // min-h ensures a ≥40 px tap target without making the rail tall
+                className="inline-flex items-center gap-1 px-2.5 py-2 min-h-[40px] text-[11px] sm:text-[11px] text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] active:bg-[var(--color-bg-3)] transition-colors rounded-sm shrink-0"
               >
-                <span className="text-sm leading-none">{flag}</span>
+                <span className="text-base leading-none">{flag}</span>
                 <span className="font-semibold tabular-nums">{c.count}</span>
               </a>
             );

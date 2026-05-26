@@ -95,11 +95,11 @@ export function ArticleModal({ article, onClose, locale }: Props) {
       {/* Panel — bottom sheet on mobile, centered card on desktop */}
       <div className="relative w-full sm:max-w-lg mx-4 sm:mx-0 bg-[var(--color-bg-2)] rounded-t-2xl sm:rounded-2xl overflow-hidden max-h-[92dvh] flex flex-col shadow-2xl">
 
-        {/* Close button */}
+        {/* Close button — ≥40 px tap target so it's hittable while skimming on mobile */}
         <button
           onClick={onClose}
           aria-label="Close preview"
-          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white text-sm hover:bg-black/70 transition-colors"
+          className="absolute top-3 right-3 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/55 text-white text-base hover:bg-black/75 active:bg-black/85 transition-colors"
         >
           ✕
         </button>
@@ -133,10 +133,10 @@ export function ArticleModal({ article, onClose, locale }: Props) {
         )}
 
         {/* Scrollable body */}
-        <div className="p-5 space-y-3 overflow-y-auto overscroll-contain">
+        <div className="p-4 sm:p-5 space-y-3 overflow-y-auto overscroll-contain">
 
-          {/* Source meta row */}
-          <div className="flex items-center gap-2 text-xs text-[var(--color-text-2)]">
+          {/* Source meta row — wraps gracefully on narrow widths */}
+          <div className="flex items-center gap-2 text-xs text-[var(--color-text-2)] flex-wrap">
             <span>{flag}</span>
             {article.source_logo && (
               <Image
@@ -155,8 +155,8 @@ export function ArticleModal({ article, onClose, locale }: Props) {
             <span className="ml-auto shrink-0">{ago}</span>
           </div>
 
-          {/* Title */}
-          <h2 className="text-base font-bold text-[var(--color-text)] leading-snug">
+          {/* Title — proper heading size so the modal reads like a real article preview */}
+          <h2 className="text-lg sm:text-xl font-bold text-[var(--color-text)] leading-snug">
             {article.title}
           </h2>
 

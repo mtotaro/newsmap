@@ -8,6 +8,18 @@ type Props = {
   locale: string;
 };
 
+/**
+ * Sticky top nav. Designed mobile-first:
+ *
+ * - Height collapses to 48 px on phones (h-12 → h-14 ≥sm) to claw back
+ *   above-the-fold space — masthead + nav was eating ~120 px on 360 px screens.
+ * - The link row is horizontally scrollable so a 5th/6th item (or wider
+ *   localized labels like "Comparar países") never wraps the bar.
+ * - Each link has `min-h-[44px]` for WCAG 2.1 AA touch target compliance,
+ *   even though the visible padding is tighter on mobile.
+ * - "NewsMap" wordmark hides below `xs` (under ~400 px) so the link row
+ *   gets full breathing room on the smallest phones.
+ */
 export async function Nav({ locale }: Props) {
   const t = await getTranslations({ locale, namespace: "Nav" });
   const supabase = await createClient();
@@ -15,49 +27,34 @@ export async function Nav({ locale }: Props) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const linkCls =
+    "inline-flex items-center px-2 sm:px-3 py-2 min-h-[44px] rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] active:bg-[var(--color-bg-3)] transition-colors whitespace-nowrap shrink-0";
+
   return (
-    <nav className="sticky top-0 z-40 h-14 flex items-center px-4 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur-sm">
+    <nav className="sticky top-0 z-40 h-12 sm:h-14 flex items-center px-3 sm:px-4 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur-sm">
       <Link
         href="/"
-        className="font-bold text-[var(--color-text)] mr-6"
+        className="font-bold text-[var(--color-text)] mr-2 sm:mr-6 text-sm sm:text-base shrink-0"
       >
         NewsMap
       </Link>
 
-      <div className="flex items-center gap-1 flex-1">
-        <Link
-          href="/feed"
-          className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
-        >
-          {t("feed")}
-        </Link>
-        <Link
-          href="/map"
-          className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
-        >
-          {t("map")}
-        </Link>
-        <Link
-          href="/compare/argentina/mexico"
-          className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
-        >
-          {t("compare")}
-        </Link>
-        <Link
-          href="/saved"
-          className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
-        >
-          {t("saved")}
-        </Link>
+      {/* Scrollable link row — overflows horizontally on very narrow viewports
+          rather than wrapping or squashing labels. */}
+      <div className="flex items-center gap-0.5 sm:gap-1 flex-1 overflow-x-auto scrollbar-hidden -mx-1 px-1">
+        <Link href="/feed" className={linkCls}>{t("feed")}</Link>
+        <Link href="/map" className={linkCls}>{t("map")}</Link>
+        <Link href="/compare/argentina/mexico" className={linkCls}>{t("compare")}</Link>
+        <Link href="/saved" className={linkCls}>{t("saved")}</Link>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         <StatsBadge />
         {user ? (
           <>
             <Link
               href="/settings"
-              className="px-3 py-1.5 rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
+              className="inline-flex items-center px-2 sm:px-3 py-2 min-h-[44px] rounded text-sm text-[var(--color-text-2)] hover:text-[var(--color-text)] hover:bg-[var(--color-bg-2)] transition-colors"
             >
               {t("settings")}
             </Link>
@@ -66,7 +63,7 @@ export async function Nav({ locale }: Props) {
         ) : (
           <Link
             href="/auth"
-            className="px-4 py-1.5 rounded-[var(--radius-button)] bg-[var(--color-blue)] text-white text-sm font-medium hover:opacity-90"
+            className="inline-flex items-center px-3 sm:px-4 py-2 min-h-[40px] rounded-[var(--radius-button)] bg-[var(--color-blue)] text-white text-xs sm:text-sm font-medium hover:opacity-90 active:opacity-80"
           >
             {t("signin")}
           </Link>

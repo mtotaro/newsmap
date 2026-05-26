@@ -89,15 +89,23 @@ export function NewsMapIntro({ locale, topology, onDone }: Props) {
           0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.7; }
           100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0;   }
         }
+        /* Mobile-only tweaks for the intro overlay */
+        @media (max-width: 640px) {
+          .nm-headline-card { max-width: min(168px, calc(100vw - 80px)) !important; }
+          .nm-tagline       { font-size: 22px !important; }
+          .nm-subtagline    { font-size: 12px !important; padding: 0 24px; }
+        }
       `}</style>
 
-      {/* World map — renders once when topology arrives */}
+      {/* World map — renders once when topology arrives.
+          We use the default `preserveAspectRatio` ("meet") so the map keeps
+          its proportions and the pin coordinates (which are in % of viewBox)
+          stay accurate across portrait/landscape mobile and desktop. */}
       {topology && Object.keys(topology).length > 0 && (
         <div style={{ position: "absolute", inset: 0 }}>
           <ComposableMap
             projectionConfig={{ scale: 147 }}
             style={{ width: "100%", height: "100%" }}
-            preserveAspectRatio="none"
           >
             <Geographies geography={topology}>
               {({ geographies }) =>
@@ -173,8 +181,12 @@ export function NewsMapIntro({ locale, topology, onDone }: Props) {
               }}
             />
 
-            {/* Headline card — slides in from left */}
+            {/* Headline card — slides in from left.
+                The `nm-headline-card` class lets the mobile media query above
+                clamp the card width so it never overflows the viewport on
+                narrow phones. */}
             <div
+              className="nm-headline-card"
               style={{
                 position: "absolute",
                 left: 14,
@@ -233,6 +245,7 @@ export function NewsMapIntro({ locale, topology, onDone }: Props) {
         }}
       >
         <p
+          className="nm-tagline"
           style={{
             color: "#e8e8e8",
             fontSize: 28,
@@ -246,6 +259,7 @@ export function NewsMapIntro({ locale, topology, onDone }: Props) {
           {tagline}
         </p>
         <p
+          className="nm-subtagline"
           style={{
             color: "#555",
             fontSize: 13,

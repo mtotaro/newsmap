@@ -30,25 +30,37 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
         onClick={onDone}
         style={{
           position: "absolute",
-          bottom: 24,
-          right: 24,
-          background: "none",
-          border: "none",
-          color: "#888",
-          fontSize: 13,
+          // Safe-area-aware positioning so the button doesn't sit under iOS's
+          // home indicator or behind a notch on landscape phones.
+          bottom: "max(20px, env(safe-area-inset-bottom, 20px))",
+          right: "max(20px, env(safe-area-inset-right, 20px))",
+          background: "rgba(20,20,20,0.6)",
+          border: "1px solid #383838",
+          borderRadius: 6,
+          color: "#ccc",
+          fontSize: 14,
           cursor: "pointer",
           fontFamily: "system-ui, -apple-system, sans-serif",
           letterSpacing: "0.03em",
-          padding: "4px 8px",
-          transition: "color 0.2s",
+          // ≥44 px tap target on every axis
+          padding: "10px 16px",
+          minHeight: 44,
+          minWidth: 44,
+          transition: "background 0.2s, color 0.2s",
           zIndex: 10,
+          backdropFilter: "blur(4px)",
+          WebkitBackdropFilter: "blur(4px)",
         }}
-        onMouseEnter={(e) =>
-          ((e.currentTarget as HTMLButtonElement).style.color = "#ccc")
-        }
-        onMouseLeave={(e) =>
-          ((e.currentTarget as HTMLButtonElement).style.color = "#888")
-        }
+        onMouseEnter={(e) => {
+          const el = e.currentTarget as HTMLButtonElement;
+          el.style.background = "rgba(40,40,40,0.85)";
+          el.style.color = "#fff";
+        }}
+        onMouseLeave={(e) => {
+          const el = e.currentTarget as HTMLButtonElement;
+          el.style.background = "rgba(20,20,20,0.6)";
+          el.style.color = "#ccc";
+        }}
       >
         Saltar →
       </button>

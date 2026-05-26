@@ -93,7 +93,9 @@ body {
   line-height: 1.1;
 }
 
-/* Small-caps tracked label — section names, "Última Hora", etc. */
+/* Small-caps tracked label — section names, "Última Hora", etc.
+   Slightly larger on desktop where the eyebrow has breathing room; minimum
+   10 px on mobile so it still reads as a label rather than a footnote. */
 .eyebrow {
   font-family: var(--font-sans);
   font-size: 10px;
@@ -101,6 +103,9 @@ body {
   text-transform: uppercase;
   font-weight: 600;
   color: var(--color-text-3);
+}
+@media (min-width: 640px) {
+  .eyebrow { font-size: 11px; }
 }
 
 /* Drop-cap for the lead story's first paragraph */

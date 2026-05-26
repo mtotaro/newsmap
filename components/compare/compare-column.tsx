@@ -55,7 +55,7 @@ export function CompareColumn({
         </p>
         <a
           href={`/${locale}/news/${countrySlug}`}
-          className="font-display text-2xl text-[var(--color-text)] flex items-center gap-2 hover:text-[var(--color-accent)] transition-colors group"
+          className="font-display text-xl sm:text-2xl text-[var(--color-text)] flex items-center gap-2 hover:text-[var(--color-accent)] transition-colors group min-h-[44px]"
         >
           <span>{flag}</span>
           <span className="font-bold">{countryName}</span>

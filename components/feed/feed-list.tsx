@@ -157,19 +157,20 @@ export function FeedList({ locale }: Props) {
       onClose={() => setPreviewArticle(null)}
       locale={locale}
     />
-    <div className="max-w-[720px] mx-auto py-4 space-y-4">
+    <div className="max-w-[720px] mx-auto py-3 sm:py-4 space-y-3 sm:space-y-4">
       {/* Continue reading rail — only renders when there's history */}
       {!activeSection && !debouncedQuery && <ContinueReadingStrip />}
 
       {/* ── Search input ─────────────────────────────────────────────── */}
-      <div className="px-4">
+      <div className="px-3 sm:px-4">
         <div className="relative">
           <input
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("search_placeholder")}
-            className="w-full pl-9 pr-8 py-2 rounded-[var(--radius-button)] bg-[var(--color-bg-3)] border border-[var(--color-border)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-3)] focus:outline-none focus:border-[var(--color-blue)] transition-colors"
+            // 16 px font on mobile prevents iOS Safari from auto-zooming on focus
+            className="w-full pl-9 pr-8 py-2.5 sm:py-2 rounded-[var(--radius-button)] bg-[var(--color-bg-3)] border border-[var(--color-border)] text-[16px] sm:text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-3)] focus:outline-none focus:border-[var(--color-blue)] transition-colors"
           />
           <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-3)] text-sm select-none">
             🔍
@@ -186,15 +187,15 @@ export function FeedList({ locale }: Props) {
         </div>
       </div>
 
-      {/* ── Section filter chips ─────────────────────────────────────── */}
-      <div className="px-4 overflow-x-auto">
-        <div className="flex gap-2 min-w-max pb-1">
+      {/* ── Section filter chips — horizontal scroll, ≥36 px tap target ── */}
+      <div className="px-3 sm:px-4 overflow-x-auto scrollbar-hidden">
+        <div className="flex gap-1.5 sm:gap-2 min-w-max pb-1">
           <button
             onClick={() => handleSection(null)}
-            className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+            className={`px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium border transition-colors shrink-0 ${
               activeSection === null
                 ? "bg-[var(--color-blue)] text-white border-[var(--color-blue)]"
-                : "text-[var(--color-text-2)] border-[var(--color-border)] hover:border-[var(--color-blue)] hover:text-[var(--color-blue)]"
+                : "text-[var(--color-text-2)] border-[var(--color-border)] hover:border-[var(--color-blue)] hover:text-[var(--color-blue)] active:bg-[var(--color-bg-2)]"
             }`}
           >
             {t("filter_all")}
@@ -203,10 +204,10 @@ export function FeedList({ locale }: Props) {
             <button
               key={key}
               onClick={() => handleSection(key)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+              className={`px-3 py-1.5 min-h-[36px] rounded-full text-xs font-medium border transition-colors shrink-0 ${
                 activeSection === key
                   ? "bg-[var(--color-blue)] text-white border-[var(--color-blue)]"
-                  : "text-[var(--color-text-2)] border-[var(--color-border)] hover:border-[var(--color-blue)] hover:text-[var(--color-blue)]"
+                  : "text-[var(--color-text-2)] border-[var(--color-border)] hover:border-[var(--color-blue)] hover:text-[var(--color-blue)] active:bg-[var(--color-bg-2)]"
               }`}
             >
               {tSec(key)}
@@ -217,7 +218,7 @@ export function FeedList({ locale }: Props) {
 
       {/* ── Feed items ───────────────────────────────────────────────── */}
       {loading ? (
-        <div className="space-y-4 px-4">
+        <div className="space-y-4 px-3 sm:px-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <ArticleCardSkeleton key={i} />
           ))}

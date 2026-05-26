@@ -222,23 +222,23 @@ export default async function ComparePage({
 
       <div className="min-h-screen pb-12">
         {/* Masthead-style header */}
-        <header className="max-w-[1100px] mx-auto px-4 pt-8 pb-5 border-b border-[var(--color-accent)] mb-6">
-          <p className="eyebrow text-[var(--color-accent)] mb-2 text-center">
+        <header className="max-w-[1100px] mx-auto px-3 sm:px-4 pt-5 sm:pt-8 pb-4 sm:pb-5 border-b border-[var(--color-accent)] mb-5 sm:mb-6">
+          <p className="eyebrow text-[var(--color-accent)] mb-1.5 sm:mb-2 text-center">
             {t("eyebrow")}
           </p>
           <h1
-            className="font-display text-center font-black text-[var(--color-text)] leading-none flex items-center justify-center gap-3 sm:gap-6 flex-wrap"
-            style={{ fontSize: "clamp(1.5rem, 4vw, 2.5rem)" }}
+            className="font-display text-center font-black text-[var(--color-text)] leading-tight flex items-center justify-center gap-2 sm:gap-6 flex-wrap"
+            style={{ fontSize: "clamp(1.2rem, 3.2vw, 2.5rem)" }}
           >
-            <span className="inline-flex items-center gap-2">
-              <span className="text-3xl sm:text-4xl">{flagA}</span>
+            <span className="inline-flex items-center gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-4xl">{flagA}</span>
               {nameA}
             </span>
-            <span className="text-[var(--color-text-3)] font-normal text-base sm:text-lg uppercase tracking-widest">
+            <span className="text-[var(--color-text-3)] font-normal text-xs sm:text-lg uppercase tracking-widest">
               {t("vs")}
             </span>
-            <span className="inline-flex items-center gap-2">
-              <span className="text-3xl sm:text-4xl">{flagB}</span>
+            <span className="inline-flex items-center gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-4xl">{flagB}</span>
               {nameB}
             </span>
           </h1>
@@ -265,7 +265,7 @@ export default async function ComparePage({
         </header>
 
         {/* Two-column comparison */}
-        <div className="max-w-[1100px] mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+        <div className="max-w-[1100px] mx-auto px-3 sm:px-4 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-10">
           <CompareColumn
             countryName={nameA}
             countrySlug={ALPHA2_TO_SLUG[alphaA]!}

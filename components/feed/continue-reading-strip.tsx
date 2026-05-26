@@ -41,7 +41,7 @@ export function ContinueReadingStrip() {
               href={entry.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 w-[200px] snap-start group"
+              className="shrink-0 w-[150px] sm:w-[200px] snap-start group"
             >
               <div className="aspect-[16/10] bg-[var(--color-bg-3)] overflow-hidden mb-1.5">
                 {entry.thumbnail_url ? (
