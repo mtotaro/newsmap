@@ -230,7 +230,33 @@ function rdfText(block: string, tag: string): string | null {
     new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, "i")
   );
   if (!m) return null;
-  return m[1].trim() || null;
+  const trimmed = m[1].trim();
+  return trimmed ? decodeXmlEntities(trimmed) : null;
+}
+
+/**
+ * Decode the standard XML/HTML named entities plus numeric character refs.
+ *
+ * We don't pull in a full entity table — only the few that actually appear
+ * in news feeds. The critical one is `&amp;` inside image URLs: Google
+ * News sitemaps wrap `<image:loc>` values without CDATA, so a real query
+ * string like `?auth=X&width=380` is serialised as `?auth=X&amp;width=380`.
+ * If we don't decode it, browsers see the literal `&amp;` in the URL and
+ * the signed image 404s because the auth signature doesn't match.
+ */
+function decodeXmlEntities(s: string): string {
+  return s
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
+      String.fromCodePoint(parseInt(hex, 16))
+    )
+    .replace(/&#(\d+);/g, (_, dec) =>
+      String.fromCodePoint(parseInt(dec, 10))
+    );
 }
 
 /**
@@ -270,13 +296,14 @@ function parseNewsSitemap(xml: string): NormalizedItem[] {
   while ((m = urlRe.exec(xml)) !== null) {
     const block = m[1];
 
-    const loc = block.match(/<loc[^>]*>(.*?)<\/loc>/)?.[1]?.trim() ?? null;
-    if (!loc) continue;
+    const locRaw = block.match(/<loc[^>]*>(.*?)<\/loc>/)?.[1]?.trim();
+    if (!locRaw) continue;
+    const loc = decodeXmlEntities(locRaw);
 
-    const title =
-      block
-        .match(/<news:title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/news:title>/)?.[1]
-        ?.trim() ?? null;
+    const titleRaw = block
+      .match(/<news:title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/news:title>/)
+      ?.[1]?.trim();
+    const title = titleRaw ? decodeXmlEntities(titleRaw) : null;
 
     const pubDate =
       block.match(/<news:publication_date[^>]*>(.*?)<\/news:publication_date>/)?.[1]
@@ -284,8 +311,13 @@ function parseNewsSitemap(xml: string): NormalizedItem[] {
       block.match(/<lastmod[^>]*>(.*?)<\/lastmod>/)?.[1]?.trim() ??
       null;
 
-    const imageUrl =
-      block.match(/<image:loc[^>]*>(.*?)<\/image:loc>/)?.[1]?.trim() ?? null;
+    // image:loc almost always contains entity-encoded `&` separators in the
+    // resizer signature query string — decoding is mandatory or signed
+    // images 404 (browser sees literal `&amp;` in the URL).
+    const imageUrlRaw = block
+      .match(/<image:loc[^>]*>(.*?)<\/image:loc>/)?.[1]
+      ?.trim();
+    const imageUrl = imageUrlRaw ? decodeXmlEntities(imageUrlRaw) : null;
 
     // Keywords are comma-separated topics, NOT a section. They occasionally
     // hint at a section ("Básquetbol" → sports) so we surface them as
@@ -297,7 +329,7 @@ function parseNewsSitemap(xml: string): NormalizedItem[] {
         )?.[1] ?? "";
     const categories = kwBlock
       .split(",")
-      .map((s) => s.trim())
+      .map((s) => decodeXmlEntities(s.trim()))
       .filter(Boolean);
 
     items.push({
