@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { FLAG_MAP } from "@/lib/utils/flags";
 import { ClusterModal } from "./cluster-modal";
 import type { ArticleCardData, ClusterInfo } from "./article-card";
 
@@ -32,7 +31,6 @@ export function ClusterPill({ article, cluster, locale, size = "sm" }: Props) {
   const distinctCountries = Array.from(
     new Set(cluster.members.map((m) => m.country_code))
   );
-  const visibleCountries = distinctCountries.slice(0, 4);
 
   /**
    * Cross-border indicator: a cluster spanning 3+ countries is treated as an
@@ -41,6 +39,8 @@ export function ClusterPill({ article, cluster, locale, size = "sm" }: Props) {
    * aggregator visually surfaces this.
    */
   const isCrossBorder = distinctCountries.length >= 3;
+  const visibleCountries =
+    size === "md" && !isCrossBorder ? distinctCountries.slice(0, 3) : [];
 
   const padding = size === "md" ? "px-3 py-1.5" : "px-2 py-1";
   const fontSize = size === "md" ? "text-[11px]" : "text-[10px]";
@@ -57,7 +57,7 @@ export function ClusterPill({ article, cluster, locale, size = "sm" }: Props) {
           e.stopPropagation();
           setOpen(true);
         }}
-        className={`inline-flex items-center gap-1.5 ${padding} ${fontSize} uppercase tracking-wider font-semibold border transition-colors rounded-sm ${baseClass}`}
+        className={`inline-flex max-w-full items-center gap-1.5 ${padding} ${fontSize} uppercase tracking-wider font-semibold border transition-colors rounded-sm ${baseClass}`}
         aria-label={t("aria_open", { count: cluster.source_count })}
         title={
           isCrossBorder
@@ -75,10 +75,16 @@ export function ClusterPill({ article, cluster, locale, size = "sm" }: Props) {
             : t("badge", { count: cluster.source_count })}
         </span>
         {visibleCountries.length > 0 && (
-          <span className="flex items-center gap-0.5 ml-1" aria-hidden="true">
+          <span
+            className="hidden sm:flex items-center gap-1 ml-1"
+            aria-hidden="true"
+          >
             {visibleCountries.map((cc) => (
-              <span key={cc} className="text-[9px] leading-none">
-                {FLAG_MAP[cc] ?? "🗞"}
+              <span
+                key={cc}
+                className="inline-flex min-w-[18px] items-center justify-center rounded-[4px] border border-current/20 px-1 py-0.5 text-[8px] font-bold leading-none"
+              >
+                {cc}
               </span>
             ))}
           </span>

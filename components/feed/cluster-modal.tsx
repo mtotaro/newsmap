@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { FLAG_MAP } from "@/lib/utils/flags";
 import { timeAgo } from "@/lib/utils/time";
 import type { ClusterMember } from "./article-card";
 
@@ -58,9 +57,9 @@ export function ClusterModal({
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center"
-      role="dialog"
+    <dialog
+      open
+      className="fixed inset-0 z-[60] m-0 flex max-h-none max-w-none items-end justify-center overflow-visible border-none bg-transparent p-0 sm:items-center"
       aria-modal="true"
       aria-label={t("aria_label")}
     >
@@ -80,15 +79,15 @@ export function ClusterModal({
           previous implementation put the backdrop class on the flex parent,
           which broke clickability on some Chromium builds when combined
           with backdrop-filter. */}
-      <div
+      <button
+        type="button"
         className="absolute inset-0 bg-black/65 backdrop-blur-sm cluster-modal-backdrop"
+        aria-label={t("close")}
         onClick={onClose}
-        aria-hidden="true"
       />
 
       <div
-        className="cluster-modal-panel relative w-full sm:max-w-[560px] max-h-[92dvh] sm:max-h-[85vh] overflow-y-auto bg-[var(--color-bg)] border-t-2 sm:border border-[var(--color-accent)] rounded-t-2xl sm:rounded-lg shadow-2xl flex flex-col mx-0 sm:mx-4"
-        onClick={(e) => e.stopPropagation()}
+        className="cluster-modal-panel relative z-10 w-full sm:max-w-[560px] max-h-[92dvh] sm:max-h-[85vh] overflow-y-auto bg-[var(--color-bg)] border-t-2 sm:border border-[var(--color-accent)] rounded-t-2xl sm:rounded-lg shadow-2xl flex flex-col mx-0 sm:mx-4"
       >
         {/* Drag handle (mobile only) — visual cue that this is a sheet */}
         <div
@@ -126,7 +125,6 @@ export function ClusterModal({
         {/* Source cards — each is a generous tap target */}
         <ul className="p-2 sm:p-3 space-y-2 sm:space-y-2.5">
           {members.map((m) => {
-            const flag = FLAG_MAP[m.country_code] ?? "🗞";
             return (
               <li key={m.id}>
                 <a
@@ -135,10 +133,13 @@ export function ClusterModal({
                   rel="noopener noreferrer"
                   className="block min-h-[68px] p-3 sm:p-4 rounded-lg border border-[var(--color-border)] hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-2)] active:bg-[var(--color-bg-3)] transition-colors group"
                 >
-                  {/* Eyebrow row — flag · source · time · → arrow */}
+                  {/* Eyebrow row — country · source · time · → arrow */}
                   <div className="flex items-center gap-2 mb-1.5 text-[11px] text-[var(--color-text-3)]">
-                    <span className="text-sm leading-none" aria-hidden="true">
-                      {flag}
+                    <span
+                      className="inline-flex min-w-[22px] items-center justify-center rounded-[4px] border border-[var(--color-border)] px-1.5 py-0.5 text-[9px] font-bold leading-none text-[var(--color-text-2)]"
+                      aria-hidden="true"
+                    >
+                      {m.country_code}
                     </span>
                     <span className="eyebrow text-[var(--color-text-2)] truncate">
                       {m.source_name}
@@ -166,6 +167,6 @@ export function ClusterModal({
         {/* Safe-area spacer for iOS home indicator on the bottom sheet */}
         <div className="h-safe-bottom" style={{ height: "env(safe-area-inset-bottom, 0px)" }} />
       </div>
-    </div>
+    </dialog>
   );
 }

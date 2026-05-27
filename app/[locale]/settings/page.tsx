@@ -11,6 +11,7 @@ import { SignOutButton } from "@/components/settings/sign-out-button";
 import { SubscriptionItem } from "@/components/settings/subscription-item";
 import { DeleteAccount } from "@/components/settings/delete-account";
 import { DigestToggle } from "@/components/settings/digest-toggle";
+import { normalizeSourceLogoUrl } from "@/lib/utils/source-logos";
 
 export async function generateMetadata({
   params,
@@ -61,6 +62,11 @@ export default async function SettingsPage({
       .then((rows) => rows[0] ?? { digest_enabled: false, digest_hour: 7 }),
   ]);
 
+  const normalizedSubscriptions = subscriptions.map((sub) => ({
+    ...sub,
+    logo_url: normalizeSourceLogoUrl(sub.source_slug, sub.logo_url),
+  }));
+
   return (
     <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -96,7 +102,7 @@ export default async function SettingsPage({
             </Link>
           </div>
 
-          {subscriptions.length === 0 ? (
+          {normalizedSubscriptions.length === 0 ? (
             <div className="px-4 py-4">
               <p className="text-sm text-[var(--color-text-2)]">
                 {t("sources_empty")}
@@ -104,7 +110,7 @@ export default async function SettingsPage({
             </div>
           ) : (
             <ul className="divide-y divide-[var(--color-border)]">
-              {subscriptions.map((sub) => (
+              {normalizedSubscriptions.map((sub) => (
                 <li key={sub.source_id} className="px-4">
                   <SubscriptionItem
                     sub={sub}

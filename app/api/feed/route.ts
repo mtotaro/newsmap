@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { articles, sources, userSubscriptions } from "@/lib/db/schema";
+import { normalizeSourceLogoUrl } from "@/lib/utils/source-logos";
 import {
   eq,
   and,
@@ -186,6 +187,7 @@ export async function GET(request: NextRequest) {
         : [];
       return {
         ...row,
+        source_logo: normalizeSourceLogoUrl(row.source_slug, row.source_logo),
         cluster:
           members.length >= 2
             ? {

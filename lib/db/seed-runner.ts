@@ -61,9 +61,11 @@ async function main() {
         target: sources.slug,
         set: {
           name: sql`excluded.name`,
+          url: sql`excluded.url`,
           feeds: sql`excluded.feeds`,
           is_active: sql`excluded.is_active`,
           needs_user_agent: sql`excluded.needs_user_agent`,
+          logo_url: sql`excluded.logo_url`,
         },
       });
     console.log(`  ${row.is_active ? "✓" : "⏸"} ${s.name} (${s.countryCode})`);

@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import type { SectionKey } from "@/lib/db/schema";
 import type { ArticleCardData } from "@/components/feed/article-card";
 import { LandingFeed } from "@/components/landing/landing-feed";
+import { normalizeSourceLogoUrl } from "@/lib/utils/source-logos";
 
 // ISR — regenerate every 15 minutes; same window as the country pages
 export const revalidate = 900;
@@ -118,7 +119,7 @@ export default async function SectionPage({
     thumbnail_url: r.thumbnail_url,
     published_at: r.published_at.toISOString(),
     source_name: r.source_name,
-    source_logo: r.source_logo,
+    source_logo: normalizeSourceLogoUrl(r.source_slug, r.source_logo),
     source_slug: r.source_slug,
     country_code: r.country_code,
   }));

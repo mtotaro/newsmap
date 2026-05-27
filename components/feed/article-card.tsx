@@ -97,6 +97,7 @@ export function ArticleCard({
   const description = article.description
     ? truncate(article.description, isLead ? 280 : 180)
     : null;
+  const hasFullContent = hasRichContent(article.content_html);
 
   // Mark-read + bump weekly counter on any "read this article" interaction.
   // De-dup is handled inside the hooks; calling multiple times is safe.
@@ -223,26 +224,32 @@ export function ArticleCard({
         {/* Thumbnail on the right (newspaper convention: photo right of headline) */}
         <div className="flex-1 min-w-0">
           {/* Meta row — small caps eyebrow + optional cluster pill */}
-          <div className="flex items-center gap-2 mb-1.5 text-[11px] text-[var(--color-text-3)] flex-wrap">
-            <span className="eyebrow text-[var(--color-text-2)]">
+          <div className="mb-1.5">
+            <div className="flex items-center gap-2 text-[11px] text-[var(--color-text-3)] min-w-0">
+              <span className="eyebrow text-[var(--color-text-2)] truncate min-w-0">
               {article.source_name}
-            </span>
-            <span className="opacity-30">·</span>
-            <SectionChip section={article.section_key} label={sectionLabel} />
-            {article.cluster && (
-              <ClusterPill
-                article={article}
-                cluster={article.cluster}
-                locale={locale}
-                size="sm"
-              />
-            )}
-            {hasRichContent(article.content_html) && (
-              <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-sm bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-medium leading-none uppercase tracking-wider">
-                ✦ full
               </span>
+              <span className="opacity-30 shrink-0">·</span>
+              <SectionChip section={article.section_key} label={sectionLabel} />
+              <span className="ml-auto shrink-0">{ago}</span>
+            </div>
+            {(article.cluster || hasFullContent) && (
+              <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                {article.cluster && (
+                  <ClusterPill
+                    article={article}
+                    cluster={article.cluster}
+                    locale={locale}
+                    size="sm"
+                  />
+                )}
+                {hasFullContent && (
+                  <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded-sm bg-[var(--color-accent)]/10 text-[var(--color-accent)] font-medium leading-none uppercase tracking-wider">
+                    ✦ full
+                  </span>
+                )}
+              </div>
             )}
-            <span className="ml-auto shrink-0">{ago}</span>
           </div>
 
           {/* Title — serif */}

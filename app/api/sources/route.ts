@@ -4,6 +4,7 @@ import { sources, userSubscriptions, articles } from "@/lib/db/schema";
 import { eq, and, inArray, sql } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
 import type { FeedEntry, SectionKey } from "@/lib/db/schema";
+import { normalizeSourceLogoUrl } from "@/lib/utils/source-logos";
 
 export async function GET(request: NextRequest) {
   try {
@@ -51,6 +52,7 @@ export async function GET(request: NextRequest) {
 
       return {
         ...s,
+        logo_url: normalizeSourceLogoUrl(s.slug, s.logo_url),
         feeds: undefined,
         available_sections: [...new Set(activeSectionKeys)],
       };
