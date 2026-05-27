@@ -91,9 +91,9 @@ const ARGENTINA: SourceSeed[] = [
     logoUrl: 'https://www.pagina12.com.ar/favicon.ico',
     websiteUrl: 'https://www.pagina12.com.ar',
     needsUserAgent: true,
-    notes: 'Kirchnerist/progressive newspaper. Migrated to Arc Publishing — single general feed only, no per-section splits. Section inferred from URL. Old /rss/secciones/* URLs return 404. Verified May 2026.',
+    notes: 'Kirchnerist/progressive newspaper on Arc Publishing. All /rss/secciones/* + /rss/portada URLs return 404. The legacy Arc outboundfeeds/rss endpoint serves only ~1 random article per hit, so we use the Google News sitemap (breakingnews-short.xml — 100 latest articles per fetch, undocumented but linked from robots.txt). Article body + canonical section are filled in by enrich-content.ts via Fusion.globalContent. Verified May 2026.',
     feedSections: [
-      { key: 'all', url: 'https://www.pagina12.com.ar/arc/outboundfeeds/rss/?outputType=xml', labelEs: 'Portada', labelEn: 'Home' },
+      { key: 'all', url: 'https://www.pagina12.com.ar/arc/outboundfeeds/breakingnews-short.xml', labelEs: 'Últimas', labelEn: 'Latest' },
     ],
   },
   {

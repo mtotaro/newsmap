@@ -5,6 +5,7 @@ import type { FeedEntry, SectionKey } from "@/lib/db/schema";
 import {
   inferSectionFromUrl,
   inferSectionFromCategory,
+  shouldSkipUrl,
 } from "./section-inference";
 import { extractThumbnail, type MediaLike } from "./thumbnail";
 import { sanitizeArticleHtml } from "@/lib/sanitize/article-html";
@@ -47,6 +48,10 @@ export async function parseFeed(source: Source): Promise<ParsedArticle[]> {
     const items = await fetchAndNormalize(feed.url, source.needs_user_agent);
     for (const item of items) {
       if (!item.title || !item.url) continue;
+      // Filter out URLs the publisher uses for non-article content
+      // (obituaries, letters to editor, print-edition index pages, etc.).
+      // See SKIP_URL_FRAGMENTS in section-inference.ts.
+      if (shouldSkipUrl(item.url)) continue;
       const sectionKey = resolveSectionKey(item.categories, item.url, feed);
       results.push({
         source_id: source.id,
@@ -97,6 +102,18 @@ async function fetchAndNormalize(
 
   const buffer = await res.arrayBuffer();
   const body = decodeXmlBuffer(buffer, res.headers.get("content-type") ?? "");
+
+  // ── Google News sitemap detection ────────────────────────────────────────
+  // Some publishers (Página 12) deprecated their per-section RSS feeds and
+  // only expose a Google News sitemap at /arc/outboundfeeds/breakingnews-*
+  // We treat those as a feed source by mapping each <url> to a NormalizedItem
+  // up front, before feedsmith ever sees the body.
+  if (
+    body.includes("<urlset") &&
+    body.includes("xmlns:news=")
+  ) {
+    return parseNewsSitemap(body);
+  }
 
   // feedsmith throws on RSS 1.0 / RDF — catch and fall through to our own parser
   let parsed: ReturnType<typeof feedsmithParse> | null = null;
@@ -214,6 +231,90 @@ function rdfText(block: string, tag: string): string | null {
   );
   if (!m) return null;
   return m[1].trim() || null;
+}
+
+/**
+ * Parse a Google News sitemap (https://www.google.com/schemas/sitemap-news/0.9).
+ *
+ * The format is one `<url>` block per article with `<news:news>` metadata.
+ * Unlike RSS, sitemaps DON'T carry article body or description — that gets
+ * filled in later by the enricher (which extracts Fusion.globalContent
+ * from the article page).
+ *
+ * Used by Página 12 (`/arc/outboundfeeds/breakingnews-short.xml`) — they
+ * deprecated their per-section RSS feeds and this is the only way to get
+ * the 100 latest articles in a single fetch.
+ *
+ * Example entry:
+ * ```xml
+ * <url>
+ *   <loc>https://www.pagina12.com.ar/2026/05/26/slug/</loc>
+ *   <lastmod>2026-05-26T19:58:24.579Z</lastmod>
+ *   <news:news>
+ *     <news:publication><news:name>Pagina12</news:name><news:language>es</news:language></news:publication>
+ *     <news:publication_date>2026-05-26T19:58:24.579Z</news:publication_date>
+ *     <news:title><![CDATA[Article title]]></news:title>
+ *     <news:keywords><![CDATA[Tag1,Tag2]]></news:keywords>
+ *   </news:news>
+ *   <image:image>
+ *     <image:loc>https://.../image.jpg</image:loc>
+ *     <image:caption><![CDATA[caption]]></image:caption>
+ *   </image:image>
+ * </url>
+ * ```
+ */
+function parseNewsSitemap(xml: string): NormalizedItem[] {
+  const items: NormalizedItem[] = [];
+  const urlRe = /<url[^>]*>([\s\S]*?)<\/url>/g;
+  let m: RegExpExecArray | null;
+  while ((m = urlRe.exec(xml)) !== null) {
+    const block = m[1];
+
+    const loc = block.match(/<loc[^>]*>(.*?)<\/loc>/)?.[1]?.trim() ?? null;
+    if (!loc) continue;
+
+    const title =
+      block
+        .match(/<news:title[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/news:title>/)?.[1]
+        ?.trim() ?? null;
+
+    const pubDate =
+      block.match(/<news:publication_date[^>]*>(.*?)<\/news:publication_date>/)?.[1]
+        ?.trim() ??
+      block.match(/<lastmod[^>]*>(.*?)<\/lastmod>/)?.[1]?.trim() ??
+      null;
+
+    const imageUrl =
+      block.match(/<image:loc[^>]*>(.*?)<\/image:loc>/)?.[1]?.trim() ?? null;
+
+    // Keywords are comma-separated topics, NOT a section. They occasionally
+    // hint at a section ("Básquetbol" → sports) so we surface them as
+    // categories for the existing inferSectionFromCategory pass to try.
+    const kwBlock =
+      block
+        .match(
+          /<news:keywords[^>]*>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/news:keywords>/
+        )?.[1] ?? "";
+    const categories = kwBlock
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    items.push({
+      guid: loc,
+      title,
+      url: loc,
+      // Sitemaps don't include a description or article body. The enricher
+      // will fill those in by fetching the page and reading Fusion.globalContent.
+      description: null,
+      contentEncoded: null,
+      pubDate,
+      categories,
+      media: imageUrl ? { contents: [{ url: imageUrl }] } : undefined,
+      enclosures: undefined,
+    });
+  }
+  return items;
 }
 
 function resolveSectionKey(
