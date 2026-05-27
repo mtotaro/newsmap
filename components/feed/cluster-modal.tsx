@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { timeAgo } from "@/lib/utils/time";
@@ -40,22 +40,11 @@ export function ClusterModal({
 }: Props) {
   const t = useTranslations("Cluster");
   const [mounted, setMounted] = useState(false);
-  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
   }, []);
-
-  useEffect(() => {
-    if (!open || !mounted) return;
-    const dialog = dialogRef.current;
-    if (!dialog || dialog.open) return;
-    dialog.showModal();
-    return () => {
-      if (dialog.open) dialog.close();
-    };
-  }, [open, mounted]);
 
   // Esc to close + lock body scroll while open
   useEffect(() => {
@@ -75,9 +64,9 @@ export function ClusterModal({
   if (!open || !mounted) return null;
 
   return createPortal(
-    <dialog
-      ref={dialogRef}
-      className="cluster-modal-root fixed inset-0 z-[70] m-0 flex max-h-none max-w-none items-end justify-center overflow-visible border-none bg-transparent p-0 sm:items-center"
+    <div
+      className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center"
+      role="dialog"
       aria-modal="true"
       aria-label={t("aria_label")}
     >
@@ -85,7 +74,6 @@ export function ClusterModal({
         @keyframes cluster-fade  { from { opacity: 0; } to { opacity: 1; } }
         @keyframes cluster-slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes cluster-pop     { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .cluster-modal-root::backdrop { background: transparent; }
         .cluster-modal-backdrop { animation: cluster-fade 0.18s ease-out; }
         .cluster-modal-panel    { animation: cluster-slide-up 0.28s cubic-bezier(0.2, 0.85, 0.3, 1); }
         @media (min-width: 640px) {
@@ -98,15 +86,15 @@ export function ClusterModal({
           previous implementation put the backdrop class on the flex parent,
           which broke clickability on some Chromium builds when combined
           with backdrop-filter. */}
-      <button
-        type="button"
-        className="absolute inset-0 appearance-none border-0 bg-black/65 p-0 backdrop-blur-sm cluster-modal-backdrop"
-        aria-label={t("close")}
+      <div
+        className="absolute inset-0 bg-black/65 backdrop-blur-sm cluster-modal-backdrop"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       <div
-        className="cluster-modal-panel relative z-10 mx-0 flex max-h-[96dvh] w-full flex-col overflow-hidden rounded-t-2xl border-t-2 border-[var(--color-accent)] bg-[var(--color-bg)] shadow-2xl sm:mx-4 sm:max-h-[88dvh] sm:max-w-[640px] sm:rounded-xl sm:border"
+        className="cluster-modal-panel relative z-10 flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-2xl border-t-2 border-[var(--color-accent)] bg-[var(--color-bg)] shadow-2xl sm:mx-4 sm:max-h-[86dvh] sm:max-w-[620px] sm:rounded-2xl sm:border"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle (mobile only) — visual cue that this is a sheet */}
         <div
@@ -192,7 +180,7 @@ export function ClusterModal({
           />
         </div>
       </div>
-    </dialog>,
+    </div>,
     document.body
   );
 }
