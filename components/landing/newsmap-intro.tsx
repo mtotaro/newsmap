@@ -1,67 +1,55 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 
 type PinConfig = {
   id: string;
-  pos: { x: number; y: number };
+  coordinates: [number, number];
   headline: string;
   source: string;
   delay: {
     desktop: number;
     mobile: number;
   };
-  cardOffset: {
-    desktop: { x: number; y: number };
-    mobile: { x: number; y: number };
-  };
+  desktopCardOffset: { x: number; y: number };
 };
+
+const MAP_WIDTH = 920;
+const MAP_HEIGHT = 520;
 
 const PINS = [
   {
     id: "ar",
-    pos: { x: 26, y: 70 },
+    coordinates: [-58.3816, -34.6037],
     headline: "Economía en alza",
     source: "Infobae · Buenos Aires",
     delay: { desktop: 500, mobile: 280 },
-    cardOffset: {
-      desktop: { x: 14, y: -22 },
-      mobile: { x: 10, y: -52 },
-    },
+    desktopCardOffset: { x: 18, y: -18 },
   },
   {
     id: "us",
-    pos: { x: 17, y: 37 },
+    coordinates: [-77.0369, 38.9072],
     headline: "Markets at record high",
     source: "AP News · Washington",
     delay: { desktop: 1300, mobile: 900 },
-    cardOffset: {
-      desktop: { x: 14, y: -22 },
-      mobile: { x: 10, y: 12 },
-    },
+    desktopCardOffset: { x: 18, y: -16 },
   },
   {
     id: "es",
-    pos: { x: 46, y: 36 },
+    coordinates: [-3.7038, 40.4168],
     headline: "Madrid lidera la Liga",
     source: "El País · Madrid",
     delay: { desktop: 2100, mobile: 1520 },
-    cardOffset: {
-      desktop: { x: 14, y: -22 },
-      mobile: { x: -138, y: -8 },
-    },
+    desktopCardOffset: { x: 18, y: 12 },
   },
   {
     id: "de",
-    pos: { x: 50, y: 28 },
+    coordinates: [13.405, 52.52],
     headline: "EU summit in Berlin",
     source: "Der Spiegel · Berlín",
     delay: { desktop: 2900, mobile: 2140 },
-    cardOffset: {
-      desktop: { x: 14, y: -22 },
-      mobile: { x: -138, y: -54 },
-    },
+    desktopCardOffset: { x: 18, y: -42 },
   },
 ] as const satisfies readonly PinConfig[];
 
@@ -69,22 +57,32 @@ const INTRO_LAYOUT = {
   desktop: {
     taglineDelay: 4000,
     doneDelay: 5800,
-    mapScale: 147,
-    dotSize: 10,
-    ringSize: 14,
+    mapScale: 150,
+    mapInset: { top: "0%", right: "0%", bottom: "0%", left: "0%" },
+    dotRadius: 5,
+    ringStartRadius: 8,
+    ringEndRadius: 24,
     taglineBottom: "14%",
-    cardWidth: 168,
+    storyBottom: "23%",
+    cardWidth: 170,
+    cardHeight: 46,
   },
   mobile: {
     taglineDelay: 3000,
     doneDelay: 4500,
-    mapScale: 126,
-    dotSize: 8,
-    ringSize: 12,
-    taglineBottom: "18%",
-    cardWidth: 132,
+    mapScale: 160,
+    mapInset: { top: "5%", right: "0%", bottom: "34%", left: "0%" },
+    dotRadius: 4.5,
+    ringStartRadius: 7,
+    ringEndRadius: 20,
+    storyBottom: "23%",
+    taglineBottom: "11%",
+    cardWidth: 170,
+    cardHeight: 46,
   },
 } as const;
+
+type IntroLayout = (typeof INTRO_LAYOUT)[keyof typeof INTRO_LAYOUT];
 
 type Props = {
   locale: string;
@@ -93,18 +91,28 @@ type Props = {
   onDone: () => void;
 };
 
+type IntroSequenceProps = Readonly<Props & {
+  isCompact: boolean;
+  layout: IntroLayout;
+}>;
+
 function isCompactViewport() {
   return typeof globalThis.window !== "undefined" && globalThis.window.innerWidth <= 640;
 }
 
-export function NewsMapIntro({ locale, topology, onDone }: Readonly<Props>) {
-  const [isCompact, setIsCompact] = useState(
-    () => isCompactViewport()
-  );
+function IntroSequence({
+  locale,
+  topology,
+  onDone,
+  isCompact,
+  layout,
+}: IntroSequenceProps) {
   const [visiblePins, setVisiblePins] = useState<Set<string>>(new Set());
   const [activePinId, setActivePinId] = useState<string | null>(null);
   const [showTagline, setShowTagline] = useState(false);
-  const layout = isCompact ? INTRO_LAYOUT.mobile : INTRO_LAYOUT.desktop;
+  const activePin = activePinId
+    ? PINS.find((pin) => pin.id === activePinId) ?? null
+    : null;
 
   const revealPin = (pinId: string) => {
     setVisiblePins((prev) => {
@@ -116,25 +124,6 @@ export function NewsMapIntro({ locale, topology, onDone }: Readonly<Props>) {
   };
 
   useEffect(() => {
-    if (typeof globalThis.window === "undefined") {
-      return;
-    }
-
-    const handleResize = () => {
-      setIsCompact(isCompactViewport());
-    };
-
-    handleResize();
-    globalThis.window.addEventListener("resize", handleResize);
-
-    return () => globalThis.window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    setVisiblePins(new Set());
-    setActivePinId(null);
-    setShowTagline(false);
-
     const timers: ReturnType<typeof setTimeout>[] = [];
     const queueTimer = (callback: () => void, delay: number) => {
       timers.push(setTimeout(callback, delay));
@@ -190,51 +179,38 @@ export function NewsMapIntro({ locale, topology, onDone }: Readonly<Props>) {
           100% { transform: translate(-50%, -50%) scale(3.5); opacity: 0;   }
         }
         .nm-headline-card {
-          max-width: min(168px, calc(100vw - 52px));
-          box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-        }
-        .nm-headline-card-title {
-          display: -webkit-box;
-          overflow: hidden;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 2;
+          transition: opacity 0.3s ease;
         }
         @media (max-width: 640px) {
-          .nm-headline-card {
-            width: min(132px, calc(100vw - 48px)) !important;
-            border-radius: 12px !important;
-            padding: 6px 8px !important;
-          }
-          .nm-headline-card-title {
-            font-size: 10px !important;
-            line-height: 1.25 !important;
-          }
-          .nm-headline-card-source {
-            display: none;
-          }
           .nm-tagline {
-            font-size: 24px !important;
-            padding: 0 24px;
+            font-size: 18px !important;
+            line-height: 1.15 !important;
+            padding: 0 20px;
           }
           .nm-subtagline {
-            font-size: 12px !important;
-            padding: 0 28px;
+            font-size: 11px !important;
+            padding: 0 22px;
           }
         }
       `}</style>
 
-      {/* World map — renders once when topology arrives.
-          We use the default `preserveAspectRatio` ("meet") so the map keeps
-          its proportions and the pin coordinates (which are in % of viewBox)
-          stay accurate across portrait/landscape mobile and desktop. */}
-      {topology && Object.keys(topology).length > 0 && (
-        <div style={{ position: "absolute", inset: 0, opacity: 0.94 }}>
-          <ComposableMap
-            projectionConfig={{ scale: layout.mapScale }}
-            style={{ width: "100%", height: "100%" }}
-          >
+      <div
+        style={{
+          position: "absolute",
+          top: layout.mapInset.top,
+          right: layout.mapInset.right,
+          bottom: layout.mapInset.bottom,
+          left: layout.mapInset.left,
+          opacity: 0.96,
+        }}
+      >
+        <ComposableMap
+          width={MAP_WIDTH}
+          height={MAP_HEIGHT}
+          projectionConfig={{ scale: layout.mapScale }}
+          style={{ width: "100%", height: "100%" }}
+        >
+          {topology && Object.keys(topology).length > 0 && (
             <Geographies geography={topology}>
               {({ geographies }) =>
                 geographies.map((geo) => (
@@ -260,109 +236,143 @@ export function NewsMapIntro({ locale, topology, onDone }: Readonly<Props>) {
                 ))
               }
             </Geographies>
-          </ComposableMap>
-        </div>
-      )}
+          )}
 
-      {/* Pins layer — animates independently of topology load */}
-      {PINS.map((pin) => {
-        const visible = visiblePins.has(pin.id);
-        const showCard = visible && (!isCompact || activePinId === pin.id);
-        const cardOffset = isCompact ? pin.cardOffset.mobile : pin.cardOffset.desktop;
-        const cardRestX = cardOffset.x >= 0 ? -10 : 10;
-        const cardRestY = showCard ? 0 : 6;
+          {PINS.map((pin) => {
+            const visible = visiblePins.has(pin.id);
+            const showCard = visible && !isCompact;
 
-        return (
+            return (
+              <Marker key={pin.id} coordinates={pin.coordinates}>
+                <g>
+                  {visible && (
+                    <circle
+                      r={layout.ringStartRadius}
+                      fill="none"
+                      stroke="rgba(120, 186, 255, 0.95)"
+                      strokeWidth="1.5"
+                    >
+                      <animate
+                        attributeName="r"
+                        from={String(layout.ringStartRadius)}
+                        to={String(layout.ringEndRadius)}
+                        dur="1.5s"
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="opacity"
+                        from="0.7"
+                        to="0"
+                        dur="1.5s"
+                        repeatCount="indefinite"
+                      />
+                    </circle>
+                  )}
+                  <circle
+                    r={layout.dotRadius + 5}
+                    fill="rgba(74, 158, 255, 0.14)"
+                    opacity={visible ? 1 : 0}
+                    style={{ transition: "opacity 0.2s ease-out" }}
+                  />
+                  <circle
+                    r={layout.dotRadius}
+                    fill="#4a9eff"
+                    opacity={visible ? 1 : 0}
+                    style={{ transition: "opacity 0.2s ease-out" }}
+                  />
+
+                  {!isCompact && (
+                    <g
+                      className="nm-headline-card"
+                      transform={`translate(${pin.desktopCardOffset.x} ${pin.desktopCardOffset.y})`}
+                      opacity={showCard ? 1 : 0}
+                    >
+                      <rect
+                        width={layout.cardWidth}
+                        height={layout.cardHeight}
+                        rx="12"
+                        fill="rgba(15, 17, 21, 0.9)"
+                        stroke="rgba(120, 186, 255, 0.16)"
+                      />
+                      <text
+                        x="12"
+                        y="18"
+                        fill="#e8e8e8"
+                        fontSize="11"
+                        fontWeight="700"
+                        fontFamily="system-ui, sans-serif"
+                      >
+                        {pin.headline}
+                      </text>
+                      <text
+                        x="12"
+                        y="32"
+                        fill="#90a7bf"
+                        fontSize="9"
+                        fontFamily="system-ui, sans-serif"
+                      >
+                        {pin.source}
+                      </text>
+                    </g>
+                  )}
+                </g>
+              </Marker>
+            );
+          })}
+        </ComposableMap>
+      </div>
+
+      {isCompact && activePin && !showTagline && (
+        <div
+          key={activePin.id}
+          style={{
+            position: "absolute",
+            left: 16,
+            right: 16,
+            bottom: layout.storyBottom,
+            display: "flex",
+            justifyContent: "center",
+            pointerEvents: "none",
+          }}
+        >
           <div
-            key={pin.id}
             style={{
-              position: "absolute",
-              left: `${pin.pos.x}%`,
-              top: `${pin.pos.y}%`,
-              transform: "translate(-50%, -50%)",
+              width: "min(320px, calc(100vw - 32px))",
+              borderRadius: 16,
+              border: "1px solid rgba(120, 186, 255, 0.14)",
+              background: "rgba(15, 17, 21, 0.9)",
+              padding: "12px 14px",
+              boxShadow: "0 20px 40px rgba(0, 0, 0, 0.28)",
+              backdropFilter: "blur(10px)",
+              WebkitBackdropFilter: "blur(10px)",
             }}
           >
-            {/* Pulsing ring */}
-            {visible && (
-              <div
-                style={{
-                  position: "absolute",
-                  width: layout.ringSize,
-                  height: layout.ringSize,
-                  borderRadius: "50%",
-                  border: "1.5px solid rgba(120, 186, 255, 0.95)",
-                  top: "50%",
-                  left: "50%",
-                  animation: "nm-ping 1.5s ease-out infinite",
-                }}
-              />
-            )}
-
-            {/* Dot — spring-like pop via cubic-bezier */}
-            <div
+            <p
               style={{
-                position: "absolute",
-                width: layout.dotSize,
-                height: layout.dotSize,
-                borderRadius: "50%",
-                backgroundColor: "#4a9eff",
-                top: "50%",
-                left: "50%",
-                transform: `translate(-50%, -50%) scale(${visible ? 1 : 0})`,
-                boxShadow: "0 0 0 5px rgba(74, 158, 255, 0.12), 0 0 18px rgba(74, 158, 255, 0.45)",
-                transition:
-                  "transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
-              }}
-            />
-
-            {/* Headline card — desktop keeps revealed cards visible; mobile
-                shows only the active one so the dots never turn into a pileup. */}
-            <div
-              className="nm-headline-card"
-              style={{
-                position: "absolute",
-                left: cardOffset.x,
-                top: cardOffset.y,
-                width: layout.cardWidth,
-                background: "rgba(15, 17, 21, 0.88)",
-                border: "1px solid rgba(120, 186, 255, 0.16)",
-                borderRadius: 10,
-                padding: "6px 9px",
-                opacity: showCard ? 1 : 0,
-                transform: `translate(${showCard ? 0 : cardRestX}px, ${cardRestY}px) scale(${showCard ? 1 : 0.96})`,
-                transition:
-                  "opacity 0.35s ease 0.1s, transform 0.35s ease 0.1s",
-                pointerEvents: "none",
+                margin: 0,
+                color: "#e8e8e8",
+                fontSize: 15,
+                fontWeight: 700,
+                lineHeight: 1.3,
+                fontFamily: "system-ui, sans-serif",
               }}
             >
-              <p
-                className="nm-headline-card-title"
-                style={{
-                  color: "#e8e8e8",
-                  fontSize: 11,
-                  fontWeight: 600,
-                  margin: 0,
-                  lineHeight: 1.3,
-                  fontFamily: "system-ui, sans-serif",
-                }}
-              >
-                {pin.headline}
-              </p>
-              <p
-                className="nm-headline-card-source"
-                style={{
-                  color: "#90a7bf",
-                  fontSize: 9,
-                  margin: "3px 0 0",
-                  fontFamily: "system-ui, sans-serif",
-                }}
-              >
-                {pin.source}
-              </p>
-            </div>
+              {activePin.headline}
+            </p>
+            <p
+              style={{
+                margin: "5px 0 0",
+                color: "#90a7bf",
+                fontSize: 11,
+                lineHeight: 1.35,
+                fontFamily: "system-ui, sans-serif",
+              }}
+            >
+              {activePin.source}
+            </p>
           </div>
-        );
-      })}
+        </div>
+      )}
 
       {/* Tagline — fades up after all pins */}
       <div
@@ -405,5 +415,38 @@ export function NewsMapIntro({ locale, topology, onDone }: Readonly<Props>) {
         </p>
       </div>
     </div>
+  );
+}
+
+export function NewsMapIntro({ locale, topology, onDone }: Readonly<Props>) {
+  const [isCompact, setIsCompact] = useState(
+    () => isCompactViewport()
+  );
+  const layout = isCompact ? INTRO_LAYOUT.mobile : INTRO_LAYOUT.desktop;
+
+  useEffect(() => {
+    if (typeof globalThis.window === "undefined") {
+      return;
+    }
+
+    const handleResize = () => {
+      setIsCompact(isCompactViewport());
+    };
+
+    handleResize();
+    globalThis.window.addEventListener("resize", handleResize);
+
+    return () => globalThis.window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return (
+    <IntroSequence
+      key={isCompact ? "compact" : "desktop"}
+      locale={locale}
+      topology={topology}
+      onDone={onDone}
+      isCompact={isCompact}
+      layout={layout}
+    />
   );
 }

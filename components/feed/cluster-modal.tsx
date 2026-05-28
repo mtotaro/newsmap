@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { timeAgo } from "@/lib/utils/time";
 import type { ClusterMember } from "./article-card";
+
+const emptySubscribe = () => () => {};
 
 type Props = {
   open: boolean;
@@ -39,12 +41,7 @@ export function ClusterModal({
   locale,
 }: Props) {
   const t = useTranslations("Cluster");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
-  }, []);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   // Esc to close + lock body scroll while open
   useEffect(() => {

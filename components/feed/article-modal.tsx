@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useMemo, useState } from "react";
+import { useEffect, useCallback, useMemo, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { SectionChip } from "@/components/ui/section-chip";
@@ -21,10 +21,45 @@ type Props = {
   locale: string;
 };
 
+type SourceLogoProps = {
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  className: string;
+  fallback?: ReactNode;
+};
+
+function SourceLogo({
+  src,
+  alt,
+  width,
+  height,
+  className,
+  fallback = null,
+}: Readonly<SourceLogoProps>) {
+  const [hasError, setHasError] = useState(false);
+
+  if (!src || hasError) {
+    return fallback ? <>{fallback}</> : null;
+  }
+
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      className={className}
+      onError={() => setHasError(true)}
+    />
+  );
+}
+
 export function ArticleModal({ article, onClose, locale }: Props) {
   const tSec = useTranslations("Sections");
   const tArt = useTranslations("Article");
-  const [logoError, setLogoError] = useState(false);
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -46,10 +81,6 @@ export function ArticleModal({ article, onClose, locale }: Props) {
   const sourceLogo = article
     ? normalizeSourceLogoUrl(article.source_slug, article.source_logo)
     : null;
-
-  useEffect(() => {
-    setLogoError(false);
-  }, [article?.id, sourceLogo]);
 
   // Load social embed SDKs when article contains embeds
   useEffect(() => {
@@ -165,21 +196,18 @@ export function ArticleModal({ article, onClose, locale }: Props) {
           </div>
         ) : (
           <div className="relative w-full aspect-video bg-[var(--color-bg-3)] flex items-center justify-center shrink-0">
-            {sourceLogo && !logoError ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={sourceLogo}
-                alt={article.source_name}
-                width={56}
-                height={56}
-                className="opacity-30 object-contain"
-                onError={() => setLogoError(true)}
-              />
-            ) : (
-              <span className="text-3xl font-bold opacity-20 tracking-widest select-none uppercase">
-                {sourceInitials}
-              </span>
-            )}
+            <SourceLogo
+              src={sourceLogo}
+              alt={article.source_name}
+              width={56}
+              height={56}
+              className="opacity-30 object-contain"
+              fallback={(
+                <span className="text-3xl font-bold opacity-20 tracking-widest select-none uppercase">
+                  {sourceInitials}
+                </span>
+              )}
+            />
           </div>
         )}
 
@@ -189,17 +217,13 @@ export function ArticleModal({ article, onClose, locale }: Props) {
           {/* Source meta row — wraps gracefully on narrow widths */}
           <div className="flex items-center gap-2 text-xs text-[var(--color-text-2)] flex-wrap">
             <span>{flag}</span>
-            {sourceLogo && !logoError && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={sourceLogo}
-                alt={article.source_name}
-                width={14}
-                height={14}
-                className="rounded-sm opacity-80 object-contain"
-                onError={() => setLogoError(true)}
-              />
-            )}
+            <SourceLogo
+              src={sourceLogo}
+              alt={article.source_name}
+              width={14}
+              height={14}
+              className="rounded-sm opacity-80 object-contain"
+            />
             <span className="font-medium truncate min-w-0">{article.source_name}</span>
             <SectionChip section={article.section_key} label={sectionLabel} />
             {readingTimeMin && (

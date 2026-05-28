@@ -76,7 +76,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    let rawRows: ArticleRow[];
     // ── Authenticated: personalized feed (only subscribed sources) ────────
     conditions.push(eq(userSubscriptions.user_id, user.id));
 
@@ -90,7 +89,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    rawRows = await db
+    const rawRows: ArticleRow[] = await db
       .select({
         ...getTableColumns(articles),
         source_name: sources.name,

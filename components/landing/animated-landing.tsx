@@ -6,17 +6,13 @@ import { NewsMapIntro } from "./newsmap-intro";
 const GEO_URL =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-type Props = { locale: string; onDone: () => void; onReady?: () => void };
+type Props = { locale: string; onDone: () => void };
 
-export default function AnimatedLanding({ locale, onDone, onReady }: Readonly<Props>) {
+export default function AnimatedLanding({ locale, onDone }: Readonly<Props>) {
   const [topology, setTopology] = useState<Record<string, unknown> | null>(
     null
   );
-  const skipLabel = locale === "en" ? "Skip ->" : "Saltar ->";
-
-  useEffect(() => {
-    onReady?.();
-  }, [onReady]);
+  const skipLabel = locale === "en" ? "Skip →" : "Saltar →";
 
   // Fetch topology in background — animation starts immediately without waiting
   useEffect(() => {
