@@ -40,19 +40,19 @@ export async function Nav({ locale }: Props) {
         NewsMap
       </Link>
 
-      {/* Scrollable link row — overflows horizontally on very narrow viewports
-          rather than wrapping or squashing labels. */}
-      <div className="flex items-center gap-0.5 sm:gap-1 flex-1 overflow-x-auto scrollbar-hidden -mx-1 px-1">
-        <Link href="/feed" className={linkCls}>{t("feed")}</Link>
-        <Link href="/map" className={linkCls}>{t("map")}</Link>
-        <Link href="/compare/argentina/mexico" className={linkCls}>{t("compare")}</Link>
-        <Link href="/saved" className={linkCls}>{t("saved")}</Link>
-      </div>
+      {user ? (
+        <>
+          {/* Scrollable link row — overflows horizontally on very narrow viewports
+              rather than wrapping or squashing labels. */}
+          <div className="flex items-center gap-0.5 sm:gap-1 flex-1 overflow-x-auto scrollbar-hidden -mx-1 px-1">
+            <Link href="/feed" className={linkCls}>{t("feed")}</Link>
+            <Link href="/map" className={linkCls}>{t("map")}</Link>
+            <Link href="/compare/argentina/mexico" className={linkCls}>{t("compare")}</Link>
+            <Link href="/saved" className={linkCls}>{t("saved")}</Link>
+          </div>
 
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        <StatsBadge />
-        {user ? (
-          <>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <StatsBadge />
             {/* Mobile: single avatar circle with dropdown — collapses
                 "Ajustes" + "Cerrar sesión" into one tap target so the nav
                 doesn't crowd on 360 px phones. */}
@@ -70,16 +70,18 @@ export async function Nav({ locale }: Props) {
             <div className="hidden sm:block">
               <SignOutButton label={t("signout")} locale={locale} />
             </div>
-          </>
-        ) : (
+          </div>
+        </>
+      ) : (
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Link
             href="/auth"
             className="inline-flex items-center px-3 sm:px-4 py-2 min-h-[40px] rounded-[var(--radius-button)] bg-[var(--color-blue)] text-white text-xs sm:text-sm font-medium hover:opacity-90 active:opacity-80"
           >
             {t("signin")}
           </Link>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 }

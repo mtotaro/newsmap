@@ -3,16 +3,26 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+
+function getSafeNextPath(rawNext: string | null, locale: string) {
+  if (rawNext?.startsWith("/") && !rawNext.startsWith("//") && !rawNext.startsWith("/@")) {
+    return rawNext;
+  }
+
+  return `/${locale}/feed`;
+}
 
 export default function AuthPage() {
   const t = useTranslations("Auth");
   const { locale } = useParams<{ locale: string }>();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const nextPath = getSafeNextPath(searchParams.get("next"), locale);
 
   async function handleMagicLink(e: React.FormEvent) {
     e.preventDefault();
@@ -23,7 +33,7 @@ export default function AuthPage() {
       email,
       options: {
         // Server callback exchanges the code for a session, then redirects to feed
-        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/${locale}/feed`,
+        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(nextPath)}`,
       },
     });
     setLoading(false);
@@ -40,7 +50,7 @@ export default function AuthPage() {
       provider: "google",
       options: {
         // Server callback exchanges the code for a session, then redirects to feed
-        redirectTo: `${window.location.origin}/api/auth/callback?next=/${locale}/feed`,
+        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(nextPath)}`,
       },
     });
   }

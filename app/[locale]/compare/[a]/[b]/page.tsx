@@ -11,6 +11,7 @@ import {
 } from "@/lib/countries";
 import { CompareColumn } from "@/components/compare/compare-column";
 import { CompareSwitcher } from "@/components/compare/compare-switcher";
+import { requirePageUser } from "@/lib/supabase/auth-guards";
 
 export const revalidate = 900;
 
@@ -88,14 +89,15 @@ export async function generateMetadata({
 
 export default async function ComparePage({
   params,
-}: {
+}: Readonly<{
   params: Promise<{ a: string; b: string; locale: string }>;
-}) {
+}>) {
   const { a, b, locale } = await params;
   const alphaA = COUNTRY_SLUG_TO_ALPHA2[a.toLowerCase()];
   const alphaB = COUNTRY_SLUG_TO_ALPHA2[b.toLowerCase()];
 
   if (!alphaA || !alphaB) notFound();
+  await requirePageUser(locale, `/${locale}/compare/${a}/${b}`);
   // Self-comparison makes no sense — bounce to the country page
   if (alphaA === alphaB) {
     redirect(`/${locale}/news/${ALPHA2_TO_SLUG[alphaA]}`);

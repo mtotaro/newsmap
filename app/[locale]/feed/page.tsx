@@ -1,10 +1,10 @@
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/lib/supabase/server";
 import { FeedList } from "@/components/feed/feed-list";
 import { NewArticlesBanner } from "@/components/feed/new-articles-banner";
 import { Masthead } from "@/components/layout/masthead";
 import { ActivityRail } from "@/components/feed/activity-rail";
 import type { Metadata } from "next";
+import { requirePageUser } from "@/lib/supabase/auth-guards";
 
 export async function generateMetadata({
   params,
@@ -18,21 +18,15 @@ export async function generateMetadata({
 
 export default async function FeedPage({
   params,
-}: {
+}: Readonly<{
   params: Promise<{ locale: string }>;
-}) {
+}>) {
   const { locale } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await requirePageUser(locale, `/${locale}/feed`);
 
-  // Anonymous users see latest articles across all sources (public discovery feed).
-  // Signed-in users see articles filtered by their subscriptions (personalized).
-  // This is crucial for SEO (Googlebot can index) and funnel (no auth wall on landing).
   return (
     <div className="min-h-screen pb-20">
-      <NewArticlesBanner userId={user?.id} />
+      <NewArticlesBanner userId={user.id} />
       <ActivityRail locale={locale} />
       <Masthead locale={locale} />
       <FeedList locale={locale} />

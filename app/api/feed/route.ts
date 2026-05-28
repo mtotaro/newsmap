@@ -43,6 +43,10 @@ export async function GET(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get("cursor"); // ISO timestamp
     const section = searchParams.get("section"); // optional section filter
@@ -72,57 +76,40 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // ── Anonymous: public discovery feed (all sources, no personalization) ──
     let rawRows: ArticleRow[];
-    if (!user) {
-      rawRows = await db
-        .select({
-          ...getTableColumns(articles),
-          source_name: sources.name,
-          source_logo: sources.logo_url,
-          source_slug: sources.slug,
-          country_code: sources.country_code,
-        })
-        .from(articles)
-        .innerJoin(sources, eq(articles.source_id, sources.id))
-        .where(conditions.length ? and(...conditions) : undefined)
-        .orderBy(desc(articles.published_at))
-        .limit(PAGE_SIZE * OVERFETCH);
-    } else {
-      // ── Authenticated: personalized feed (only subscribed sources) ────────
-      conditions.push(eq(userSubscriptions.user_id, user.id));
+    // ── Authenticated: personalized feed (only subscribed sources) ────────
+    conditions.push(eq(userSubscriptions.user_id, user.id));
 
-      // Per-subscription section filter (only when no explicit UI section override)
-      if (!section) {
-        conditions.push(
-          sql`(
-            ${userSubscriptions.section_keys} IS NULL
-            OR ${articles.section_key}::text = ANY(${userSubscriptions.section_keys})
-          )`
-        );
-      }
-
-      rawRows = await db
-        .select({
-          ...getTableColumns(articles),
-          source_name: sources.name,
-          source_logo: sources.logo_url,
-          source_slug: sources.slug,
-          country_code: sources.country_code,
-        })
-        .from(articles)
-        .innerJoin(sources, eq(articles.source_id, sources.id))
-        .innerJoin(
-          userSubscriptions,
-          and(
-            eq(userSubscriptions.source_id, articles.source_id),
-            eq(userSubscriptions.user_id, user.id)
-          )
-        )
-        .where(and(...conditions))
-        .orderBy(desc(articles.published_at))
-        .limit(PAGE_SIZE * OVERFETCH);
+    // Per-subscription section filter (only when no explicit UI section override)
+    if (!section) {
+      conditions.push(
+        sql`(
+          ${userSubscriptions.section_keys} IS NULL
+          OR ${articles.section_key}::text = ANY(${userSubscriptions.section_keys})
+        )`
+      );
     }
+
+    rawRows = await db
+      .select({
+        ...getTableColumns(articles),
+        source_name: sources.name,
+        source_logo: sources.logo_url,
+        source_slug: sources.slug,
+        country_code: sources.country_code,
+      })
+      .from(articles)
+      .innerJoin(sources, eq(articles.source_id, sources.id))
+      .innerJoin(
+        userSubscriptions,
+        and(
+          eq(userSubscriptions.source_id, articles.source_id),
+          eq(userSubscriptions.user_id, user.id)
+        )
+      )
+      .where(and(...conditions))
+      .orderBy(desc(articles.published_at))
+      .limit(PAGE_SIZE * OVERFETCH);
 
     // ── Dedup by cluster_key (most-recent per cluster wins) ─────────────────
     // Singletons (cluster_key === null) are always kept as-is.

@@ -47,7 +47,7 @@ export function LandingPage({ locale }: Props) {
 
       {/* CTA buttons */}
       <div
-        className={`flex flex-col sm:flex-row gap-3 transition-opacity duration-300 delay-500 ${
+        className={`flex gap-3 transition-opacity duration-300 delay-500 ${
           animDone ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
@@ -56,12 +56,6 @@ export function LandingPage({ locale }: Props) {
           className="px-6 py-3 rounded-[var(--radius-button)] bg-[var(--color-blue)] text-white font-medium hover:opacity-90 transition-opacity"
         >
           {t("cta")}
-        </Link>
-        <Link
-          href="/map"
-          className="px-6 py-3 rounded-[var(--radius-button)] border border-[var(--color-border)] text-[var(--color-text-2)] font-medium hover:bg-[var(--color-bg-2)] transition-colors"
-        >
-          {t("demo_label")} →
         </Link>
       </div>
 

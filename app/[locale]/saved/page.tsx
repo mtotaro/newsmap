@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { SavedList } from "@/components/feed/saved-list";
 import type { Metadata } from "next";
+import { requirePageUser } from "@/lib/supabase/auth-guards";
 
 export async function generateMetadata({
   params,
@@ -18,10 +19,12 @@ export async function generateMetadata({
 
 export default async function SavedPage({
   params,
-}: {
+}: Readonly<{
   params: Promise<{ locale: string }>;
-}) {
+}>) {
   const { locale } = await params;
+  await requirePageUser(locale, `/${locale}/saved`);
+
   return (
     <div className="min-h-screen pb-20">
       <SavedList locale={locale} />

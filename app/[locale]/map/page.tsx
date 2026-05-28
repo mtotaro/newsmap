@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { WorldMap } from "@/components/map/world-map";
 import type { Metadata } from "next";
+import { requirePageUser } from "@/lib/supabase/auth-guards";
 
 export async function generateMetadata({
   params,
@@ -14,10 +15,11 @@ export async function generateMetadata({
 
 export default async function MapPage({
   params,
-}: {
+}: Readonly<{
   params: Promise<{ locale: string }>;
-}) {
+}>) {
   const { locale } = await params;
+  await requirePageUser(locale, `/${locale}/map`);
   const t = await getTranslations({ locale, namespace: "Map" });
 
   return (

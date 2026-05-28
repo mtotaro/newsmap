@@ -8,6 +8,15 @@ import { normalizeSourceLogoUrl } from "@/lib/utils/source-logos";
 
 export async function GET(request: NextRequest) {
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const country = searchParams.get("country");
 
@@ -88,38 +97,23 @@ export async function GET(request: NextRequest) {
     }
 
     // Attach subscription status + section_keys if user is logged in
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const subs = await db
+      .select({
+        source_id: userSubscriptions.source_id,
+        section_keys: userSubscriptions.section_keys,
+      })
+      .from(userSubscriptions)
+      .where(eq(userSubscriptions.user_id, user.id));
 
-    if (user) {
-      const subs = await db
-        .select({
-          source_id: userSubscriptions.source_id,
-          section_keys: userSubscriptions.section_keys,
-        })
-        .from(userSubscriptions)
-        .where(eq(userSubscriptions.user_id, user.id));
-
-      const subsMap = new Map(subs.map((s) => [s.source_id, s.section_keys]));
-
-      return NextResponse.json(
-        withStaticSections.map((s) => ({
-          ...s,
-          subscribed: subsMap.has(s.id),
-          subscription_sections: subsMap.has(s.id)
-            ? (subsMap.get(s.id) ?? null)
-            : null,
-        }))
-      );
-    }
+    const subsMap = new Map(subs.map((s) => [s.source_id, s.section_keys]));
 
     return NextResponse.json(
       withStaticSections.map((s) => ({
         ...s,
-        subscribed: false,
-        subscription_sections: null,
+        subscribed: subsMap.has(s.id),
+        subscription_sections: subsMap.has(s.id)
+          ? (subsMap.get(s.id) ?? null)
+          : null,
       }))
     );
   } catch (err) {
