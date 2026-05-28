@@ -31,6 +31,6 @@ export const config = {
      *  - offline.html  (SW offline fallback)
      *  - common image/font extensions
      */
-    "/((?!_next/static|_next/image|favicon\\.ico|api/|sw\\.js|manifest\\.json|robots\\.txt|sitemap\\.xml|offline\\.html|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|ttf|woff2?)$).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|api/|sw\\.js|manifest\\.json|robots\\.txt|sitemap\\.xml|ads\\.txt|offline\\.html|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|ttf|woff2?)$).*)",
   ],
 };
