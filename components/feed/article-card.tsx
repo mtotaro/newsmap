@@ -360,7 +360,7 @@ function ThumbnailContent({
           fill
           sizes={large ? "(max-width: 768px) 100vw, 720px" : "140px"}
           className="object-cover"
-          unoptimized={false}
+          unoptimized
           priority={priority}
         />
       ) : (
