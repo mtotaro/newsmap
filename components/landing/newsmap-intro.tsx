@@ -33,7 +33,7 @@ const PINS = [
     headline: "Markets at record high",
     source: "AP News · Washington",
     delay: { desktop: 1300, mobile: 900 },
-    desktopCardOffset: { x: 18, y: -16 },
+    desktopCardOffset: { x: -188, y: -16 },
   },
   {
     id: "es",
@@ -97,7 +97,7 @@ type IntroSequenceProps = Readonly<Props & {
 }>;
 
 function isCompactViewport() {
-  return typeof globalThis.window !== "undefined" && globalThis.window.innerWidth <= 640;
+  return globalThis.window !== undefined && globalThis.window.innerWidth <= 640;
 }
 
 function IntroSequence({
@@ -425,7 +425,7 @@ export function NewsMapIntro({ locale, topology, onDone }: Readonly<Props>) {
   const layout = isCompact ? INTRO_LAYOUT.mobile : INTRO_LAYOUT.desktop;
 
   useEffect(() => {
-    if (typeof globalThis.window === "undefined") {
+    if (globalThis.window === undefined) {
       return;
     }
 
