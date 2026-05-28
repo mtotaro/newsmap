@@ -6,12 +6,17 @@ import { NewsMapIntro } from "./newsmap-intro";
 const GEO_URL =
   "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
-type Props = { locale: string; onDone: () => void };
+type Props = { locale: string; onDone: () => void; onReady?: () => void };
 
-export default function AnimatedLanding({ locale, onDone }: Props) {
+export default function AnimatedLanding({ locale, onDone, onReady }: Readonly<Props>) {
   const [topology, setTopology] = useState<Record<string, unknown> | null>(
     null
   );
+  const skipLabel = locale === "en" ? "Skip ->" : "Saltar ->";
+
+  useEffect(() => {
+    onReady?.();
+  }, [onReady]);
 
   // Fetch topology in background — animation starts immediately without waiting
   useEffect(() => {
@@ -52,17 +57,17 @@ export default function AnimatedLanding({ locale, onDone }: Props) {
           WebkitBackdropFilter: "blur(4px)",
         }}
         onMouseEnter={(e) => {
-          const el = e.currentTarget as HTMLButtonElement;
+          const el = e.currentTarget;
           el.style.background = "rgba(40,40,40,0.85)";
           el.style.color = "#fff";
         }}
         onMouseLeave={(e) => {
-          const el = e.currentTarget as HTMLButtonElement;
+          const el = e.currentTarget;
           el.style.background = "rgba(20,20,20,0.6)";
           el.style.color = "#ccc";
         }}
       >
-        Saltar →
+        {skipLabel}
       </button>
     </>
   );

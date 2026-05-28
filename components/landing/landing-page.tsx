@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { ALPHA2_TO_SLUG } from "@/lib/countries";
+import { LandingIntroFallback } from "@/components/landing/landing-intro-fallback";
 
 const AnimatedLanding = dynamic(
   () => import("@/components/landing/animated-landing"),
@@ -17,6 +18,7 @@ type Props = {
 
 export function LandingPage({ locale }: Props) {
   const [animDone, setAnimDone] = useState(false);
+  const [animReady, setAnimReady] = useState(false);
   const t = useTranslations("Landing");
 
   return (
@@ -28,7 +30,18 @@ export function LandingPage({ locale }: Props) {
         }`}
         style={{ background: "#0f0f0f" }}
       >
-        <AnimatedLanding locale={locale} onDone={() => setAnimDone(true)} />
+        <div
+          className={`absolute inset-0 transition-opacity duration-300 ${
+            animReady ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <LandingIntroFallback locale={locale} />
+        </div>
+        <AnimatedLanding
+          locale={locale}
+          onReady={() => setAnimReady(true)}
+          onDone={() => setAnimDone(true)}
+        />
       </div>
 
       {/* Headline + subheadline */}
